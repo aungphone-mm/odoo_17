@@ -1,0 +1,39 @@
+<odoo>
+    <data>
+        <record id="view_res_config_settings_form_inherit" model="ir.ui.view">
+            <field name="name">res.config.settings.form.inherit</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='open_company']" position="after">
+                    <div class="w-50 row">
+                        <span class="d-block w-75 py-2">Nav Color</span>
+                        <field name="navbar_color" class="d-block w-25 p-0 m-0" widget="color"/>
+                    </div>
+                    <div class="w-50 row">
+                        <span class="d-block w-75 py-2">Background Color</span>
+                        <field name="menu_background_color" class="d-block w-25 p-0 m-0" widget="color"/>
+                    </div>
+                </xpath>
+                <xpath expr="//div[@name='about_setting_container']" position="replace">
+                    <div class="row mt16 o_settings_container" name="about_development_company">
+                        <div class='col-12 col-lg-6 o_setting_box'>
+                            <div class="d-flex">
+                                <div class="o_setting_right_pane">
+                                    <!-- FIXME Those links are defined directly in the template which means that we will have to
+                                    update the template code is the link ever changes -->
+                                    <img alt="Mingalar Sky Co., Ltd." class="d-block img img-fluid company-logo" src="website_extension/static/description/icon.png"/>
+                                    <br />
+                                    <b class="trade-mark">designed &amp; developed by Mingalar Sky Co., Ltd.</b>
+                                    <br />
+                                    <br />
+                                    <small class="version">Version : 16.0</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

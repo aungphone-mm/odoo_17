@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo><data>
+    <record id="account_category_action" model="ir.actions.act_window">
+        <field name="name">Chart of Account Category</field>
+        <field name="res_model">account.category</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_old_account" model="ir.actions.act_window">
+        <field name="name">Old Account</field>
+        <field name="res_model">old.account</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="coa_category" name="Category" parent="account_accountant.menu_accounting" action="account_category_action" sequence="20"/>
+    <menuitem id="old_coa" name="Old Account" parent="account_accountant.menu_accounting" action="action_old_account" sequence="30"/>
+
+    <record id="account_category_view_form" model="ir.ui.view">
+       <field name="name">account.category.view.form</field>
+        <field name="model">account.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="account_category_tree_view" model="ir.ui.view">
+       <field name="name">account.category.tree.form</field>
+        <field name="model">account.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="company_id"/>
+            </tree>
+        </field>
+    </record>
+
+     <record id="old_account_view_tree" model="ir.ui.view">
+       <field name="name">old.account.view.tree</field>
+        <field name="model">old.account</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="company_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="old_account_view_form" model="ir.ui.view">
+       <field name="name">old.account.view.form</field>
+        <field name="model">old.account</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+
+
+    <record id="inherited_account_view_list" model="ir.ui.view">
+        <field name="name">account.account.view.list.inherited</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_type']" position="after">
+                <field name="category_id"/>
+                <field name="old_account_id"/>
+            </xpath>
+        </field>
+    </record>
+
+</data>
+</odoo>
