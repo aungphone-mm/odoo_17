@@ -1,1 +1,1 @@
-from . import sale_subscrption_adjustment
+from . import sale_subscription_adjustment

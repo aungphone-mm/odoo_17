@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+   <data>
+        <record id="view_subscription_invoice_wizard_form" model="ir.ui.view">
+            <field name="name">subscription.invoice.wizard.form</field>
+            <field name="model">subscription.invoice.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Select Month and Year">
+                <group>
+                    <field name="month"/>
+                    <field name="year"/>
+                    <field name="subscription_type_id"/>
+                    <field name="subscription_ids"
+                           context="{'tree_view_ref': 'sale_order.view_order_tree_with_products'}"
+                    />
+                </group>
+                <footer>
+                    <button string="Confirm" type="object" name="action_confirm" class="oe_highlight"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+            </field>
+        </record>
+
+        <record id="action_subscription_invoice_wizard" model="ir.actions.act_window">
+            <field name="name">Create Subscription Invoices</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">subscription.invoice.wizard</field>
+<!--            <field name="res_model">sale.order</field>-->
+            <field name="view_mode">tree</field>
+            <field name="target">new</field>
+<!--            <field name="context">{'tree_view_ref': 'sale_order.view_order_tree_with_products'}</field>-->
+        </record>
+
+        <menuitem id="menu_subscription_invoice_wizard"
+                  name="Create Subscription Invoices"
+                  action="action_subscription_invoice_wizard"
+                  parent="sale_subscription.menu_sale_subscription_config"/>
+   </data>
+</odoo>

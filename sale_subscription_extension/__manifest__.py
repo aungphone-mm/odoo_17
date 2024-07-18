@@ -12,6 +12,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/sale_subscription_adjustment_view.xml',
+        'wizards/sale_subscription_adjustment_view.xml',
     ],
     'demo': [],
     'installable': True,
