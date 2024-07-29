@@ -7,8 +7,8 @@
             <field name="arch" type="xml">
                 <xpath expr="//sheet" position="before">
                 <header>
-                    <button name="action_create_sale_orders" string="Create Sale Orders" type="object" class="oe_highlight"/>
-                    <button name="action_view_sale_order_lines" string="View Sale Order Lines" type="object" class="btn-primary"/>
+                    <button name="action_create_sale_orders" string="Generate Subscriptions" type="object" class="oe_highlight"/>
+                    <button name="action_view_sale_order_lines" string="Update Qty for Next invoice" type="object" class="btn-primary"/>
                 </header>
             </xpath>
                 <xpath expr="//notebook" position="inside">
@@ -25,17 +25,17 @@
                             <field name="customer_count"/>
                         </group>
                     </page>
-                    <page string="Sale Orders" name="sale_orders">
-                    <field name="sale_order_ids">
-                        <tree>
-                            <field name="name"/>
-                            <field name="partner_id"/>
-                            <field name="date_order"/>
-                            <field name="amount_total"/>
-                            <field name="state"/>
-                        </tree>
-                    </field>
-                </page>
+                    <page string="Active Subscriptions" name="active_subscriptions">
+                        <field name="active_subscription_ids" readonly="1">
+                            <tree>
+                                <field name="name"/>
+                                <field name="partner_id"/>
+                                <field name="date_order"/>
+                                <field name="amount_total"/>
+                                <field name="state"/>
+                            </tree>
+                        </field>
+                    </page>
                 </xpath>
             </field>
         </record>

@@ -28,6 +28,24 @@ class SaleSubscriptionTemplate(models.Model):
         for template in self:
             template.customer_count = len(template.customer_ids)
 
+    active_subscription_ids = fields.Many2many(
+        'sale.order',
+        compute='_compute_active_subscription_ids',
+        string='Active Subscriptions',
+        store=True
+    )
+    @api.depends('sale_order_ids', 'sale_order_ids.state')
+    def _compute_active_subscription_ids(self):
+        for template in self:
+            template.active_subscription_ids = template._get_active_subscriptions()
+
+    def _get_active_subscriptions(self):
+        return self.sale_order_ids.filtered(lambda o: o.state == 'sale')
+
+    # @api.model
+    # def _search_sale_orders(self, operator, value):
+    #     return [('state', '=', 'sale')]
+
     def action_create_sale_orders(self):
         wizard = self.env['create.subscription.wizard'].create({
             'template_id': self.id,
