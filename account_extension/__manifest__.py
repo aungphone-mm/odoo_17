@@ -1,6 +1,6 @@
 {
     'name': 'Account Extension',
-    'version': '16.0.0.0',
+    'version': '1.0',
     'category': 'Accounting',
     'license': 'AGPL-3',
     'description': """
@@ -17,5 +17,6 @@ Add Date, Reference and Name in Journal Item in Views.
                 'view/account_category_view.xml',
                 ],
     'installable': True,
-    'active': False,
+    'application': False,
+    'auto_install': False,
 }
