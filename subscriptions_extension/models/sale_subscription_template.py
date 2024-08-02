@@ -27,24 +27,20 @@ class SaleSubscriptionTemplate(models.Model):
     def _compute_customer_count(self):
         for template in self:
             template.customer_count = len(template.customer_ids)
-
-    active_subscription_ids = fields.Many2many(
-        'sale.order',
-        compute='_compute_active_subscription_ids',
-        string='Active Subscriptions',
-        store=True
-    )
-    @api.depends('sale_order_ids', 'sale_order_ids.state')
-    def _compute_active_subscription_ids(self):
-        for template in self:
-            template.active_subscription_ids = template._get_active_subscriptions()
-
-    def _get_active_subscriptions(self):
-        return self.sale_order_ids.filtered(lambda o: o.state == 'sale')
-
-    # @api.model
-    # def _search_sale_orders(self, operator, value):
-    #     return [('state', '=', 'sale')]
+    #
+    # active_subscription_ids = fields.Many2many(
+    #     'sale.order',
+    #     compute='_compute_active_subscription_ids',
+    #     string='Active Subscriptions',
+    #     store=True
+    # )
+    # @api.depends('sale_order_ids', 'sale_order_ids.state')
+    # def _compute_active_subscription_ids(self):
+    #     for template in self:
+    #         template.active_subscription_ids = template._get_active_subscriptions()
+    #
+    # def _get_active_subscriptions(self):
+    #     return self.sale_order_ids.filtered(lambda o: o.state == 'sale')
 
     def action_create_sale_orders(self):
         wizard = self.env['create.subscription.wizard'].create({
@@ -61,50 +57,129 @@ class SaleSubscriptionTemplate(models.Model):
 
     def action_view_sale_order_lines(self):
         self.ensure_one()
-        sale_order_lines = self.env['sale.order.line'].search([
-            ('order_id.sale_order_template_id', '=', self.id)
-        ])
+        return {
+            'name': 'Sale Order Template Lines',
+            'type': 'ir.actions.act_window',
+            'res_model': 'sale.order.template',
+            'view_mode': 'form',
+            'res_id': self.id,
+            'target': 'new',
+            'view_id': self.env.ref('subscriptions_extension.view_sale_order_template_wizard_form').id,
+            'context': {
+                'default_sale_order_template_id': self.id,
+                'default_sale_order_template_line_ids': [(6, 0, self.sale_order_template_line_ids.ids)],
+            }
+        }
 
-        if not sale_order_lines:
+    def action_create_invoices(self):
+        Invoice = self.env['account.move']
+        created_invoices = Invoice
+
+        for order in self.env['sale.order'].search([('sale_order_template_id', '=', self.id)]):
+            invoice_vals = {
+                'move_type': 'out_invoice',
+                'partner_id': order.partner_id.id,
+                'invoice_date': fields.Date.today(),
+                'invoice_line_ids': [],
+                'invoice_origin': order.name,
+            }
+
+            for order_line in order.order_line:
+                line_vals = {
+                    'product_id': order_line.product_id.id,
+                    'name': order_line.name,
+                    'quantity': order_line.product_uom_qty,
+                    'price_unit': order_line.price_unit,
+                    'tax_ids': [(6, 0, order_line.tax_id.ids)],
+                    'product_uom_id': order_line.product_uom.id,
+                    'sale_line_ids': [(6, 0, [order_line.id])],  # This links the invoice line to the sale order line
+                }
+                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+
+            try:
+                invoice = Invoice.create(invoice_vals)
+                created_invoices += invoice
+                order.write({
+                    'invoice_status': 'invoiced',
+                })
+                if order.state in ['draft', 'sent']:
+                    order.action_confirm()
+            except Exception as e:
+                raise UserError(f"Error creating invoice for order {order.name}: {str(e)}")
+
+        if created_invoices:
+            return {
+                'name': 'Created Invoices',
+                'type': 'ir.actions.act_window',
+                'res_model': 'account.move',
+                'view_mode': 'tree,form',
+                'domain': [('id', 'in', created_invoices.ids)],
+                'target': 'current',
+            }
+        else:
             return {'type': 'ir.actions.act_window_close'}
 
-        wizard = self.env['sale.order.line.wizard'].create({'template_id': self.id})
-        for line in sale_order_lines:
-            try:
-                self.env['sale.order.line.wizard.line'].create({
-                    'wizard_id': wizard.id,
-                    'sale_line_id': line.id,
-                    'product_id': line.product_id.id,
-                    'name': line.name,
-                    'product_uom_qty': line.product_uom_qty,
-                    'price_unit': line.price_unit,
-                })
-            except Exception as e:
-                _logger.error(f"Error creating wizard line for sale order line {line.id}: {str(e)}")
+    sale_order_template_html = fields.Html(string='Template Line Information', compute='_compute_sale_order_template_html')
+    show_as_columns = fields.Boolean(string='Show as Columns', default=True)
 
-        return {
-            'name': 'Sale Order Lines',
-            'type': 'ir.actions.act_window',
-            'res_model': 'sale.order.line.wizard',
-            'view_mode': 'form',
-            'res_id': wizard.id,
-            'target': 'new',
-            'context': {'create': False},
-        }
-    # def action_view_sale_order_lines(self):
-    #     self.ensure_one()
-    #     sale_order_lines = self.env['sale.order.line'].search([
-    #         ('order_id.sale_order_template_id', '=', self.id)
-    #     ])
-    #     action = {
-    #         'name': 'Sale Order Lines',
-    #         'type': 'ir.actions.act_window',
-    #         'res_model': 'sale.order.line',
-    #         'view_mode': 'tree,form',
-    #         'domain': [('id', 'in', sale_order_lines.ids)],
-    #         'context': {'create': False},
-    #     }
-    #     return action
+    @api.depends('sale_order_template_line_ids', 'show_as_columns')
+    def _compute_sale_order_template_html(self):
+        for record in self:
+            template_lines = record.sale_order_template_line_ids
+            if record.show_as_columns:
+                formatted_html = record._get_column_view_html(template_lines)
+            else:
+                formatted_html = record._get_row_view_html(template_lines)
+            record.sale_order_template_html = formatted_html
+
+    def _get_row_view_html(self, template_lines):
+        html = """
+        <table class="table table-sm table-hover">
+            <thead>
+                <tr>
+                    <th class="text-left">Product</th>
+                    <th class="text-right">Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
+        for line in template_lines:
+            html += f"""
+                <tr>
+                    <td class="text-left">{line.product_id.name}</td>
+                    <td class="text-right">{line.product_uom_qty}</td>
+                </tr>
+            """
+        html += """
+            </tbody>
+        </table>
+        """
+        return html
+
+    def _get_column_view_html(self, template_lines):
+        html = """
+        <table class="table table-sm table-hover">
+            <thead>
+                <tr>
+                    <th class="text-center">Info</th>
+        """
+        for line in template_lines:
+            html += f'<th class="text-center">{line.product_id.name}</th>'
+        html += """
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th class="text-left">Quantity</th>
+        """
+        for line in template_lines:
+            html += f'<td class="text-right">{line.product_uom_qty}</td>'
+        html += """
+                </tr>
+            </tbody>
+        </table>
+        """
+        return html
 
 class SubscriptionCustomer(models.Model):
     _name = 'subscription.customer'
@@ -132,7 +207,7 @@ class CreateSubscriptionWizard(models.TransientModel):
     template_id = fields.Many2one('sale.order.template', string='Subscription Template', required=True)
     validity_date = fields.Date(string='Validity Date', required=True, default=lambda self: fields.Date.today() + timedelta(days=30))
     date_order = fields.Datetime(string='Order Date', required=True, default=fields.Datetime.now)
-    plan_id = fields.Many2one('sale.subscription.plan', string='Recurring Plan')
+    plan_id = fields.Many2one('sale.subscription.plan',related='template_id.plan_id', string='Recurring Plan')
     payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms')
     end_date = fields.Date(string='End Date', required=True, default=lambda self: fields.Date.today() + timedelta(days=30))
 
@@ -163,84 +238,3 @@ class CreateSubscriptionWizard(models.TransientModel):
             'domain': [('id', 'in', created_order_ids)],
             'target': 'current',
         }
-
-class SaleOrderLineWizard(models.TransientModel):
-    _name = 'sale.order.line.wizard'
-    _description = 'Sale Order Line Wizard'
-
-    template_id = fields.Many2one('sale.order.template', string='Subscription Template')
-    line_ids = fields.One2many('sale.order.line.wizard.line', 'wizard_id', string='Sale Order Lines')
-
-    def default_get(self, fields):
-        res = super(SaleOrderLineWizard, self).default_get(fields)
-        if self._context.get('active_model') == 'sale.order.line' and self._context.get('active_ids'):
-            lines = self.env['sale.order.line'].browse(self._context['active_ids'])
-            wizard_lines = [(0, 0, {
-                'sale_line_id': line.id,
-                'product_id': line.product_id.id,
-                'name': line.name,
-                'product_uom_qty': line.product_uom_qty,
-                'price_unit': line.price_unit,
-            }) for line in lines]
-            res['line_ids'] = wizard_lines
-        return res
-
-    def action_create_invoices(self):
-        Invoice = self.env['account.move']
-        SaleOrder = self.env['sale.order']
-        created_invoices = Invoice
-        for order in self.line_ids.mapped('sale_line_id.order_id'):
-            invoice_vals = {
-                'move_type': 'out_invoice',
-                'partner_id': order.partner_id.id,
-                'invoice_date': fields.Date.today(),
-                'invoice_line_ids': [],
-                'invoice_origin': order.name,  # Add the sale order reference
-            }
-            for wizard_line in self.line_ids.filtered(lambda l: l.sale_line_id.order_id == order):
-                line_vals = {
-                    'product_id': wizard_line.product_id.id,
-                    'name': wizard_line.name,
-                    'quantity': wizard_line.product_uom_qty,
-                    'price_unit': wizard_line.price_unit,
-                    'tax_ids': [(6, 0, wizard_line.sale_line_id.tax_id.ids)],
-                    'product_uom_id': wizard_line.sale_line_id.product_uom.id,
-                    'sale_line_ids': [(4, wizard_line.sale_line_id.id)],  # Link to the sale order line
-                }
-                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-            try:
-                invoice = Invoice.create(invoice_vals)
-                created_invoices += invoice
-                # Update the sale order
-                order.write({
-                    'invoice_ids': [(4, invoice.id)],
-                    'invoice_status': 'invoiced',
-                })
-                # Change the sale order state to 'sale' if it's in 'draft' or 'sent' state
-                if order.state in ['draft', 'sent']:
-                    order.action_confirm()
-            except Exception as e:
-                raise UserError(f"Error creating invoice for order {order.name}: {str(e)}")
-        if created_invoices:
-            return {
-                'name': 'Created Invoices',
-                'type': 'ir.actions.act_window',
-                'res_model': 'account.move',
-                'view_mode': 'tree,form',
-                'domain': [('id', 'in', created_invoices.ids)],
-                'target': 'current',
-            }
-        else:
-            return {'type': 'ir.actions.act_window_close'}
-
-class SaleOrderLineWizardLine(models.TransientModel):
-    _name = 'sale.order.line.wizard.line'
-    _description = 'Sale Order Line Wizard Line'
-
-    wizard_id = fields.Many2one('sale.order.line.wizard', string='Wizard')
-    sale_line_id = fields.Many2one('sale.order.line', string='Sale Order Line')
-    partner_id = fields.Many2one(related='sale_line_id.order_id.partner_id', string='Customer', readonly=True)
-    product_id = fields.Many2one('product.product', string='Product')
-    name = fields.Char(string='Description')
-    product_uom_qty = fields.Float(string='Quantity')
-    price_unit = fields.Float(string='Unit Price')

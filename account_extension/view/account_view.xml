@@ -1,17 +1,20 @@
 <odoo>
     <data>
-        <record id="view_account_move_line_form_inherit" model="ir.ui.view">
-            <field name="name">account.move.line.form.inherit</field>
-            <field name="model">account.move</field>
-            <field name="inherit_id" ref="account.view_move_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//notebook/page[@name='aml_tab']//field/tree/field[@name='analytic_distribution']"
-                       position="after">
-                    <field name="date" readonly="0"/>
-                    <field name="ref" readonly="0"/>
-                </xpath>
-            </field>
-        </record>
+<!--        <record id="view_account_move_line_form_inherit" model="ir.ui.view">-->
+<!--            <field name="name">account.move.line.form.inherit</field>-->
+<!--            <field name="model">account.move</field>-->
+<!--            <field name="inherit_id" ref="account.view_move_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='ref']" position="after">-->
+<!--                    <field name="chart_of_account_id"/>-->
+<!--                </xpath>-->
+<!--                <xpath expr="//notebook/page[@name='aml_tab']//field/tree/field[@name='analytic_distribution']"-->
+<!--                       position="after">-->
+<!--                    <field name="date" readonly="0"/>-->
+<!--                    <field name="ref" readonly="0"/>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
 
         <record id="view_account_group_tree_inherit" model="ir.ui.view">
             <field name="name">account.group.tree.inherit</field>
@@ -40,5 +43,6 @@
                 </xpath>
             </field>
         </record>
+
     </data>
 </odoo>

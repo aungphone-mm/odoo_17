@@ -26,7 +26,7 @@
                         </group>
                     </page>
                     <page string="Active Subscriptions" name="active_subscriptions">
-                        <field name="active_subscription_ids" readonly="1">
+                        <field name="sale_order_ids" readonly="1">
                             <tree>
                                 <field name="name"/>
                                 <field name="partner_id"/>
@@ -59,57 +59,38 @@
             </form>
         </field>
     </record>
-    <record id="view_sale_order_line_wizard_form" model="ir.ui.view">
-        <field name="name">sale.order.line.wizard.form</field>
-        <field name="model">sale.order.line.wizard</field>
-        <field name="arch" type="xml">
-            <form string="Create Invoices">
-                <sheet>
-                    <group>
-                        <field name="template_id" invisible="1"/>
-                        <field name="line_ids">
-                            <tree editable="bottom">
-<!--                                <field name="sale_line_id" invisible="1"/>-->
-                                <field name="sale_line_id" string="Order Reference" readonly="1"/>
-                                <field name="partner_id" string="Customer" readonly="1"/>
-                                <field name="product_id" readonly="1"/>
-                                <field name="name"/>
-                                <field name="product_uom_qty"/>
-                                <field name="price_unit"/>
-                            </tree>
-                        </field>
-                    </group>
-                </sheet>
-                <footer>
-                    <button string="Create Invoices" name="action_create_invoices" type="object" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
-                </footer>
-            </form>
-        </field>
-    </record>
-<!--    <record id="view_sale_order_line_wizard_form" model="ir.ui.view">-->
-<!--    <field name="name">sale.order.line.wizard.form</field>-->
-<!--    <field name="model">sale.order.line.wizard</field>-->
-<!--    <field name="arch" type="xml">-->
-<!--        <form string="Create Invoices">-->
-<!--            <sheet>-->
-<!--                <group>-->
-<!--                    <field name="template_id" invisible="1"/>-->
-<!--                    <field name="line_ids">-->
-<!--                        <tree editable="bottom">-->
-<!--                            <field name="product_id" readonly="1"/>-->
-<!--                            <field name="name"/>-->
-<!--                            <field name="quantity"/>-->
-<!--                            <field name="price_unit"/>-->
-<!--                        </tree>-->
-<!--                    </field>-->
-<!--                </group>-->
-<!--            </sheet>-->
-<!--            <footer>-->
-<!--                <button string="Create Invoices" name="action_create_invoices" type="object" class="btn-primary"/>-->
-<!--                <button string="Cancel" class="btn-secondary" special="cancel"/>-->
-<!--            </footer>-->
-<!--        </form>-->
-<!--    </field>-->
-<!--</record>-->
+
+    <record id="view_sale_order_template_wizard_form" model="ir.ui.view">
+    <field name="name">sale.order.template.form</field>
+    <field name="model">sale.order.template</field>
+    <field name="arch" type="xml">
+        <form string="Sale Order Template">
+            <sheet>
+                <group>
+                    <field name="name"/>
+                    <field name="sale_order_template_line_ids" invisible="1"/>
+                    <field name="show_as_columns"/>
+                </group>
+
+                <notebook>
+                    <page string="Sale Order Template Lines">
+                        <field name="sale_order_template_html" widget="html"/>
+                    </page>
+                </notebook>
+            </sheet>
+            <footer>
+                <button string="Create Invoices" name="action_create_invoices" type="object" class="btn-primary"/>
+                <button string="Close" class="btn-secondary" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
+    <record id="action_sale_order_template_wizard" model="ir.actions.act_window">
+    <field name="name">Sale Order Template</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">sale.order.template</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="view_sale_order_template_wizard_form"/>
+    <field name="target">new</field>
+</record>
 </odoo>
