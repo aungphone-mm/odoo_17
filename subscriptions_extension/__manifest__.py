@@ -4,6 +4,7 @@
     'category': 'Sales',
     'license': 'AGPL-3',
     'summary': 'Extend subscription functionality',
+    'external_dependencies': {'python': ['lxml']},
     'depends': ['sale_subscription', 'sale_management', 'sale'],
     'author': 'Mingalar Sky Co., Ltd.',
     'website': 'https://www.mingalarsky.com',

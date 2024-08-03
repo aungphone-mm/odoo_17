@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+<record id="sale_subscription_view_tree_inherit" model="ir.ui.view">
+    <field name="name">sale.subscription.form</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale_subscription.sale_subscription_view_tree"/>
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='partner_id']" position="after">
+            <field name="sale_order_template_id"/>
+        </xpath>
+    </field>
+</record>
     <record id="sale_subscription_template_view_form_inherit" model="ir.ui.view">
             <field name="name">sale.order.template.form.inherit.customer</field>
             <field name="model">sale.order.template</field>
@@ -79,6 +89,7 @@
                 </notebook>
             </sheet>
             <footer>
+                <button name="action_edit_html" string="Edit Units" type="object" class="oe_highlight"/>
                 <button string="Create Invoices" name="action_create_invoices" type="object" class="btn-primary"/>
                 <button string="Close" class="btn-secondary" special="cancel"/>
             </footer>
@@ -93,4 +104,17 @@
     <field name="view_id" ref="view_sale_order_template_wizard_form"/>
     <field name="target">new</field>
 </record>
+    <record id="view_edit_html_wizard_form" model="ir.ui.view">
+        <field name="name">edit.html.wizard.form</field>
+        <field name="model">edit.html.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Edit Units">
+                 <field name="html_content" widget="html" options="{'collaborative': true, 'resizable': true}" style="min-height: 400px;"/>
+                <footer>
+                    <button string="Confirm and Create Invoices" name="action_confirm" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
 </odoo>

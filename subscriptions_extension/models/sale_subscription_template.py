@@ -2,6 +2,8 @@ from odoo import models, fields, api
 from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
 from datetime import timedelta
+from lxml import etree
+import html
 
 class SaleSubscriptionTemplate(models.Model):
     _inherit = 'sale.order.template'
@@ -72,114 +74,188 @@ class SaleSubscriptionTemplate(models.Model):
         }
 
     def action_create_invoices(self):
+        self.ensure_one()
         Invoice = self.env['account.move']
         created_invoices = Invoice
 
-        for order in self.env['sale.order'].search([('sale_order_template_id', '=', self.id)]):
-            invoice_vals = {
-                'move_type': 'out_invoice',
-                'partner_id': order.partner_id.id,
-                'invoice_date': fields.Date.today(),
-                'invoice_line_ids': [],
-                'invoice_origin': order.name,
-            }
+        # Use the edited HTML if available, otherwise use the original
+        html_content = self.env.context.get('edited_html', self.sale_order_template_html)
 
-            for order_line in order.order_line:
-                line_vals = {
-                    'product_id': order_line.product_id.id,
-                    'name': order_line.name,
-                    'quantity': order_line.product_uom_qty,
-                    'price_unit': order_line.price_unit,
-                    'tax_ids': [(6, 0, order_line.tax_id.ids)],
-                    'product_uom_id': order_line.product_uom.id,
-                    'sale_line_ids': [(6, 0, [order_line.id])],  # This links the invoice line to the sale order line
+        # Parse the HTML content
+        tree = etree.fromstring(html_content, etree.HTMLParser())
+        rows = tree.xpath('//tr')[2:]  # Skip header rows
+
+        for row in rows:
+            cells = row.xpath('.//td | .//th')
+            if len(cells) < 2:
+                continue
+
+            customer_name = cells[0].text.strip() if cells[0].text else ''
+            customer = self.env['res.partner'].search([('name', '=', customer_name)], limit=1)
+
+            if not customer:
+                continue
+
+            invoice_lines = []
+            for i, cell in enumerate(cells[1:], start=1):
+                quantity = float(cell.text.strip() if cell.text else '0')
+                if quantity > 0:
+                    product = self.sale_order_template_line_ids[i - 1].product_id
+                    invoice_lines.append((0, 0, {
+                        'product_id': product.id,
+                        'name': product.name,
+                        'quantity': quantity,
+                        'price_unit': product.lst_price,
+                    }))
+
+            if invoice_lines:
+                invoice_vals = {
+                    'partner_id': customer.id,
+                    'move_type': 'out_invoice',
+                    'invoice_line_ids': invoice_lines,
                 }
-                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-
-            try:
                 invoice = Invoice.create(invoice_vals)
                 created_invoices += invoice
-                order.write({
-                    'invoice_status': 'invoiced',
-                })
-                if order.state in ['draft', 'sent']:
-                    order.action_confirm()
-            except Exception as e:
-                raise UserError(f"Error creating invoice for order {order.name}: {str(e)}")
 
         if created_invoices:
-            return {
-                'name': 'Created Invoices',
-                'type': 'ir.actions.act_window',
-                'res_model': 'account.move',
-                'view_mode': 'tree,form',
-                'domain': [('id', 'in', created_invoices.ids)],
-                'target': 'current',
-            }
-        else:
-            return {'type': 'ir.actions.act_window_close'}
+            action = self.env.ref('account.action_move_out_invoice_type').read()[0]
+            action['domain'] = [('id', 'in', created_invoices.ids)]
+            return action
+        return {'type': 'ir.actions.act_window_close'}
 
-    sale_order_template_html = fields.Html(string='Template Line Information', compute='_compute_sale_order_template_html')
+    def action_edit_html(self):
+        self.ensure_one()
+        return {
+            'name': 'Edit Units',
+            'type': 'ir.actions.act_window',
+            'res_model': 'edit.html.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'active_id': self.id},
+            'flags': {'form': {'action_buttons': True}},
+            'width': 1000,
+            'height': 800,
+        }
+
+    sale_order_template_html = fields.Html(string='Template Line Information',
+                                           compute='_compute_sale_order_template_html')
     show_as_columns = fields.Boolean(string='Show as Columns', default=True)
 
-    @api.depends('sale_order_template_line_ids', 'show_as_columns')
+
+    @api.depends('sale_order_template_line_ids', 'sale_order_template_line_ids.product_uom_qty', 'sale_order_ids',
+                     'sale_order_ids.order_line.product_uom_qty', 'show_as_columns')
     def _compute_sale_order_template_html(self):
         for record in self:
-            template_lines = record.sale_order_template_line_ids
             if record.show_as_columns:
-                formatted_html = record._get_column_view_html(template_lines)
+                formatted_html = record._get_column_view_html()
             else:
-                formatted_html = record._get_row_view_html(template_lines)
+                formatted_html = record._get_row_view_html()
             record.sale_order_template_html = formatted_html
 
-    def _get_row_view_html(self, template_lines):
-        html = """
-        <table class="table table-sm table-hover">
-            <thead>
-                <tr>
-                    <th class="text-left">Product</th>
-                    <th class="text-right">Quantity</th>
-                </tr>
-            </thead>
-            <tbody>
-        """
-        for line in template_lines:
-            html += f"""
-                <tr>
-                    <td class="text-left">{line.product_id.name}</td>
-                    <td class="text-right">{line.product_uom_qty}</td>
-                </tr>
-            """
-        html += """
-            </tbody>
-        </table>
-        """
-        return html
+    def _get_column_view_html(self):
+        self.ensure_one()
+        template_lines = self.sale_order_template_line_ids.sorted(key=lambda l: l.sequence)
+        active_subscriptions = self.sale_order_ids.filtered(lambda o: o.state == 'sale')
 
-    def _get_column_view_html(self, template_lines):
         html = """
-        <table class="table table-sm table-hover">
+        <table class="table table-sm table-bordered table-hover">
             <thead>
                 <tr>
-                    <th class="text-center">Info</th>
+                    <th class="text-center align-middle" rowspan="2">Info</th>
         """
         for line in template_lines:
             html += f'<th class="text-center">{line.product_id.name}</th>'
         html += """
                 </tr>
+                <tr>
+        """
+        for line in template_lines:
+            html += f'<th class="text-center">{line.product_id.uom_id.name}</th>'
+        html += """
+                </tr>
             </thead>
             <tbody>
                 <tr>
-                    <th class="text-left">Quantity</th>
+                    <th class="text-left">Template Quantity</th>
         """
         for line in template_lines:
             html += f'<td class="text-right">{line.product_uom_qty}</td>'
         html += """
                 </tr>
+        """
+
+        for subscription in active_subscriptions:
+            html += f"""
+                <tr>
+                    <th class="text-left">{subscription.partner_id.name}</th>
+            """
+            for template_line in template_lines:
+                subscription_line = subscription.order_line.filtered(lambda l: l.product_id == template_line.product_id)
+                quantity = subscription_line.product_uom_qty if subscription_line else 0
+                html += f'<td class="text-right">{quantity}</td>'
+            html += """
+                </tr>
+            """
+
+        html += """
             </tbody>
         </table>
         """
         return html
+
+    def _get_row_view_html(self):
+        self.ensure_one()
+        template_lines = self.sale_order_template_line_ids.sorted(key=lambda l: l.sequence)
+        html = """
+           <table class="table table-sm table-hover">
+               <thead>
+                   <tr>
+                       <th class="text-left">Product</th>
+                       <th class="text-right">Quantity</th>
+                   </tr>
+               </thead>
+               <tbody>
+           """
+        for line in template_lines:
+            html += f"""
+                   <tr>
+                       <td class="text-left">{line.product_id.name}</td>
+                       <td class="text-right">{line.product_uom_qty}</td>
+                   </tr>
+               """
+        html += """
+               </tbody>
+           </table>
+           """
+        return html
+
+    # def action_recompute_html(self):
+    #     self._compute_sale_order_template_html()
+class EditHTMLWizard(models.TransientModel):
+    _name = 'edit.html.wizard'
+    _description = 'Edit HTML Wizard'
+
+    template_id = fields.Many2one('sale.order.template', string='Subscription Template', required=True)
+    html_content = fields.Html(string='HTML Content', sanitize=False)
+
+    @api.model
+    def default_get(self, fields):
+        res = super(EditHTMLWizard, self).default_get(fields)
+        if self.env.context.get('active_id'):
+            template = self.env['sale.order.template'].browse(self.env.context['active_id'])
+            res.update({
+                'template_id': template.id,
+                'html_content': template.sale_order_template_html,
+            })
+        return res
+
+    def action_confirm(self):
+        self.ensure_one()
+        self.template_id.write({
+            'sale_order_template_html': self.html_content,
+        })
+        return self.template_id.with_context(edited_html=self.html_content).action_create_invoices()
+
 
 class SubscriptionCustomer(models.Model):
     _name = 'subscription.customer'
