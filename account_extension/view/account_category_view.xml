@@ -12,8 +12,9 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="coa_category" name="Category" parent="account_accountant.menu_accounting" action="account_category_action" sequence="20"/>
-    <menuitem id="old_coa" name="Old Account" parent="account_accountant.menu_accounting" action="action_old_account" sequence="30"/>
+    <menuitem id="menu_customization" name="Customization" parent="account.menu_finance_configuration" sequence="40"/>
+    <menuitem id="coa_category" name="Category" parent="menu_customization" action="account_category_action" sequence="20"/>
+    <menuitem id="old_coa" name="Old Account" parent="menu_customization" action="action_old_account" sequence="30"/>
 
     <record id="account_category_view_form" model="ir.ui.view">
        <field name="name">account.category.view.form</field>
@@ -70,9 +71,6 @@
             </form>
         </field>
     </record>
-
-
-
 
     <record id="inherited_account_view_list" model="ir.ui.view">
         <field name="name">account.account.view.list.inherited</field>
