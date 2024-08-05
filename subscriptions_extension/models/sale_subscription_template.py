@@ -133,8 +133,8 @@ class SaleSubscriptionTemplate(models.Model):
             'target': 'new',
             'context': {'active_id': self.id},
             'flags': {'form': {'action_buttons': True}},
-            'width': 1000,
-            'height': 800,
+            'width': '80%',
+            'height': '80%',
         }
 
     sale_order_template_html = fields.Html(string='Template Line Information',
@@ -274,7 +274,6 @@ class SubscriptionCustomer(models.Model):
             self.name = self.partner_id.name
             self.email = self.partner_id.email
             self.phone = self.partner_id.phone
-
 
 class CreateSubscriptionWizard(models.TransientModel):
     _name = 'create.subscription.wizard'

@@ -105,16 +105,25 @@
     <field name="target">new</field>
 </record>
     <record id="view_edit_html_wizard_form" model="ir.ui.view">
-        <field name="name">edit.html.wizard.form</field>
-        <field name="model">edit.html.wizard</field>
-        <field name="arch" type="xml">
-            <form string="Edit Units">
-                 <field name="html_content" widget="html" options="{'collaborative': true, 'resizable': true}" style="min-height: 400px;"/>
-                <footer>
-                    <button string="Confirm and Create Invoices" name="action_confirm" type="object" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
-                </footer>
-            </form>
-        </field>
-    </record>
+    <field name="name">edit.html.wizard.form</field>
+    <field name="model">edit.html.wizard</field>
+    <field name="arch" type="xml">
+        <form string="Edit Units">
+            <sheet>
+                <field name="html_content" widget="html" options="{
+                    'collaborative': true,
+                    'resizable': true,
+                    'defaultFontSize': 14,
+                    'height': 600,
+                    'minHeight': 400,
+                    'toolbar': ['style', 'bold', 'italic', 'underline', 'table']
+                }"/>
+            </sheet>
+            <footer>
+                <button string="Confirm and Create Invoices" name="action_confirm" type="object" class="btn-primary"/>
+                <button string="Cancel" class="btn-secondary" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
 </odoo>
