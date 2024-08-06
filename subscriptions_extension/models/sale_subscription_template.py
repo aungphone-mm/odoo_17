@@ -77,25 +77,19 @@ class SaleSubscriptionTemplate(models.Model):
         self.ensure_one()
         Invoice = self.env['account.move']
         created_invoices = Invoice
-
         # Use the edited HTML if available, otherwise use the original
         html_content = self.env.context.get('edited_html', self.sale_order_template_html)
-
         # Parse the HTML content
         tree = etree.fromstring(html_content, etree.HTMLParser())
         rows = tree.xpath('//tr')[2:]  # Skip header rows
-
         for row in rows:
             cells = row.xpath('.//td | .//th')
             if len(cells) < 2:
                 continue
-
             customer_name = cells[0].text.strip() if cells[0].text else ''
             customer = self.env['res.partner'].search([('name', '=', customer_name)], limit=1)
-
             if not customer:
                 continue
-
             invoice_lines = []
             for i, cell in enumerate(cells[1:], start=1):
                 quantity = float(cell.text.strip() if cell.text else '0')
@@ -107,7 +101,6 @@ class SaleSubscriptionTemplate(models.Model):
                         'quantity': quantity,
                         'price_unit': product.lst_price,
                     }))
-
             if invoice_lines:
                 invoice_vals = {
                     'partner_id': customer.id,
@@ -116,7 +109,6 @@ class SaleSubscriptionTemplate(models.Model):
                 }
                 invoice = Invoice.create(invoice_vals)
                 created_invoices += invoice
-
         if created_invoices:
             action = self.env.ref('account.action_move_out_invoice_type').read()[0]
             action['domain'] = [('id', 'in', created_invoices.ids)]
@@ -164,7 +156,7 @@ class SaleSubscriptionTemplate(models.Model):
                     <th class="text-center align-middle" rowspan="2">Info</th>
         """
         for line in template_lines:
-            html += f'<th class="text-center">{line.product_id.name}</th>'
+            html += f'<th class="text-center" style="transform: rotate(-90deg);">{line.product_id.name}</th>'
         html += """
                 </tr>
                 <tr>
