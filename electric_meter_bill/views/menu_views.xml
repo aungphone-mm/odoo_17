@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="location_action" model="ir.actions.act_window">
+            <field name="name">Location</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">location</field>
+            <field name="view_mode">tree</field>
+        </record>
+        <!-- This Menu Item will appear in the Upper bar, That's why It needs NO parent or action -->
+        <menuitem id="menu_electric_meter_main" name="Electric Meter" sequence="10" web_icon="electric_meter_bill,static/images/electric_meter.png" />
+        <!-- This Menu Item Must have a parent -->
+        <menuitem id="menu_electric_meter_configuration" name="Configuration" parent="menu_electric_meter_main" sequence="100"/>
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="menu_location" name="Location" parent="menu_electric_meter_configuration" action="electric_meter_bill.location_action" sequence="10"/>
+
+        <record id="electric_meter_action" model="ir.actions.act_window">
+            <field name="name">Meter Box</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">electric.meter</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <menuitem id="menu_electric_meter" name="Meter Box" parent="menu_electric_meter_main" action="electric_meter_bill.electric_meter_action" sequence="1"/>
+
+        <record id="electric_rate_action" model="ir.actions.act_window">
+            <field name="name">Electric Rate</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">electric.rate</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- This Menu Item Must have a parent -->
+        <menuitem id="menu_electric_rate" name="Rate" parent="menu_electric_meter_configuration" sequence="20" action="electric_meter_bill.electric_rate_action"/>
+
+        <record id="business_source_action" model="ir.actions.act_window">
+            <field name="name">Business Source</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">business.source</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <!-- This Menu Item Must have a parent -->
+        <menuitem id="menu_business_source" name="Business Source" parent="sale.menu_sale_config" sequence="20" action="electric_meter_bill.business_source_action"/>
+
+        <record id="electric_meter_reading_action" model="ir.actions.act_window">
+            <field name="name">Meter Reading</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">electric.meter.reading</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- This Menu Item Must have a parent -->
+        <menuitem id="menu_electric_meter_reading" name="Meter Reading" parent="menu_electric_meter_main" sequence="20" action="electric_meter_bill.electric_meter_reading_action"/>
+    </data>
+</odoo>

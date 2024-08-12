@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="location_view_tree" model="ir.ui.view">
+            <field name="name">Location</field>
+            <field name="model">location</field>
+            <field name="arch" type="xml">
+                <tree string="location_tree" editable="top" multi_edit="1">
+                    <field name="code" width="100px"/>
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="sequence" width="100px"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_electric_meter,access_electric_meter,model_electric_meter,base.group_user,1,1,1,1
+access_location,access_location,model_location,base.group_user,1,1,1,1
+access_electric_rate,access_electric_rate,model_electric_rate,base.group_user,1,1,1,1
+access_electric_rate_line,access_electric_rate_line,model_electric_rate_line,base.group_user,1,1,1,1
+access_business_source,access_business_source,model_business_source,base.group_user,1,1,1,1
+access_electric_meter_reading,access_electric_meter_reading,model_electric_meter_reading,base.group_user,1,1,1,1
+acess_electric_meter_reading_line,acess_electric_meter_reading_line,model_electric_meter_reading_line,base.group_user,1,1,1,1

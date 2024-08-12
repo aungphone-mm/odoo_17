@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit Form View to Modify it -->
+        <record id="res_partner_business_source_inherit" model="ir.ui.view">
+            <field name="name">Business Source Inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='mobile_blacklisted']" position="before">
+                    <!-- Add your fields or attributes here -->
+                    <field name="business_source_id" options="{'no_edit': True, 'no_create': True, 'no_open': True}" />
+                </xpath>
+                <xpath expr="//field[@name='vat']" position="after">
+                    <!-- Add your fields or attributes here -->
+                    <field name="electric_meter_ids" widget="many2many_tags" options="{'no_edit': True, 'no_create': True, 'no_open': True}" />
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
