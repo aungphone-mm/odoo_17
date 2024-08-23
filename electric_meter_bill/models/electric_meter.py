@@ -1,5 +1,6 @@
 from markupsafe import Markup
 from odoo import fields, models, api
+from odoo.exceptions import UserError, ValidationError
 from datetime import datetime
 
 
@@ -12,7 +13,7 @@ class ElectricMeter(models.Model):
     location_id = fields.Many2one('location', string='Location', required=True)
     latest_reading_unit = fields.Integer(string='Latest Reading Unit')
     partner_id = fields.Many2one('res.partner', string="Customer", domain=[('customer_rank', '>', 0)])
-    product_id = fields.Many2one(comodel_name='product.product',string='Product', required=True)
+    product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
     active = fields.Boolean(string='Active', required=False, default=True)
 
 
@@ -29,7 +30,8 @@ class ElectricRate(models.Model):
         required=False)
     start_date = fields.Date(string='Start Date', required=True)
     end_date = fields.Date(string='End Date', required=True)
-    journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', domain=[('type', '=', 'sale')], required=True)
+    journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', domain=[('type', '=', 'sale')],
+                                 required=True)
     rate_line_ids = fields.One2many(comodel_name='electric.rate.line', inverse_name='rate_id', string='Rate Line',
                                     required=False)
     currency_id = fields.Many2one('res.currency', string='Currency', required=True)
@@ -63,9 +65,33 @@ class ElectricMeterReading(models.Model):
     description = fields.Text(string='Description', tracking=True)
     reading_date = fields.Date(string='Reading Date', required=True, default=fields.Date.today, tracking=True)
     reading_line_ids = fields.One2many(comodel_name='electric.meter.reading.line', inverse_name='reading_id',
-                                       string='Reading Line', required=False, tracking=True)
-    state = fields.Selection([('draft', 'Draft'), ('confirmed', 'Confirmed'), ('done', 'Done'), ('canceled', 'Canceled')], string='Status',
-                             required=True, default='draft', tracking=True)
+                                       string='Reading Line', required=False)
+    state = fields.Selection(
+        [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('done', 'Done'), ('canceled', 'Canceled')], string='Status',
+        required=True, default='draft', tracking=True)
+
+    @api.model
+    def read(self, fields=None, load='_classic_read'):
+        return super(ElectricMeterReading, self).read(fields, load)
+
+    @api.model
+    def write(self, vals):
+        return super(ElectricMeterReading, self).write(vals)
+
+    def delete_selected_lines(self):
+        """Delete selected lines from the reading_line_ids field."""
+        if self.state != 'draft':
+            raise UserError('You can only delete lines in Draft state.')
+        for line in self.reading_line_ids:
+            if line.selection_line:
+                line.unlink()
+
+        reload_action = {
+            'type': 'ir.actions.client',
+            'tag': 'soft_reload',
+        }
+
+        return reload_action
 
     @api.model
     def create(self, vals):
@@ -78,7 +104,7 @@ class ElectricMeterReading(models.Model):
     def default_get(self, field_list):
         res = super(ElectricMeterReading, self).default_get(field_list)
 
-        # Auto-populate reading lines with active meters
+        # Auto populate reading lines with active meters
         meter_obj = self.env['electric.meter']
         active_meters = meter_obj.search([('active', '=', True)])
         reading_lines = [(0, 0, {'meter_id': meter.id, 'partner_id': meter.partner_id}) for meter in active_meters]
@@ -124,6 +150,13 @@ class ElectricMeterReading(models.Model):
                 line.write({'state': 'done'})
         self._update_latest_reading_units()
         self._generate_invoice()
+        return {
+            'effect': {
+                'fadeout': 'slow',
+                'message': 'Electric Meter Bill Invoice(s) are already created',
+                'type': 'rainbow_man',
+            }
+        }
 
     def action_cancel(self):
         self.write({'state': 'canceled'})
@@ -155,7 +188,8 @@ class ElectricMeterReading(models.Model):
                     invoices[partner] = invoice
                 else:
                     invoice = invoices[partner]
-                    invoice.narration = (invoice.narration or '') + Markup(line.narration)
+                    invoice.narration = (invoice.narration or '') + Markup(line.narration) + Markup(
+                        '<div  style="break-after:page"></div>' + partner.business_source_id.rate_id.description)
 
                 # Add the invoice line to the existing or new invoice
                 self.env['account.move.line'].create({
@@ -182,18 +216,24 @@ class ElectricMeterReadingLine(models.Model):
     _name = 'electric.meter.reading.line'
     _description = 'Electric Meter Reading Line'
 
+    _inherit = ['mail.activity.mixin', 'mail.thread']
+
     reading_id = fields.Many2one('electric.meter.reading', string='Reading', required=True)
-    partner_id = fields.Many2one('res.partner', string="Customer", readonly=True)
+    selection_line = fields.Boolean(string='Select', default=False)
+    partner_id = fields.Many2one('res.partner', string="Customer", readonly=True, automatice=True, store=True)
     meter_id = fields.Many2one('electric.meter', string='Electric Meter', required=True)
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=True)
-    latest_reading_unit = fields.Integer(string='Latest Reading Unit', compute='_compute_latest_reading_unit', store=True, readonly=False)
-    current_reading_unit = fields.Integer(string='Current Reading Unit', required=True)
+    latest_reading_unit = fields.Integer(string='Latest Reading Unit', compute='_compute_latest_reading_unit',
+                                         store=True, readonly=False)
+    current_reading_unit = fields.Integer(string='Current Reading Unit', required=True, tracking=True)
     total_unit = fields.Integer(string='Total Unit', required=True, store=True)
-    invoice_id = fields.Many2one(comodel_name='account.move', string='Invoice', required=False, inverse_name="reading_line_id")
+    invoice_id = fields.Many2one(comodel_name='account.move', string='Invoice', required=False,
+                                 inverse_name="reading_line_id")
     amount = fields.Float(string='Amount', required=True, default=0.0, currency_field='currency_id')
     narration = fields.Text(string='Narration')
-    state = fields.Selection([('draft', 'Draft'), ('confirmed', 'Confirmed'), ('done', 'Done'), ('canceled', 'Canceled')], string='Status',
-                             required=True, default='draft', related="reading_id.state")
+    state = fields.Selection(
+        [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('done', 'Done'), ('canceled', 'Canceled')], string='Status',
+        required=True, default='draft', related="reading_id.state")
 
     @api.depends('meter_id.latest_reading_unit')
     def _compute_latest_reading_unit(self):
@@ -204,7 +244,9 @@ class ElectricMeterReadingLine(models.Model):
                 record.partner_id = meter.partner_id
                 record.currency_id = meter.partner_id.business_source_id.rate_id.currency_id
 
+
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    reading_line_id = fields.Many2one('electric.meter.reading.line', string='Electric Meter Reading Line', required=False)
+    reading_line_id = fields.Many2one('electric.meter.reading.line', string='Electric Meter Reading Line',
+                                      required=False)

@@ -61,7 +61,7 @@
                                 </field>
                             </page>
                             <page string="Additional Information">
-                                <field name="description"/>
+                                <field name="description" widget="html"/>
                             </page>
                         </notebook>
                     </sheet>
@@ -102,8 +102,10 @@
                 <form string="electric_meter_reading_form">
                     <header>
                         <button name="action_confirm" type="object" string="Confirm" invisible="state in ['cancelled', 'confirmed', 'done']"/>
-                        <button name="action_done" type="object" string="Mark as Done" invisible="state == 'done'"/>
+                        <button name="action_done" type="object" string="Mark as Done" invisible="state in ['cancelled', 'confirmed', 'draft']"/>
                         <button name="action_cancel" type="object" string="Cancel" invisible="state in ['cancelled', 'done']"/>
+                        <button name="delete_selected_lines" type="object" class="btn-danger" string="Delete Selected Lines"
+                        context="{'line_ids': active_ids}" invisible="state in ['cancelled', 'confirmed', 'done']"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done,canceled"/>
                     </header>
                     <sheet>
@@ -120,11 +122,12 @@
                         </group>
                         <notebook>
                             <page string="Electric Meter Reading Detail">
-                                <field name="reading_line_ids" context="{'default_reading_id': active_id}">
-                                    <tree string="reading_detail_tree" widget="section_and_note_one2many"
-                                          mode="tree" editable="bottom">
-                                        <field name="partner_id" readonly="True" width="300px"/>
-                                        <field name="meter_id" width="300px"/>
+                                <field name="reading_line_ids" context="{'default_reading_id': active_id}" widget="section_and_note_one2many" >
+                                    <tree string="reading_detail_tree" widget="section_and_note_one2many" create="0"
+                                          mode="tree" editable="bottom" select="multi" options="{'selectable': 'multi'}">
+                                        <field name="selection_line" nolabel="1" width="50px" />
+                                        <field name="partner_id" width="300px" force_save="1"/>
+                                        <field name="meter_id" width="300px" />
                                         <field name="latest_reading_unit" width="200px" readonly="True"/>
                                         <field name="current_reading_unit" width="200px"/>
                                         <field name="total_unit" width="100px"/>
