@@ -52,7 +52,26 @@
                             </group>
                             <notebook>
                                 <page string="Check In">
-                                    <field name="landing_check_in_line_ids"/>
+                                    <field name="landing_check_in_line_ids">
+                                         <tree string="Landing Check In Line" editable="top">
+                                                <field name="raw"/>
+                                                <field name="landing_check_in_id"/>
+                                                <field name="format_code"/>
+                                                <field name="number_of_legs_encoded"/>
+                                                <field name="passenger_name"/>
+                                                <field name="electronic_ticket_indicator"/>
+                                                <field name="pnr_code"/>
+                                                <field name="from_city_airport_code"/>
+                                                <field name="to_city_airport_code"/>
+                                                <field name="operating_carrier_designator"/>
+                                                <field name="flight_number"/>
+                                                <field name="date_of_flight"/>
+                                                <field name="compartment_code"/>
+                                                <field name="seat_number"/>
+                                                <field name="check_in_sequence_number"/>
+                                                <field name="passenger_status"/>
+                                            </tree>
+                                    </field>
                                 </page>
                         </notebook>
                         </sheet>

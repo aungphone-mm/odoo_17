@@ -13,7 +13,7 @@
             <field name="model">landing.check.in.line</field>
             <field name="arch" type="xml">
                 <tree string="Landing Check In Line">
-                    <field name="landing_check_in_id"/>
+                    <field name="raw"/>
                     <field name="format_code"/>
                     <field name="number_of_legs_encoded"/>
                     <field name="passenger_name"/>
@@ -28,7 +28,7 @@
                     <field name="seat_number"/>
                     <field name="check_in_sequence_number"/>
                     <field name="passenger_status"/>
-                    <field name="raw"/>
+                    <field name="landing_check_in_id"/>
                 </tree>
             </field>
         </record>
