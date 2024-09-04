@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Sequences for membership -->
+        <record id="seq_type_check_in" model="ir.sequence.type">
+            <field name="name">Checkin Sequence Type</field>
+            <field name="code">check.in</field>
+        </record>
+
+        <record id="seq_membership" model="ir.sequence">
+            <field name="name">Checkin Sequence</field>
+            <field name="code">check.in</field>
+            <field name="prefix">Session/</field>
+            <field eval="1" name="number_next"/>
+            <!-- <field eval="1" name="number_increment"/> -->
+            <field name="padding">3</field>
+        </record>
+
+    </data>
+</openerp>

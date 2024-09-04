@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+        <record id="action_landing_check_in_line" model="ir.actions.act_window">
+            <field name="name">Landing Check In Lines</field>
+            <field name="res_model">landing.check.in.line</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_landing_check_in_line" name="Landing Check In Line" parent="menu_landing_check_in_root" action="action_landing_check_in_line" sequence="10"/>
+
+        <record id="view_landing_check_in_line_tree" model="ir.ui.view">
+            <field name="name">landing.check.in.line.tree</field>
+            <field name="model">landing.check.in.line</field>
+            <field name="arch" type="xml">
+                <tree string="Landing Check In Line">
+                    <field name="landing_check_in_id"/>
+                    <field name="format_code"/>
+                    <field name="number_of_legs_encoded"/>
+                    <field name="passenger_name"/>
+                    <field name="electronic_ticket_indicator"/>
+                    <field name="pnr_code"/>
+                    <field name="from_city_airport_code"/>
+                    <field name="to_city_airport_code"/>
+                    <field name="operating_carrier_designator"/>
+                    <field name="flight_number"/>
+                    <field name="date_of_flight"/>
+                    <field name="compartment_code"/>
+                    <field name="seat_number"/>
+                    <field name="check_in_sequence_number"/>
+                    <field name="passenger_status"/>
+                    <field name="raw"/>
+                </tree>
+            </field>
+        </record>
+</odoo>

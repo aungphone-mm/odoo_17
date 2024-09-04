@@ -1,0 +1,61 @@
+<!--<?xml version="1.0" ?>-->
+<!--<openerp>-->
+<!--    <data noupdate="1">-->
+<!--        <record id="base.check_in_user" model="res.groups">-->
+<!--            <field name="name">Check In User</field>-->
+<!--            <field name="category_id" ref="base.module_category_check_in"/>-->
+<!--            <field name="comment">this user will be able to view, create and edit CHECK IN menu.</field>-->
+<!--        </record>-->
+
+<!--        <record id="base.check_in_line_user" model="res.groups">-->
+<!--            <field name="name">Check In Record User</field>-->
+<!--            <field name="category_id" ref="base.module_category_check_in"/>-->
+<!--            <field name="comment">this user will be able to view, create and edit CHECK IN RECORD menu.</field>-->
+<!--        </record>-->
+
+<!--        <record id="base.elms_user" model="res.groups">-->
+<!--            <field name="name">user</field>-->
+<!--            <field name="category_id" ref="base.module_category_elms"/>-->
+<!--            <field name="comment">this user will be able to view, create but can not delete record information in some ELPS menus item.</field>-->
+<!--        </record>-->
+<!--        <record id="base.elms_manager" model="res.groups">-->
+<!--            <field name="name">manager</field>-->
+<!--            <field name="category_id" ref="base.module_category_elms"/>-->
+<!--            <field name="comment">this user will be able to view, create and edit in ELPS menus item.</field>-->
+<!--        </record>-->
+<!--        &lt;!&ndash; <record id="hr_probation_record_rule" model="ir.rule">-->
+<!--            <field name="name">Employee Probation</field>-->
+<!--            <field name="model_id" ref="model_hr_probation_alert"/>-->
+<!--            <field name="domain_force">[('emp_name.department_id.dep_head_id.user_id','=',user.id),('state', 'in',-->
+<!--                ['draft'])]</field>-->
+<!--            <field name="perm_create" eval="False"/>-->
+<!--            <field name="perm_write" eval="True"/>-->
+<!--            <field name="perm_unlink" eval="False"/>-->
+<!--            <field name="groups" eval="[(4,ref('hr.group_hod'))]"/>-->
+<!--        </record>-->
+<!--        -->
+<!--     <record id="property_rule_probation_hr_manager" model="ir.rule">-->
+<!--            <field name="name">Probation for HR Manager</field>-->
+<!--            <field name="model_id" ref="model_hr_probation_alert"/>-->
+<!--            <field name="domain_force">[('state', 'in',-->
+<!--                ['hod_approve','hr_confirm','ca_confirm'])]-->
+<!--            </field>-->
+<!--            <field name="perm_create" eval="True"/>-->
+<!--            <field name="perm_write" eval="True"/>-->
+<!--            <field name="perm_unlink" eval="True"/>-->
+<!--            <field name="groups" eval="[(4,ref('hr.group_hr_manager'))]"/>-->
+<!--        </record> -->
+<!--        <record id="property_rule_probation_ca" model="ir.rule">-->
+<!--            <field name="name">Probation for ca Manager</field>-->
+<!--            <field name="model_id" ref="model_hr_probation_alert"/>-->
+<!--            <field name="domain_force">[('state', 'in',-->
+<!--                ['hr_confirm'])]-->
+<!--            </field>-->
+<!--            <field name="perm_create" eval="False"/>-->
+<!--            <field name="perm_write" eval="True"/>-->
+<!--            <field name="perm_unlink" eval="False"/>-->
+<!--            <field name="groups" eval="[(4,ref('account.group_account_manager'))]"/>-->
+<!--        </record>       -->
+<!-- &ndash;&gt;-->
+<!--   </data>-->
+<!--</openerp>-->

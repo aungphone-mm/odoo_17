@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+       <!-- Action -->
+            <record id="action_landing_check_in" model="ir.actions.act_window">
+                <field name="name">Landing Check In</field>
+                <field name="res_model">landing.check.in</field>
+                <field name="view_mode">tree,form</field>
+                <field name="help" type="html">
+                    <p class="oe_view_nocontent_create">
+                        Click to create a new landing check-in record.
+                    </p>
+                </field>
+            </record>
+
+            <!-- Menu -->
+            <menuitem id="menu_landing_check_in_root" name="Landing Check In" sequence="10"/>
+            <menuitem id="menu_landing_check_in" name="Landing Check In" parent="menu_landing_check_in_root" action="action_landing_check_in" sequence="10"/>
+
+            <!-- Tree View -->
+            <record id="view_landing_check_in_tree" model="ir.ui.view">
+                <field name="name">landing.check.in.tree</field>
+                <field name="model">landing.check.in</field>
+                <field name="arch" type="xml">
+                    <tree string="Landing Check In">
+                        <field name="check_in"/>
+                        <field name="location_type"/>
+                        <field name="user_id"/>
+                        <field name="date"/>
+                        <field name="start_time"/>
+                        <field name="end_time"/>
+                    </tree>
+                </field>
+            </record>
+
+            <!-- Form View -->
+            <record id="view_landing_check_in_form" model="ir.ui.view">
+                <field name="name">landing.check.in.form</field>
+                <field name="model">landing.check.in</field>
+                <field name="arch" type="xml">
+                    <form string="Landing Check In">
+                        <sheet>
+                            <group>
+                                <group>
+                                    <field name="check_in"/>
+                                    <field name="location_type"/>
+                                    <field name="user_id"/>
+                                    <field name="date"/>
+                                    <field name="start_time"/>
+                                    <field name="end_time"/>
+                                </group>
+                                <group></group>
+                            </group>
+                            <notebook>
+                                <page string="Check In">
+                                    <field name="landing_check_in_line_ids"/>
+                                </page>
+                        </notebook>
+                        </sheet>
+                    </form>
+                </field>
+            </record>
+</odoo>
