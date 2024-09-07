@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Action -->
+        <record id="action_airline_passenger_bill" model="ir.actions.act_window">
+            <field name="name">Airline Passenger Bill</field>
+            <field name="res_model">airline.passenger.bill</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new session of Airline Passenger Bill record.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_airline_passenger_bill_line" model="ir.actions.act_window">
+            <field name="name">Airline Passenger Bill Line</field>
+            <field name="res_model">airline.passenger.bill.line</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="action_airline" model="ir.actions.act_window">
+            <field name="name">Airline</field>
+            <field name="res_model">airline</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <record id="action_passenger_rate" model="ir.actions.act_window">
+            <field name="name">Rate</field>
+            <field name="res_model">passenger.rate</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menu -->
+        <menuitem id="menu_airline_passenger_bill_root" name="Passenger Bill" sequence="10"
+                  web_icon="airline_passenger_bill,static/description/icon.png"/>
+        <menuitem id="menu_airline_passenger" name="Airline Passenger Bill" parent="menu_airline_passenger_bill_root"
+                  action="action_airline_passenger_bill" sequence="10"/>
+        <menuitem id="menu_airline_passenger_bill_line" name="Airline Passenger Bill Line"
+                  parent="menu_airline_passenger_bill_root" action="action_airline_passenger_bill_line" sequence="10"/>
+        <menuitem id="menu_airline_passenger_bill_configuration" name="Configuration"
+                  parent="menu_airline_passenger_bill_root" sequence="100"/>
+        <menuitem id="menu_airline" name="Airline" sequence="1" parent="menu_airline_passenger_bill_configuration"
+                  action="airline_passenger_bill.action_airline"/>
+        <menuitem id="menu_passenger_rate" name="Rate" sequence="2" parent="menu_airline_passenger_bill_configuration"
+                  action="action_passenger_rate"/>
+
+    </data>
+</odoo>

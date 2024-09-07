@@ -1,5 +1,5 @@
 {
-    'name': 'Landing Check In Management',
+    'name': 'Airline Passenger Bill Management',
     'version': '17.0.1.0',
     'category': 'Utilities',
     'license': 'AGPL-3',
@@ -7,12 +7,16 @@
                 This module helps in tracking and managing the check-in details of various entities, 
                 ensuring smooth operations and accurate record-keeping. 
                 Ideal for companies and organizations that require precise check-in management.""",
+    'depends': ['mail', 'account', 'base'],
     'author': 'Mingalar Sky Co., Ltd.',
     'website': 'https://www.mingalarsky.com',
     'data': [
         'security/ir.model.access.csv',
-        'views/landing_check_in_lines_views.xml',
-        'views/landing_check_in_views.xml',
+        'views/airline_passenger_bill_line_view.xml',
+        'views/airline_passenger_bill_views.xml',
+        'views/menu_views.xml',
+        'data/ir_sequence_data.xml',
+        'views/airline_view.xml',
     ],
     'installable': True,
     'application': False,

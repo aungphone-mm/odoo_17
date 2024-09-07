@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-        <record id="action_landing_check_in_line" model="ir.actions.act_window">
-            <field name="name">Landing Check In Lines</field>
-            <field name="res_model">landing.check.in.line</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-
-        <menuitem id="menu_landing_check_in_line" name="Landing Check In Line" parent="menu_landing_check_in_root" action="action_landing_check_in_line" sequence="10"/>
-
-        <record id="view_landing_check_in_line_tree" model="ir.ui.view">
-            <field name="name">landing.check.in.line.tree</field>
-            <field name="model">landing.check.in.line</field>
+        <record id="view_airline_passenger_bill_line_tree" model="ir.ui.view">
+            <field name="name">airline.passenger.bill.line.tree</field>
+            <field name="model">airline.passenger.bill.line</field>
             <field name="arch" type="xml">
-                <tree string="Landing Check In Line">
+                <tree string="Airline Passenger Bill Line">
                     <field name="raw"/>
                     <field name="format_code"/>
                     <field name="number_of_legs_encoded"/>
@@ -28,7 +20,6 @@
                     <field name="seat_number"/>
                     <field name="check_in_sequence_number"/>
                     <field name="passenger_status"/>
-                    <field name="landing_check_in_id"/>
                 </tree>
             </field>
         </record>

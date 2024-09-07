@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_landing_check_in,access.landing.check.in,model_landing_check_in,base.group_user,1,1,1,1
-access_landing_check_in_line,access.landing.check.in.line,model_landing_check_in_line,base.group_user,1,1,1,1

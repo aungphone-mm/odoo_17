@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="airline_view_tree" model="ir.ui.view">
+            <field name="name">airline_view_tree</field>
+            <field name="model">airline</field>
+            <field name="arch" type="xml">
+                <tree string="Airline" editable="top">
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="partner_id"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>

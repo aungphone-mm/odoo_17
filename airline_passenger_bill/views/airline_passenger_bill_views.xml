@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_airline_passenger_bill_tree" model="ir.ui.view">
+        <field name="name">airline.passenger.bill.tree</field>
+        <field name="model">airline.passenger.bill</field>
+        <field name="arch" type="xml">
+            <tree string="Airline Passenger Bill">
+                <field name="name"/>
+                <field name="type"/>
+                <field name="user_id"/>
+                <field name="date"/>
+                <field name="start_time"/>
+                <field name="end_time"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_airline_passenger_bill_form" model="ir.ui.view">
+        <field name="name">airline.passenger.bill.form</field>
+        <field name="model">airline.passenger.bill</field>
+        <field name="arch" type="xml">
+            <form string="Airline Passenger Bill">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="type"/>
+                            <field name="start_time" widget="float_time"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+<!--                            <field name="user_id"/>-->
+                            <field name="passenger_rate_id"/>
+                            <field name="end_time" widget="float_time"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Detail Information">
+                            <field name="airline_passenger_bill_line_ids"
+                                   context="{'default_airline_passenger_bill_id': active_id}">
+                                <tree string="Airline Passenger Bill Line" editable="top">
+                                    <field name="raw" style="width: 200px;"/>
+                                    <field name="invoice_id" />
+                                    <field name="format_code"/>
+                                    <!--                                    <field name="number_of_legs_encoded"/>-->
+                                    <field name="passenger_name"/>
+                                    <field name="electronic_ticket_indicator"/>
+                                    <!--                                    <field name="pnr_code"/>-->
+                                    <field name="from_city_airport_code"/>
+                                    <field name="to_city_airport_code"/>
+                                    <field name="operating_carrier_designator"/>
+                                    <field name="flight_number"/>
+                                    <!--                                    <field name="date_of_flight"/>-->
+                                    <field name="compartment_code"/>
+                                    <field name="seat_number"/>
+                                    <field name="check_in_sequence_number"/>
+                                    <!--                                    <field name="passenger_status"/>-->
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <!-- Include the chatter -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" options="{'no_create': True}"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="passenger_rate_view_tree" model="ir.ui.view">
+        <field name="name">passenger_rate_view_tree</field>
+        <field name="model">passenger.rate</field>
+        <field name="arch" type="xml">
+            <tree string="Rate" editable="top">
+                <field name="name"/>
+                <field name="from_date" widget="daterange"/>
+                <field name="to_date" widget="daterange"/>
+                <field name="currency_id"/>
+                <field name="amount"/>
+                <field name="product_id"/>
+                <field name="journal_id"/>
+                <field name="receivable_account_id"/>
+                <field name="default_partner"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
