@@ -1,4 +1,4 @@
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 import qrcode
 import base64
 from io import BytesIO
@@ -92,9 +92,10 @@ class AirlinePassengerBillLine(models.Model):
             self._generate_invoice()
 
     def _generate_invoice(self):
-        parent_customer = self.env['res.partner'].search([('id', '=', 9295)])
+        parent_customer = self.env['res.partner'].search([('id', '=', self.airline_passenger_bill_id.passenger_rate_id.default_partner.id)])
+        partner = self.env['res.partner']
         if parent_customer:
-            partner = self.env['res.partner'].create({
+            partner = partner.create({
                 'name': self.passenger_name,
                 'parent_id': parent_customer.id,
             })
