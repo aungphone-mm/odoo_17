@@ -12,11 +12,13 @@
     'website': 'https://www.mingalarsky.com',
     'data': [
         'security/ir.model.access.csv',
+        'report/custom_template.xml',
         'views/airline_passenger_bill_line_view.xml',
         'views/airline_passenger_bill_views.xml',
         'views/menu_views.xml',
         'data/ir_sequence_data.xml',
         'views/airline_view.xml',
+        'report/airline_invoice_template.xml',
     ],
     'installable': True,
     'application': False,

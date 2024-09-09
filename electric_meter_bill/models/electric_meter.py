@@ -172,7 +172,6 @@ class ElectricMeterReading(models.Model):
         for line in self.reading_line_ids:
             if line.amount > 0:
                 partner = line.partner_id
-                # Check if an invoice for this partner already exists
                 if partner not in invoices:
                     # Create a new invoice if it doesn't exist
                     invoice = self.env['account.move'].create({
@@ -183,24 +182,48 @@ class ElectricMeterReading(models.Model):
                         'journal_id': partner.business_source_id.rate_id.journal_id.id,
                         'narration': line.narration,
                         'move_type': 'out_invoice',
-                        'invoice_line_ids': [],  # Start with no lines
+                        'reading_line_id': line.id,  # Link the reading line to the invoice
+                        'invoice_line_ids': [],
                     })
                     invoices[partner] = invoice
                 else:
+                    # Update existing invoice with additional details
                     invoice = invoices[partner]
                     invoice.narration = (invoice.narration or '') + Markup(line.narration) + Markup(
-                        '<div  style="break-after:page"></div>' + partner.business_source_id.rate_id.description)
+                        '<div style="break-after:page"></div>' + partner.business_source_id.rate_id.description)
 
-                # Add the invoice line to the existing or new invoice
-                self.env['account.move.line'].create({
+                # Create invoice lines
+                invoice_line = self.env['account.move.line'].create({
                     'move_id': invoice.id,
                     'product_id': line.meter_id.product_id.id,
                     'quantity': 1,
                     'name': f'{line.meter_id.name} - {line.total_unit} Units',
                     'price_unit': line.amount,
+                    'reading_line_id': line.id,  # Link the reading line to the invoice line
                 })
 
+                # Set invoice reference on reading line
                 line.invoice_id = invoice.id
+
+    def _get_rate_breakdown(self, total_unit, rate):
+        """
+        Return a list of tuples containing the rate breakdown.
+        Each tuple will have (from_unit, to_unit, units_in_bracket, unit_price, bracket_amount).
+        """
+        breakdown = []
+        remaining_units = total_unit
+
+        for rate_line in rate.rate_line_ids:
+            if remaining_units <= 0:
+                break
+
+            units_in_bracket = min(remaining_units, rate_line.to_unit - rate_line.from_unit + 1)
+            bracket_amount = units_in_bracket * rate_line.unit_price
+            breakdown.append((rate_line.from_unit, rate_line.to_unit, units_in_bracket, rate_line.unit_price, bracket_amount))
+
+            remaining_units -= units_in_bracket
+
+        return breakdown
 
     @api.onchange('reading_line_ids')
     def _onchange_reading_line_ids(self):

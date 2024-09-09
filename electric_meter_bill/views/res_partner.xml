@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='mobile_blacklisted']" position="before">
                     <field name="business_source_id" options="{'no_edit': True, 'no_create': True, 'no_open': True}" />
+                    <field name="electric_meter_rate"/>
                 </xpath>
                 <xpath expr="//field[@name='vat']" position="after">
                     <field name="electric_meter_ids" widget="many2many_tags" options="{'no_edit': True, 'no_create': True, 'no_open': True}" />

@@ -12,8 +12,8 @@
                 <field name="user_id"/>
                 <field name="date"/>
                 <field name="passenger_rate_id"/>
-                <field name="start_time"/>
-                <field name="end_time"/>
+                <field name="start_time" widget="float_time"/>
+                <field name="end_time" widget="float_time"/>
             </tree>
         </field>
     </record>
@@ -59,6 +59,7 @@
                                     <field name="seat_number"/>
                                     <field name="check_in_sequence_number"/>
                                     <field name="payment_state" optional="hide"/>
+                                    <button name="action_print_slip" type="object" string="Print Slip" class="btn-primary"/>
                                     <!--                                    <field name="passenger_status"/>-->
                                     <button name="action_register_payment" string="Pay" type="object" class="oe_highlight"
                                         invisible="payment_state in 'paid'"/>
@@ -119,4 +120,15 @@
             </tree>
         </field>
     </record>
+
+    <record id="action_print_airline_passenger_slip" model="ir.actions.server">
+        <field name="name">Print Airline Passenger Slip</field>
+        <field name="model_id" ref="model_airline_passenger_bill"/>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_print_slip()
+        </field>
+    </record>
+
 </odoo>

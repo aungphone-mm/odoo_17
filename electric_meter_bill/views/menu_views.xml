@@ -47,7 +47,7 @@
             <field name="name">Meter Reading</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">electric.meter.reading</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">tree,form</field>
         </record>
 
         <!-- This Menu Item Must have a parent -->

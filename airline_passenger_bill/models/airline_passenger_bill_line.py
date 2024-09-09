@@ -1,5 +1,7 @@
-from odoo import fields, models, api, _
-
+from odoo import fields, models, api
+import qrcode
+import base64
+from io import BytesIO
 
 class AirlinePassengerBillLine(models.Model):
     _name = 'airline.passenger.bill.line'
@@ -45,6 +47,28 @@ class AirlinePassengerBillLine(models.Model):
                                     ('reversed', 'Reversed'),
                                     ('invoicing_legacy', 'Invoicing App Legacy'),
                             ], String='State', related='invoice_id.payment_state')
+    qr_code = fields.Binary("QR Code", compute='generate_qr_code')
+
+    def generate_qr_code(self):
+        for rec in self:
+            if qrcode and base64:
+                qr = qrcode.QRCode(
+                    version=1,
+                    error_correction=qrcode.constants.ERROR_CORRECT_L,
+                    box_size=4,
+                    border=4,
+                )
+                form_url = rec.invoice_id.name
+                qr.add_data(form_url)
+                qr.make(fit=True)
+                img = qr.make_image()
+                temp = BytesIO()
+                img.save(temp, format="PNG")
+                qr_image = base64.b64encode(temp.getvalue())
+                rec.update({'qr_code': qr_image})
+
+    def action_print_slip(self):
+        return self.env.ref('airline_passenger_bill.action_airline_passenger_bill_slip').report_action(self)
 
     @api.onchange('raw')
     def _onchange_raw(self):
