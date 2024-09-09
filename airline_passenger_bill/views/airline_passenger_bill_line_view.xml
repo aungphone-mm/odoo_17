@@ -5,7 +5,11 @@
             <field name="model">airline.passenger.bill.line</field>
             <field name="arch" type="xml">
                 <tree string="Airline Passenger Bill Line">
+                    <header>
+                        <button name="action_register_payment" string="Pay" type="object" class="oe_highlight"/>
+                    </header>
                     <field name="raw"/>
+                    <field name="invoice_id"/>
                     <field name="format_code"/>
                     <field name="number_of_legs_encoded"/>
                     <field name="passenger_name"/>
@@ -20,7 +24,36 @@
                     <field name="seat_number"/>
                     <field name="check_in_sequence_number"/>
                     <field name="passenger_status"/>
+                    <field name="payment_state" optional="hide"/>
                 </tree>
+            </field>
+        </record>
+
+        <record id="view_airline_passenger_bill_line_filter" model="ir.ui.view">
+            <field name="name">airline.passenger.bill.line.search</field>
+            <field name="model">airline.passenger.bill.line</field>
+            <field eval="200" name="priority"/>
+            <field name="arch" type="xml">
+                <search string="Airline Passenger Bill Line Search">
+                    <field name="raw" filter_domain="[('raw', 'ilike', self)]"/>
+                    <field name="invoice_id"/>
+                    <field name="format_code" filter_domain="[('format_code', 'ilike', self)]"/>
+                    <field name="number_of_legs_encoded" filter_domain="[('number_of_legs_encoded', 'ilike', self)]"/>
+                    <field name="passenger_name" filter_domain="[('passenger_name', 'ilike', self)]"/>
+                    <field name="electronic_ticket_indicator" filter_domain="[('electronic_ticket_indicator', 'ilike', self)]"/>
+                    <field name="from_city_airport_code" filter_domain="[('from_city_airport_code', 'ilike', self)]"/>
+                    <field name="operating_carrier_designator"/>
+                    <field name="flight_number" filter_domain="[('flight_number', 'ilike', self)]"/>
+                    <field name="compartment_code" filter_domain="[('compartment_code', 'ilike', self)]"/>
+                    <field name="seat_number" filter_domain="[('seat_number', 'ilike', self)]"/>
+                    <field name="check_in_sequence_number" filter_domain="[('seat_number', 'ilike', self)]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Code" name="group_by_code" domain="[]" context="{'group_by': 'from_city_airport_code'}"/>
+                        <filter string="Flight Number" name="group_by_flight_no" domain="[]" context="{'group_by': 'flight_number'}"/>
+                        <filter string="Ticket" name="group_by_ticket" domain="[]" context="{'group_by': 'electronic_ticket_indicator'}"/>
+                    </group>
+                </search>
             </field>
         </record>
 </odoo>

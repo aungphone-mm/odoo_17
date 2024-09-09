@@ -11,6 +11,7 @@
                 <field name="type"/>
                 <field name="user_id"/>
                 <field name="date"/>
+                <field name="passenger_rate_id"/>
                 <field name="start_time"/>
                 <field name="end_time"/>
             </tree>
@@ -33,7 +34,7 @@
                         <group>
                             <field name="date"/>
 <!--                            <field name="user_id"/>-->
-                            <field name="passenger_rate_id"/>
+                            <field name="passenger_rate_id"  options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
                             <field name="end_time" widget="float_time"/>
                         </group>
                     </group>
@@ -57,7 +58,10 @@
                                     <field name="compartment_code"/>
                                     <field name="seat_number"/>
                                     <field name="check_in_sequence_number"/>
+                                    <field name="payment_state" optional="hide"/>
                                     <!--                                    <field name="passenger_status"/>-->
+                                    <button name="action_register_payment" string="Pay" type="object" class="oe_highlight"
+                                        invisible="payment_state in 'paid'"/>
                                 </tree>
                             </field>
                         </page>
@@ -72,6 +76,30 @@
         </field>
     </record>
 
+    <record id="view_airline_passenger_bill_filter" model="ir.ui.view">
+            <field name="name">airline.passenger.bill.search</field>
+            <field name="model">airline.passenger.bill</field>
+            <field eval="200" name="priority"/>
+            <field name="arch" type="xml">
+                <search string="Airline Passenger Bill Search">
+                    <field name="name" filter_domain="[('name', 'ilike', self)]"/>
+                    <field name="type"/>
+                    <field name="date" string="Date"/>
+                    <field name="passenger_rate_id"/>
+                    <field name="start_time"/>
+                    <separator/>
+                    <filter string="Domestic" name="domestic" domain="[('type', '=', 'domestic')]"/>
+                    <filter string="International" name="international" domain="[('type', '=', 'international')]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Date" name="group_by_date" domain="[]" context="{'group_by': 'date'}"/>
+                        <filter string="Type" name="group_by_type" domain="[]" context="{'group_by': 'type'}"/>
+                        <filter string="Rate" name="group_by_rate" domain="[]" context="{'group_by': 'passenger_rate_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
     <record id="passenger_rate_view_tree" model="ir.ui.view">
         <field name="name">passenger_rate_view_tree</field>
         <field name="model">passenger.rate</field>
@@ -81,6 +109,7 @@
                 <field name="from_date" widget="daterange"/>
                 <field name="to_date" widget="daterange"/>
                 <field name="currency_id"/>
+                <field name="type"/>
                 <field name="amount"/>
                 <field name="product_id"/>
                 <field name="journal_id"/>

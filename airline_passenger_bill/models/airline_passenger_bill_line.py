@@ -1,4 +1,4 @@
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 
 
 class AirlinePassengerBillLine(models.Model):
@@ -38,6 +38,13 @@ class AirlinePassengerBillLine(models.Model):
     # Bar Code Raw Data: Raw data of the bar code.
     raw = fields.Char(string='Raw', tracking=True, track_visibility='always')
     invoice_id = fields.Many2one('account.move', string='Invoice', tracking=True, track_visibility='always')
+    payment_state = fields.Selection([('not_paid', 'Not Paid'),
+                                    ('in_payment', 'In Payment'),
+                                    ('paid', 'Paid'),
+                                    ('partial', 'Partially Paid'),
+                                    ('reversed', 'Reversed'),
+                                    ('invoicing_legacy', 'Invoicing App Legacy'),
+                            ], String='State', related='invoice_id.payment_state')
 
     @api.onchange('raw')
     def _onchange_raw(self):
@@ -96,4 +103,17 @@ class AirlinePassengerBillLine(models.Model):
             'type': 'ir.actions.act_url',
             'url': f'/web/content/{self.invoice_id}/download',
             'target': 'self',
+        }
+
+    def action_register_payment(self):
+        return {
+            'name': _('Register Payment'),
+            'res_model': 'account.payment.register',
+            'view_mode': 'form',
+            'context': {
+                'active_model': 'account.move',
+                'active_ids': self.invoice_id.ids,
+            },
+            'target': 'new',
+            'type': 'ir.actions.act_window',
         }

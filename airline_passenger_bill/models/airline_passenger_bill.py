@@ -59,3 +59,7 @@ class PassengerRate(models.Model):
     journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', required=True, track_visibility='always')
     default_partner = fields.Many2one(comodel_name='res.partner', string='Default Partner', track_visibility='always')
     active = fields.Boolean(string='Active', default=True, track_visibility='onchange')
+    type = fields.Selection([
+        ('domestic', 'Domestic'),
+        ('international', 'International')
+    ], default='domestic', string='Domestic/International', track_visibility='always', tracking=True)
