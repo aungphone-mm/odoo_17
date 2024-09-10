@@ -56,4 +56,17 @@
                 </search>
             </field>
         </record>
+
+        <template id="airline_passenger_bill_line_template">
+            <div>
+                <strong>Airline Passenger Bill Line Has Been Updated:</strong>
+            </div>
+            <ul>
+                <t t-foreach="changes" t-as="change">
+                    <li>
+                        <t t-esc="change"/>
+                    </li>
+                </t>
+            </ul>
+        </template>
 </odoo>

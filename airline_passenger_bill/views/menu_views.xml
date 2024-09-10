@@ -16,7 +16,7 @@
         <record id="action_airline_passenger_bill_line" model="ir.actions.act_window">
             <field name="name">Airline Passenger Bill Line</field>
             <field name="res_model">airline.passenger.bill.line</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree</field>
         </record>
 
         <record id="action_airline" model="ir.actions.act_window">
