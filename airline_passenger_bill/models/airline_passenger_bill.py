@@ -23,7 +23,7 @@ class AirlinePassengerBill(models.Model):
     airline_passenger_bill_line_ids = fields.One2many('airline.passenger.bill.line', 'airline_passenger_bill_id',
                                                       string='Passenger Details')
     passenger_rate_id = fields.Many2one('passenger.rate', string='Passenger Rate', required=True, track_visibility='always',
-                                        tracking=True)
+                                        tracking=True, domain="[('type', '=', type)]")
 
     @api.onchange('date')
     def _onchange_date(self):
