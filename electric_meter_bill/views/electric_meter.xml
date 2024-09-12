@@ -11,6 +11,7 @@
                     <field name="latest_reading_unit" width="300px"/>
                     <field name="location_id"/>
                     <field name="product_id"/>
+                    <field name="mgm_percentage"/>
                     <field name="partner_id" widget="many2one_avatar_employee"/>
                 </tree>
             </field>
@@ -102,7 +103,7 @@
                 <form string="electric_meter_reading_form">
                     <header>
                         <button name="action_confirm" type="object" string="Confirm" invisible="state in ['cancelled', 'confirmed', 'done']"/>
-                        <button name="action_done" type="object" string="Mark as Done" invisible="state in ['cancelled', 'confirmed', 'draft']"/>
+                        <button name="action_done" type="object" string="Mark as Done" invisible="state in ['cancelled', 'draft']"/>
                         <button name="action_cancel" type="object" string="Cancel" invisible="state in ['cancelled', 'done']"/>
                         <button name="delete_selected_lines" type="object" class="btn-danger" string="Delete Selected Lines"
                         context="{'line_ids': active_ids}" invisible="state in ['cancelled', 'confirmed', 'done']"/>

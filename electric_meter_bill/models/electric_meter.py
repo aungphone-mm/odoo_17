@@ -15,6 +15,7 @@ class ElectricMeter(models.Model):
     partner_id = fields.Many2one('res.partner', string="Customer", domain=[('customer_rank', '>', 0)])
     product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
     active = fields.Boolean(string='Active', required=False, default=True)
+    mgm_percentage= fields.Integer("Management Fee")
 
 
 class ElectricRate(models.Model):
@@ -140,8 +141,13 @@ class ElectricMeterReading(models.Model):
                         # Break if there are no remaining units
                         if remaining_units <= 0:
                             break
+                            #aung
 
                     line.amount = total_amount
+                    if line.meter_id.mgm_percentage:
+                        mgm_charge = (line.amount / 100) * line.meter_id.mgm_percentage
+                        line.amount += mgm_charge
+                        line.narration += f'Management Charge ({line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
 
     def action_done(self):
         self.write({'state': 'done'})
@@ -257,6 +263,7 @@ class ElectricMeterReadingLine(models.Model):
     state = fields.Selection(
         [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('done', 'Done'), ('canceled', 'Canceled')], string='Status',
         required=True, default='draft', related="reading_id.state")
+    mgm_percentage = fields.Integer("Management Fee")
 
     @api.depends('meter_id.latest_reading_unit')
     def _compute_latest_reading_unit(self):
@@ -270,6 +277,12 @@ class ElectricMeterReadingLine(models.Model):
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
+
+    reading_line_id = fields.Many2one('electric.meter.reading.line', string='Electric Meter Reading Line',
+                                      required=False)
+
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
 
     reading_line_id = fields.Many2one('electric.meter.reading.line', string='Electric Meter Reading Line',
                                       required=False)
