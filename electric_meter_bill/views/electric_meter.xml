@@ -148,5 +148,17 @@
                 </form>
             </field>
         </record>
+        <record id="view_account_invoice_filter_inherit" model="ir.ui.view">
+        <field name="name">account.invoice.select.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter string="Electric Invoices" name="electric_invoices" domain="[('journal_id.code', '=', 'EC')]"/>
+                <filter string="Passenger Service Charges" name="p_service_charge" domain="[('journal_id.code', '=', 'PSC')]"/>
+            </xpath>
+        </field>
+    </record>
     </data>
 </odoo>
