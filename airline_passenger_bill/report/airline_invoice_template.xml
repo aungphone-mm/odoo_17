@@ -11,70 +11,70 @@
             </script>
                 <t t-foreach="docs" t-as="doc">
                     <div class="page">
-                        <h2 style="text-align: center; padding-top: 15px; padding-bottom: 5px; font-size: 25px;">Airline
+                        <h2 style="text-align: center; padding-bottom: 5px; font-size:9.5px; font-weight: bold; font-family: Roboto;">Airline
                             Passenger Service Charges
                         </h2>
 
                         <t t-if="doc.qr_code">
-                            <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="text-align: center; margin-bottom:5px;">
                                 <img t-att-src="'data:image/png;base64,' + doc.qr_code.decode('utf-8')" alt="QR Code"/>
                             </div>
                         </t>
 
-                        <table class="table table-bordered" style="margin-left: 10px; font-size: 18px;">
+                        <table class="table table-bordered" style="font-size: 9.2px; font-family: Roboto; font-weight: bold;">
                             <tr>
-                                <td style="padding-bottom: 10px;">
-                                    <strong>Passenger Name:</strong>
+                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                    <strong>Passenger:</strong>
                                 </td>
-                                <td style="padding-bottom: 10px;">
+                                <td style="padding-bottom: 5px; padding-left:0px;">
                                     <span t-field="doc.passenger_name"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding-bottom: 10px;">
+                                <td style="padding-bottom: 5px; padding-left:0px;">
                                     <strong>Invoice ID:</strong>
                                 </td>
-                                <td style="padding-bottom: 10px;">
+                                <td style="padding-bottom: 5px; padding-left:0px;">
                                     <span t-field="doc.invoice_id.name"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding-bottom: 10px;">
+                                <td style="padding-bottom: 5px; padding-left:0px;">
                                     <strong>Airline:</strong>
                                 </td>
-                                <td style="padding-bottom: 10px;">
+                                <td style="padding-bottom: 5px; padding-left:0px;">
                                     <span t-field="doc.operating_carrier_designator.description"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding-bottom: 10px;">
+                                <td style="padding-bottom: 5px; padding-left:0px;">
                                     <strong>Flight Number:</strong>
                                 </td>
-                                <td style="padding-bottom: 10px;">
+                                <td style="padding-bottom: 5px; padding-left:0px;">
                                     <span t-field="doc.flight_number"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding-bottom: 10px;">
+                                <td style="padding-bottom: 5px;padding-left:0px;">
                                     <strong>Seat Number:</strong>
                                 </td>
-                                <td style="padding-bottom: 10px;">
+                                <td style="padding-bottom: 5px; padding-left:0px;">
                                     <span t-field="doc.seat_number"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding-bottom: 10px;">
-                                    <strong>Sequence Number:</strong>
+                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                    <strong>Sequence No:</strong>
                                 </td>
-                                <td style="padding-bottom: 10px;">
+                                <td style="padding-bottom: 5px; padding-left:0px;">
                                     <span t-field="doc.check_in_sequence_number"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td>
+                                <td style="padding-bottom: 5px; padding-left:0px;">
                                     <strong>Price Unit:</strong>
                                 </td>
-                                <td>
+                                <td style="padding-bottom: 5px; padding-left:0px;">
                                     <t t-set="price_unit" t-value="0"/>
 
                                     <t t-foreach="doc.invoice_id.invoice_line_ids" t-as="line">
