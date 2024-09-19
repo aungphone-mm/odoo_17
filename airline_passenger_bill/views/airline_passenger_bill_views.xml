@@ -38,12 +38,15 @@
                             <field name="end_time" widget="float_time"/>
                         </group>
                     </group>
+                    <div>
+                        <field name="raw" nolabel="1" placeholder="Enter raw data"/>
+                    </div>
                     <notebook>
                         <page string="Detail Information">
                             <field name="airline_passenger_bill_line_ids"
                                    context="{'default_airline_passenger_bill_id': active_id}">
-                                <tree string="Airline Passenger Bill Line" editable="top">
-                                    <field name="raw" style="width: 200px;"/>
+                                <tree string="Airline Passenger Bill Line" create="false" edit="false">
+<!--                                    <field name="raw" style="width: 200px;"/>-->
                                     <field name="invoice_id" />
                                     <field name="format_code"/>
                                     <!--                                    <field name="number_of_legs_encoded"/>-->
@@ -59,10 +62,10 @@
                                     <field name="seat_number"/>
                                     <field name="check_in_sequence_number"/>
                                     <field name="payment_state" optional="hide"/>
-                                    <button name="action_print_slip" type="object" string="Print Slip" class="btn-primary"/>
+<!--                                    <button name="action_print_slip" type="object" string="Print Slip" class="btn-primary"/>-->
                                     <!--                                    <field name="passenger_status"/>-->
-                                    <button name="action_register_payment" string="Pay" type="object" class="oe_highlight"
-                                        invisible="payment_state in 'paid'"/>
+<!--                                    <button name="action_register_payment" string="Pay" type="object" class="oe_highlight"-->
+<!--                                        invisible="payment_state in 'paid'"/>-->
                                 </tree>
                             </field>
                         </page>

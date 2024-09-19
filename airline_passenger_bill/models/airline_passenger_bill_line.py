@@ -38,7 +38,7 @@ class AirlinePassengerBillLine(models.Model):
     passenger_status = fields.Char(string='Status', tracking=True, track_visibility='always')
     airline_passenger_bill_id = fields.Many2one('airline.passenger.bill', string='Airlines Passenger Bill', tracking=True, track_visibility='always')
     # Bar Code Raw Data: Raw data of the bar code.
-    raw = fields.Char(string='Raw', tracking=True, track_visibility='always')
+    raw = fields.Char(string='Raw',)
     invoice_id = fields.Many2one('account.move', string='Invoice', tracking=True, track_visibility='always')
     payment_state = fields.Selection([('not_paid', 'Not Paid'),
                                     ('in_payment', 'In Payment'),
@@ -70,65 +70,6 @@ class AirlinePassengerBillLine(models.Model):
     def action_print_slip(self):
         return self.env.ref('airline_passenger_bill.action_airline_passenger_bill_slip').report_action(self)
 
-    @api.onchange('raw')
-    def _onchange_raw(self):
-        if self.raw:
-            raw = self.raw
-            self.format_code = raw[0:1].strip()
-            self.number_of_legs_encoded = int(raw[1:2].strip())
-            self.passenger_name = raw[2:22].strip()
-            self.passenger_status = raw[57:58].strip()
-            self.electronic_ticket_indicator = raw[22:23].strip()
-            self.pnr_code = raw[23:30].strip()
-            self.from_city_airport_code = raw[30:33].strip()
-            self.to_city_airport_code = raw[33:36].strip()
-            self.operating_carrier_designator = self.env['airline'].search([('name', '=', raw[36:39].strip())]).id
-            self.flight_number = raw[39:44].strip()
-            self.date_of_flight = raw[44:47].strip()
-            self.compartment_code = raw[47:48].strip()
-            self.seat_number = raw[49:52].strip()
-            self.check_in_sequence_number = raw[53:57].strip()
-            self.passenger_status = raw[57:58].strip()
-            self._generate_invoice()
-
-    def _generate_invoice(self):
-        parent_customer = self.env['res.partner'].search([('id', '=', self.airline_passenger_bill_id.passenger_rate_id.default_partner.id)])
-        partner = self.env['res.partner']
-        if parent_customer:
-            partner = partner.create({
-                'name': self.passenger_name,
-                'parent_id': parent_customer.id,
-            })
-        if self.passenger_name:
-            invoice = self.env['account.move'].create({
-                'partner_id': partner.id,
-                'currency_id': self.airline_passenger_bill_id.passenger_rate_id.currency_id.id,
-                'invoice_date': self.airline_passenger_bill_id.date,
-                'invoice_origin': self.passenger_name,
-                'journal_id': self.airline_passenger_bill_id.passenger_rate_id.journal_id.id,
-                'narration': f'Flight: {self.from_city_airport_code}-{self.to_city_airport_code} {self.flight_number}',
-                'move_type': 'out_invoice',
-                'invoice_line_ids': [],  # Start with no lines
-            })
-            self.env['account.move.line'].create({
-                'move_id': invoice.id,
-                'product_id': self.airline_passenger_bill_id.passenger_rate_id.product_id.id,
-                'quantity': 1,
-                'name': f'{self.passenger_name}',
-                'price_unit': self.airline_passenger_bill_id.passenger_rate_id.amount,
-            })
-
-            invoice.action_post()
-
-            self.invoice_id = invoice.id
-            self._create_invoice_download()
-
-    def _create_invoice_download(self):
-        return {
-            'type': 'ir.actions.act_url',
-            'url': f'/web/content/{self.invoice_id}/download',
-            'target': 'self',
-        }
 
     def action_register_payment(self):
         return {
@@ -250,3 +191,13 @@ class AirlinePassengerBillLine(models.Model):
                 message_type='notification',
                 subtype_xmlid="mail.mt_note"
             )
+
+class AccountPaymentRegister(models.TransientModel):
+    _inherit = 'account.payment.register'
+    _description = 'Register Payment'
+
+    def action_create_payments(self):
+        payments = self._create_payments()
+
+        if self._context.get('dont_redirect_to_payments'):
+            return True

@@ -5,10 +5,6 @@
             <field name="model">airline.passenger.bill.line</field>
             <field name="arch" type="xml">
                 <tree string="Airline Passenger Bill Line">
-                    <header>
-                        <button name="action_register_payment" string="Pay" type="object" class="oe_highlight"/>
-                    </header>
-                    <field name="raw"/>
                     <field name="invoice_id"/>
                     <field name="format_code"/>
                     <field name="number_of_legs_encoded"/>
@@ -25,7 +21,48 @@
                     <field name="check_in_sequence_number"/>
                     <field name="passenger_status"/>
                     <field name="payment_state" optional="hide"/>
+                    <button name="action_print_slip" type="object" string="Print Slip" class="btn-primary"/>
+                    <button name="action_register_payment" string="Pay" type="object" class="oe_highlight"
+                        invisible="payment_state in 'paid'"/>
                 </tree>
+            </field>
+        </record>
+
+        <record id="view_airline_passenger_bill_line_form" model="ir.ui.view">
+            <field name="name">airline.passenger.bill.line.form</field>
+            <field name="model">airline.passenger.bill.line</field>
+            <field name="arch" type="xml">
+                <form string="Airline Passenger Bill Line Form">
+                        <sheet>
+                            <group>
+                                <group>
+<!--                                    <field name="raw"/>-->
+                                    <field name="invoice_id" readonly="1"/>
+                                    <field name="format_code" readonly="1"/>
+                                    <field name="number_of_legs_encoded" readonly="1"/>
+                                    <field name="passenger_name" readonly="1"/>
+                                    <field name="electronic_ticket_indicator" readonly="1"/>
+                                    <field name="pnr_code" readonly="1"/>
+                                    <field name="payment_state" invisible="1"/>
+                                </group>
+                                <group>
+                                    <field name="from_city_airport_code" readonly="1"/>
+                                    <field name="to_city_airport_code" readonly="1"/>
+                                    <field name="operating_carrier_designator" readonly="1"/>
+                                    <field name="flight_number" readonly="1"/>
+                                    <field name="date_of_flight" readonly="1"/>
+                                    <field name="compartment_code" readonly="1"/>
+                                    <field name="seat_number" readonly="1"/>
+                                    <field name="check_in_sequence_number" readonly="1"/>
+                                </group>
+                            </group>
+                        </sheet>
+                        <footer>
+                            <button string="Print" type="object" name="action_print_slip" class="btn-primary"/>
+                            <button string="Pay" type="object" name="action_register_payment" class="btn-primary" invisible="payment_state in 'paid'"/>
+                            <button string="Close" type="close" special="cancel" class="btn-primary"/>
+                        </footer>
+                    </form>
             </field>
         </record>
 
