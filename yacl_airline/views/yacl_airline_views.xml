@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <data>
+
+        <!-- Action for Airlines -->
+       <record id="action_airline" model="ir.actions.act_window">
+           <field name="name">Airlines</field>
+           <field name="res_model">airline</field>
+           <field name="view_mode">tree,form</field>
+       </record>
+
+       <!-- Tree View for Airlines -->
+       <record id="view_airline_tree" model="ir.ui.view">
+           <field name="name">airline.tree</field>
+           <field name="model">airline</field>
+           <field name="arch" type="xml">
+               <tree>
+                   <field name="name"/>
+                   <field name="description"/>
+                   <field name="partner_id"/>
+               </tree>
+           </field>
+       </record>
+
+       <!-- Form View for Airlines -->
+       <record id="view_airline_form" model="ir.ui.view">
+           <field name="name">airline.form</field>
+           <field name="model">airline</field>
+           <field name="arch" type="xml">
+               <form>
+                   <sheet>
+                       <group>
+                           <group>
+                                <field name="name"/>
+                                <field name="description"/>
+                                <field name="partner_id"/>
+                           </group>
+                       </group>
+                       <notebook>
+                           <page string="Flights">
+                               <field name="flight_ids"/>
+                           </page>
+                       </notebook>
+                   </sheet>
+               </form>
+           </field>
+       </record>
+   </data>
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+   <odoo>
+       <data>
+           <!-- Parent menu item for Flight Management -->
+           <menuitem id="menu_flight_management"
+                     name="Airlines &amp; Flights"
+                     parent="base.menu_administration"
+                     sequence="1"/>
+
+             <!-- Menu item for Airlines -->
+           <menuitem id="menu_airline"
+                     name="Airlines"
+                     parent="menu_flight_management"
+                     action="action_airline"
+                     sequence="10"/>
+
+           <!-- Menu item for Flight Numbers -->
+           <menuitem id="menu_flight_no"
+                     name="Flights"
+                     parent="menu_flight_management"
+                     action="action_flight_no"
+                     sequence="20"/>
+         
+       </data>
+   </odoo>

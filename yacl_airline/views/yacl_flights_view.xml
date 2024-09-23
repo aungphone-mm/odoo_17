@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+           <!-- Action for Flight Numbers -->
+        <record id="action_flight_no" model="ir.actions.act_window">
+            <field name="name">Flight Numbers</field>
+            <field name="res_model">flights</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <!-- Tree View for Flight Numbers -->
+        <record id="view_flight_no_tree" model="ir.ui.view">
+            <field name="name">flights.tree</field>
+            <field name="model">flights</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                    <field name="aircraft_type"/>
+                    <field name="register_no"/>
+                    <field name="airline_id"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>
