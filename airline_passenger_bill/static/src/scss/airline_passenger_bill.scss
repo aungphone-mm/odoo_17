@@ -3,11 +3,52 @@
 }
 
 #raw_0 {
-    background: yellow;
-    height: 100px;
-    border: 1px solid #FF0000;
-}
+    border: 2px solid #FF0000; /* Red border */
+    border-radius: 10px; /* More pronounced rounded corners */
+    padding: 12px 20px; /* Increased padding for better touch targets */
+    font-size: 16px; /* Font size */
+    color: #333; /* Dark text color */
+    width: 100%; /* Full width */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s; /* Smooth transitions */
+    outline: none; /* Remove default outline */
 
-#raw_0::placeholder {
-        text-align: center;
+    /* Add a gradient background */
+    background: linear-gradient(#FFD700, #FFFF00); /* Subtle gradient effect */
+
+    /* Customizing placeholder */
+    &::placeholder {
+        color: #999; /* Placeholder color */
+        text-align: center; /* Center placeholder text */
+        font-style: italic; /* Italicize placeholder text */
+    }
+
+    /* Hover effect */
+    &:hover {
+        border-color: #FF8C00; /* Change border color on hover */
+        background-color: #f1f1f1; /* Slightly darker background on hover */
+    }
+
+    /* Focus effect */
+    &:focus {
+        border-color: #007BFF; /* Change border color on focus */
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Add glow effect on focus */
+        background-color: #e8f0fe; /* Light blue background on focus */
+    }
+
+    /* Add an icon */
+    &::before {
+        content: '';
+        background: url('path_to_your_icon.png') no-repeat center; /* Path to your icon */
+        width: 20px; /* Icon width */
+        height: 20px; /* Icon height */
+        position: absolute; /* Position it relative to the input */
+        left: 15px; /* Position from the left */
+        top: 50%; /* Center vertically */
+        transform: translateY(-50%); /* Adjust vertical alignment */
+        pointer-events: none; /* Prevent interaction with the icon */
+    }
+
+    /* Extra styling for the container if needed */
+    position: relative; /* Required for absolute positioning of the icon */
 }
