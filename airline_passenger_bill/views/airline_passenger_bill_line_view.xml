@@ -4,7 +4,11 @@
             <field name="name">airline.passenger.bill.line.tree</field>
             <field name="model">airline.passenger.bill.line</field>
             <field name="arch" type="xml">
-                <tree string="Airline Passenger Bill Line">
+                <tree string="Airline Passenger Bill Line"
+                      decoration-danger="payment_state == 'not_paid'"
+                      decoration-success="payment_state in ['paid', 'in_payment']"
+                      decoration-info="payment_state == 'partial'"
+                >
                     <field name="invoice_id"/>
                     <field name="format_code"/>
                     <field name="number_of_legs_encoded"/>
@@ -96,7 +100,7 @@
 
         <template id="airline_passenger_bill_line_template">
             <div>
-                <strong>Airline Passenger Bill Line Has Been Updated:</strong>
+                <strong>Airline Passenger Bill Line Has Been Created:</strong>
             </div>
             <ul>
                 <t t-foreach="changes" t-as="change">

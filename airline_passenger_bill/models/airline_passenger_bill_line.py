@@ -91,98 +91,100 @@ class AirlinePassengerBillLine(models.Model):
     def create(self, vals):
         passenger_bills = super(AirlinePassengerBillLine, self).create(vals)
         for passenger_bill in passenger_bills:
-            msg = f"Airline Passenger Bill Line created."
-            passenger_bill.airline_passenger_bill_id.message_post(body=msg)
+            passenger_bill._log_billing_tracking(vals)
+            # msg = f"Airline Passenger Bill Line created."
+            # passenger_bill.airline_passenger_bill_id.message_post(body=msg)
             return passenger_bills
 
-    def write(self, vals):
-        self._log_billing_tracking(vals)
-        return super().write(vals)
+    # def write(self, vals):
+    #     self._log_billing_tracking(vals)
+    #     return super().write(vals)
 
     def _log_billing_tracking(self, vals):
         template_id = self.env.ref('airline_passenger_bill.airline_passenger_bill_line_template')
         changes = []
 
+        if 'invoice_id' in vals:
+            # old_value = self.invoice_id.name or 'N/A'
+            new_value = self.env['account.move'].browse(vals['invoice_id']).name if vals.get('invoice_id') else 'N/A'
+            changes.append(f"Invoice: → {new_value}")
+
         if 'format_code' in vals:
-            old_value = self.format_code or 'N/A'
+            # old_value = self.format_code or 'N/A'
             new_value = vals.get('format_code', 'N/A')
-            changes.append(f"Format Code: {old_value} → {new_value}")
+            changes.append(f"Format Code:  → {new_value}")
 
         if 'number_of_legs_encoded' in vals:
-            old_value = self.number_of_legs_encoded or 0
+            # old_value = self.number_of_legs_encoded or 0
             new_value = vals.get('number_of_legs_encoded', 0)
-            changes.append(f"Number of Legs: {old_value} → {new_value}")
+            changes.append(f"Number of Legs: → {new_value}")
 
         if 'passenger_name' in vals:
-            old_value = self.passenger_name or 'N/A'
+            # old_value = self.passenger_name or 'N/A'
             new_value = vals.get('passenger_name', 'N/A')
-            changes.append(f"Passenger Name: {old_value} → {new_value}")
+            changes.append(f"Passenger Name: → {new_value}")
 
         if 'electronic_ticket_indicator' in vals:
-            old_value = self.electronic_ticket_indicator or 'N/A'
+            # old_value = self.electronic_ticket_indicator or 'N/A'
             new_value = vals.get('electronic_ticket_indicator', 'N/A')
-            changes.append(f"Electronic Ticket Indicator: {old_value} → {new_value}")
+            changes.append(f"Electronic Ticket Indicator: → {new_value}")
 
         if 'pnr_code' in vals:
-            old_value = self.pnr_code or 'N/A'
+            # old_value = self.pnr_code or 'N/A'
             new_value = vals.get('pnr_code', 'N/A')
-            changes.append(f"PNR Code: {old_value} → {new_value}")
+            changes.append(f"PNR Code: → {new_value}")
 
         if 'from_city_airport_code' in vals:
-            old_value = self.from_city_airport_code or 'N/A'
+            # old_value = self.from_city_airport_code or 'N/A'
             new_value = vals.get('from_city_airport_code', 'N/A')
-            changes.append(f"From City/Airport Code: {old_value} → {new_value}")
+            changes.append(f"From City/Airport Code:  → {new_value}")
 
         if 'to_city_airport_code' in vals:
-            old_value = self.to_city_airport_code or 'N/A'
+            # old_value = self.to_city_airport_code or 'N/A'
             new_value = vals.get('to_city_airport_code', 'N/A')
-            changes.append(f"To City/Airport Code: {old_value} → {new_value}")
+            changes.append(f"To City/Airport Code: → {new_value}")
 
         if 'operating_carrier_designator' in vals:
-            old_value = self.operating_carrier_designator.name or 'N/A'
+            # old_value = self.operating_carrier_designator.name or 'N/A'
             new_value = self.env['airline'].browse(vals['operating_carrier_designator']).name if vals.get(
                 'operating_carrier_designator') else 'N/A'
-            changes.append(f"Operating Carrier Designator: {old_value} → {new_value}")
+            changes.append(f"Operating Carrier Designator: → {new_value}")
 
         if 'flight_number' in vals:
-            old_value = self.flight_number or 'N/A'
+            # old_value = self.flight_number or 'N/A'
             new_value = vals.get('flight_number', 'N/A')
-            changes.append(f"Flight Number: {old_value} → {new_value}")
+            changes.append(f"Flight Number:  → {new_value}")
 
         if 'date_of_flight' in vals:
-            old_value = self.date_of_flight or 'N/A'
+            # old_value = self.date_of_flight or 'N/A'
             new_value = vals.get('date_of_flight', 'N/A')
-            changes.append(f"Date of Flight: {old_value} → {new_value}")
+            changes.append(f"Date of Flight:  → {new_value}")
 
         if 'compartment_code' in vals:
-            old_value = self.compartment_code or 'N/A'
+            # old_value = self.compartment_code or 'N/A'
             new_value = vals.get('compartment_code', 'N/A')
-            changes.append(f"Compartment Code: {old_value} → {new_value}")
+            changes.append(f"Compartment Code:  → {new_value}")
 
         if 'seat_number' in vals:
-            old_value = self.seat_number or 'N/A'
+            # old_value = self.seat_number or 'N/A'
             new_value = vals.get('seat_number', 'N/A')
-            changes.append(f"Seat Number: {old_value} → {new_value}")
+            changes.append(f"Seat Number:  → {new_value}")
 
         if 'check_in_sequence_number' in vals:
-            old_value = self.check_in_sequence_number or 'N/A'
+            # old_value = self.check_in_sequence_number or 'N/A'
             new_value = vals.get('check_in_sequence_number', 'N/A')
-            changes.append(f"Check-in Sequence Number: {old_value} → {new_value}")
+            changes.append(f"Check-in Sequence Number: → {new_value}")
 
         if 'passenger_status' in vals:
-            old_value = self.passenger_status or 'N/A'
+            # old_value = self.passenger_status or 'N/A'
             new_value = vals.get('passenger_status', 'N/A')
-            changes.append(f"Passenger Status: {old_value} → {new_value}")
+            changes.append(f"Passenger Status:  → {new_value}")
 
         if 'raw' in vals:
-            old_value = self.raw or 'N/A'
+            # old_value = self.raw or 'N/A'
             new_value = vals.get('raw', 'N/A')
-            changes.append(f"Raw Data: {old_value} → {new_value}")
+            changes.append(f"Raw Data: → {new_value}")
 
-        if 'invoice_id' in vals:
-            old_value = self.invoice_id.name or 'N/A'
-            new_value = self.env['account.move'].browse(vals['invoice_id']).name if vals.get('invoice_id') else 'N/A'
-            changes.append(f"Invoice: {old_value} → {new_value}")
 
         if changes:
             rendered_message = self.env['ir.qweb']._render(

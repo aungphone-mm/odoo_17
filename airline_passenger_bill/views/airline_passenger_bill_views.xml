@@ -46,7 +46,11 @@
                         <page string="Detail Information">
                             <field name="airline_passenger_bill_line_ids"
                                    context="{'default_airline_passenger_bill_id': active_id}">
-                                <tree string="Airline Passenger Bill Line" create="false" edit="false">
+                                <tree string="Airline Passenger Bill Line" create="false" edit="false"
+                                      decoration-danger="payment_state == 'not_paid'"
+                                      decoration-success="payment_state in ['paid', 'in_payment']"
+                                      decoration-info="payment_state == 'partial'"
+                                >
 <!--                                    <field name="raw" style="width: 200px;"/>-->
                                     <field name="invoice_id" />
                                     <field name="format_code"/>
