@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_airline_security_service,access.airline.security.service,model_airline_security_service,base.group_user,1,1,1,1
+access_airline_security_service_line,access.airline.security.service.line,model_airline_security_service_line,base.group_user,1,1,1,1
+access_security_rate,access.airline.security.rate,model_airline_security_rate,base.group_user,1,1,1,1
+access_security_rate_line,access.airline.security.rate.line,model_airline_security_rate_line,base.group_user,1,1,1,1

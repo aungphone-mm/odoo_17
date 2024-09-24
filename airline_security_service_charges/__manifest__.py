@@ -1,0 +1,22 @@
+{
+    'name': 'Airline Security Service Charges',
+    'version': '17.0.1.0',
+    'category': 'Utilities',
+    'license': 'AGPL-3',
+    'summary': """Manage the Security Service process for landing operations efficiently""",
+    'depends': ['mail', 'account', 'base','yacl_airline'],
+    'author': 'Mingalar Sky Co., Ltd.',
+    'website': 'https://www.mingalarsky.com',
+    'data': [
+        'security/ir.model.access.csv',
+        # 'report/custom_template.xml',
+        'views/airline_security_service_views.xml',
+        'views/airline_security_service_line_views.xml',
+        'views/menu_views.xml',
+        'data/ir_sequence_data.xml',
+        'report/airline_invoice_template.xml',
+    ],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}

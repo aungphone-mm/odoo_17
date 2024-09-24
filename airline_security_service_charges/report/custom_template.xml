@@ -7,7 +7,7 @@
             <field name="default" eval="True"/>
             <field name="format">custom</field>
             <field name="page_height">105</field>
-            <field name="page_width">85</field>
+            <field name="page_width">80</field>
             <field name="orientation">Portrait</field>
             <field name="margin_top">0</field>
             <field name="margin_bottom">0</field>
@@ -21,7 +21,7 @@
         <record id="action_airline_passenger_bill_slip" model="ir.actions.report">
             <field name="name">Airline Passenger Slip</field>
             <field name="model">airline.passenger.bill.line</field>
-            <field name="report_type">qweb-pdf</field>
+            <field name="report_type">qweb-html</field>
             <field name="report_name">airline_passenger_bill.report_airline_passenger_bill_slip</field>
             <field name="report_file">airline_passenger_bill.report_airline_passenger_bill_slip</field>
             <field name="print_report_name">'Airline Slip - ' + object.passenger_name</field>
