@@ -7,7 +7,7 @@
                 This module helps in tracking and managing the check-in details of various entities, 
                 ensuring smooth operations and accurate record-keeping. 
                 Ideal for companies and organizations that require precise check-in management.""",
-    'depends': ['mail', 'account', 'base'],
+    'depends': ['mail', 'account', 'base', 'web'],
     'author': 'Mingalar Sky Co., Ltd.',
     'website': 'https://www.mingalarsky.com',
     'data': [
@@ -20,6 +20,12 @@
         'views/airline_view.xml',
         'report/airline_invoice_template.xml',
     ],
+    'assets' : {
+        'web.assets_backend': [
+            'airline_passenger_bill/static/src/js/*.js',
+            'airline_passenger_bill/static/src/scss/*.scss'
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': False,

@@ -23,7 +23,7 @@
         <field name="name">airline.passenger.bill.form</field>
         <field name="model">airline.passenger.bill</field>
         <field name="arch" type="xml">
-            <form string="Airline Passenger Bill">
+            <form string="Airline Passenger Bill" js_class="airline_passenger_bill">
                 <sheet>
                     <group>
                         <group>
@@ -39,7 +39,8 @@
                         </group>
                     </group>
                     <div>
-                        <field name="raw" nolabel="1" placeholder="Enter raw data"/>
+                        <field name="raw" style="width:100%;" nolabel="1" placeholder="Scan or Enter Boarding Pass Information Here" class="bill-raw" />
+                        <button name="action_open_form" string="Parse Raw" type="object" class="btn-primary" id="parse_raw_button"/>
                     </div>
                     <notebook>
                         <page string="Detail Information">

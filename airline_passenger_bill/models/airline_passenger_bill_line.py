@@ -68,6 +68,9 @@ class AirlinePassengerBillLine(models.Model):
                 rec.update({'qr_code': qr_image})
 
     def action_print_slip(self):
+        if self.airline_passenger_bill_id:
+            self.airline_passenger_bill_id.ensure_one()
+            self.airline_passenger_bill_id.write({})  # To trigger the recompute of the total amount
         return self.env.ref('airline_passenger_bill.action_airline_passenger_bill_slip').report_action(self)
 
 

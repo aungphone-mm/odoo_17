@@ -1,5 +1,8 @@
 from odoo import fields, models, api, _
 from datetime import datetime
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class AirlinePassengerBill(models.Model):
@@ -46,7 +49,8 @@ class AirlinePassengerBill(models.Model):
     @api.onchange('date')
     def _onchange_date(self):
         if self.date:
-            self.passenger_rate_id = self.env['passenger.rate'].search([('from_date', '<=', self.date), ('to_date', '>=', self.date), ('active', '=', True)], limit=1).id
+            self.passenger_rate_id = self.env['passenger.rate'].search(
+                [('from_date', '<=', self.date), ('to_date', '>=', self.date), ('active', '=', True)], limit=1).id
 
     @api.model
     def create(self, vals):
@@ -62,7 +66,7 @@ class AirlinePassengerBill(models.Model):
     @api.onchange('raw')
     def _onchange_raw(self):
         if self.raw:
-            raw =self.raw
+            raw = self.raw
             self.format_code = raw[0:1].strip()
             self.number_of_legs_encoded = int(raw[1:2].strip())
             self.passenger_name = raw[2:22].strip()
@@ -103,6 +107,25 @@ class AirlinePassengerBill(models.Model):
             })
             self.unlink_raw()
 
+    def action_open_form(self):
+        if self.airline_passenger_bill_line_ids:
+            # Assuming you want to open the first line's form view
+            line_id = self.airline_passenger_bill_line_ids[-1].id  # Get the first line ID
+            return {
+                'name': self.display_name,
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'airline.passenger.bill.line',
+                'res_id': line_id,  # Pass the specific line ID
+                'target': 'new'
+            }
+        else:
+            # Optionally handle the case where there are no lines
+            return {
+                'type': 'ir.actions.act_window_message',
+                'title': 'No Lines Found',
+                'message': 'There are no airline passenger bill lines to open.',
+            }
 
     def _generate_invoice(self):
         parent_customer = self.env['res.partner'].search(
@@ -149,9 +172,6 @@ class AirlinePassengerBill(models.Model):
         }
 
 
-
-
-
 class PassengerRate(models.Model):
     _name = 'passenger.rate'
     _description = 'Passenger Rate'
@@ -159,13 +179,15 @@ class PassengerRate(models.Model):
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
     name = fields.Char(string='Name', required=True)
-    receivable_account_id = fields.Many2one(comodel_name='account.account', string='Receivable Account', required=True, track_visibility='always')
+    receivable_account_id = fields.Many2one(comodel_name='account.account', string='Receivable Account', required=True,
+                                            track_visibility='always')
     from_date = fields.Date('From Date', default=fields.Date.context_today, required=True, track_visibility='always')
     to_date = fields.Date('To Date', default=fields.Date.context_today, required=True, track_visibility='always')
     currency_id = fields.Many2one('res.currency', string='Currency', required=True, track_visibility='always')
     amount = fields.Monetary(string='Amount', currency_field='currency_id', required=True, track_visibility='always')
     product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
-    journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', required=True, track_visibility='always')
+    journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', required=True,
+                                 track_visibility='always')
     default_partner = fields.Many2one(comodel_name='res.partner', string='Default Partner', track_visibility='always')
     active = fields.Boolean(string='Active', default=True, track_visibility='onchange')
     type = fields.Selection([
