@@ -8,6 +8,7 @@ class AirlineSecurityServiceLine(models.Model):
 
     airline_security_service_id = fields.Many2one('airline.security.service', string='Airlines security service', tracking=True, track_visibility='always')
     flightno_id = fields.Many2one('flights',string='Flight No.')
+    flight_registration_no = fields.Char(string='Registration No.', related='flightno_id.register_no', store=True)
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, track_visibility='always')
     end_time = fields.Datetime(string='End Date & Time', tracking=True, track_visibility='always')
     total_minutes = fields.Integer(string='Total Minutes', compute='_compute_total_minutes', store=True)

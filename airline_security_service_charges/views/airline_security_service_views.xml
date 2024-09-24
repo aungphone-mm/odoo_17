@@ -57,6 +57,7 @@
                         <field name="airline_security_service_line_ids">
                             <tree editable="bottom">
                                 <field name="flightno_id"/>
+                                <field name="flight_registration_no"/>
                                 <field name="start_time" />
                                 <field name="end_time" />
                                 <field name="total_minutes"/>
