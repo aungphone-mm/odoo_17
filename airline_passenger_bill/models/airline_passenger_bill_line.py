@@ -48,6 +48,11 @@ class AirlinePassengerBillLine(models.Model):
                                     ('invoicing_legacy', 'Invoicing App Legacy'),
                             ], String='State', related='invoice_id.payment_state')
     qr_code = fields.Binary("QR Code", compute='generate_qr_code')
+    journal_id = fields.Many2one('account.journal', string='Journal', compute="_compute_journal_id", store=True)
+
+    @api.depends('invoice_id.payment_state')
+    def _compute_journal_id(self):
+        print('HHHH')
 
     def generate_qr_code(self):
         for rec in self:

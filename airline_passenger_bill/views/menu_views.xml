@@ -44,6 +44,8 @@
                   action="airline_passenger_bill.action_airline"/>
         <menuitem id="menu_passenger_rate" name="Rate" sequence="2" parent="menu_airline_passenger_bill_configuration"
                   action="action_passenger_rate"/>
+        <menuitem id="menu_airline_bill_counter" name="Bill Counter" sequence="3" parent="menu_airline_passenger_bill_configuration"
+                  action="action_airline_bill_counter"/>
 
     </data>
 </odoo>

@@ -3,3 +3,4 @@ access_airline_passenger_bill,access.airline.passenger.bill,model_airline_passen
 access_airline_passenger_bill_line,access.airline.passenger.bill.line,model_airline_passenger_bill_line,base.group_user,1,1,1,1
 access_airline,access.airline,model_airline,base.group_user,1,1,1,1
 access_passenger_rate,access.passenger.rate,model_passenger_rate,base.group_user,1,1,1,1
+access_airline_bill_counter,access.airline.bill.counter,model_airline_bill_counter,base.group_user,1,1,1,1

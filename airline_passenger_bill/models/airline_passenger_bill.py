@@ -44,6 +44,8 @@ class AirlinePassengerBill(models.Model):
     passenger_status = fields.Char(string='Status', tracking=True, track_visibility='always')
     raw = fields.Char(string='Raw')
     invoice_id = fields.Many2one('account.move', string='Invoice', tracking=True, track_visibility='always')
+    counter_id = fields.Many2one('airline.bill.counter', string='Counter Name', required=True)
+    operator_id = fields.Many2one('hr.employee', string='Operator Name', required=True, default=lambda self: self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1))
 
 
     @api.onchange('date')

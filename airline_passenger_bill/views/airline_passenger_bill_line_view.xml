@@ -24,6 +24,7 @@
                     <field name="seat_number"/>
                     <field name="check_in_sequence_number"/>
                     <field name="passenger_status"/>
+                    <field name="journal_id"/>
                     <field name="payment_state" optional="hide"/>
                     <button name="action_print_slip" type="object" string="Print Slip" class="btn-primary"/>
                     <button name="action_register_payment" string="Pay" type="object" class="oe_highlight"
