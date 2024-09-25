@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <template id="report_airline_passenger_bill_slip">
             <t t-call="web.html_container">
                 <script type="text/javascript">
@@ -11,78 +10,74 @@
             </script>
                 <t t-foreach="docs" t-as="doc">
                     <div class="page">
-                        <h2 style="text-align: center; padding-bottom: 5px; font-size:9.5px; font-weight: bold; font-family: Roboto;">Airline
+                        <h2 style="text-align: center; padding-top: 15px; padding-bottom: 5px; font-size: 25px;">Airline
                             Passenger Service Charges
                         </h2>
-
                         <t t-if="doc.qr_code">
-                            <div style="text-align: center; margin-bottom:5px;">
+                            <div style="text-align: center; margin-bottom: 20px;">
                                 <img t-att-src="'data:image/png;base64,' + doc.qr_code.decode('utf-8')" alt="QR Code"/>
                             </div>
                         </t>
-
-                        <table class="table table-bordered" style="font-size: 9.2px; font-family: Roboto; font-weight: bold;">
+                        <table class="table table-bordered" style="margin-left: 10px; font-size: 18px;">
                             <tr>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
-                                    <strong>Passenger:</strong>
+                                <td style="padding-bottom: 10px;">
+                                    <strong>Passenger Name:</strong>
                                 </td>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                <td style="padding-bottom: 10px;">
                                     <span t-field="doc.passenger_name"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                <td style="padding-bottom: 10px;">
                                     <strong>Invoice ID:</strong>
                                 </td>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                <td style="padding-bottom: 10px;">
                                     <span t-field="doc.invoice_id.name"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                <td style="padding-bottom: 10px;">
                                     <strong>Airline:</strong>
                                 </td>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                <td style="padding-bottom: 10px;">
                                     <span t-field="doc.operating_carrier_designator.description"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                <td style="padding-bottom: 10px;">
                                     <strong>Flight Number:</strong>
                                 </td>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                <td style="padding-bottom: 10px;">
                                     <span t-field="doc.flight_number"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding-bottom: 5px;padding-left:0px;">
+                                <td style="padding-bottom: 10px;">
                                     <strong>Seat Number:</strong>
                                 </td>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                <td style="padding-bottom: 10px;">
                                     <span t-field="doc.seat_number"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
-                                    <strong>Sequence No:</strong>
+                                <td style="padding-bottom: 10px;">
+                                    <strong>Sequence Number:</strong>
                                 </td>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                <td style="padding-bottom: 10px;">
                                     <span t-field="doc.check_in_sequence_number"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                <td>
                                     <strong>Price Unit:</strong>
                                 </td>
-                                <td style="padding-bottom: 5px; padding-left:0px;">
+                                <td>
                                     <t t-set="price_unit" t-value="0"/>
-
                                     <t t-foreach="doc.invoice_id.invoice_line_ids" t-as="line">
                                         <t t-if="line.product_id.id == doc.airline_passenger_bill_id.passenger_rate_id.product_id.id">
                                             <t t-set="price_unit" t-value="line.price_unit"/>
                                         </t>
                                     </t>
-
                                     <span t-esc="doc.invoice_id.currency_id.symbol + ' ' +str(price_unit)"/>
                                 </td>
                             </tr>
@@ -91,6 +86,5 @@
                 </t>
             </t>
         </template>
-
     </data>
 </odoo>
