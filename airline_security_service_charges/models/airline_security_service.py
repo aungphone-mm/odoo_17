@@ -62,6 +62,7 @@ class AirlineSecurityService(models.Model):
             'invoice_line_ids': [(0, 0, line) for line in self._prepare_invoice_line_vals()],
             'airline_security_service_id': self.id,
             'currency_id': self.security_rate_id.currency_id.id,
+            'form_type': 'security',
         }
 
     def _prepare_invoice_line_vals(self):

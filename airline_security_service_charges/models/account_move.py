@@ -4,6 +4,7 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     airline_security_service_id = fields.Many2one('airline.security.service', string='Security Service', readonly=True)
+    form_type = fields.Char('Form Type')
 
     def action_view_security_service(self):
         self.ensure_one()

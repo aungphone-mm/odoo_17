@@ -190,6 +190,7 @@ class ElectricMeterReading(models.Model):
                         'move_type': 'out_invoice',
                         'reading_line_id': line.id,  # Link the reading line to the invoice
                         'invoice_line_ids': [],
+                        'form_type': 'electric',
                     })
                     invoices[partner] = invoice
                 else:
@@ -280,6 +281,7 @@ class AccountMove(models.Model):
 
     reading_line_id = fields.Many2one('electric.meter.reading.line', string='Electric Meter Reading Line',
                                       required=False)
+    form_type = fields.Char('Form Type')
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'

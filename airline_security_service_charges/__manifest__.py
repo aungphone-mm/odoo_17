@@ -9,7 +9,7 @@
     'website': 'https://www.mingalarsky.com',
     'data': [
         'security/ir.model.access.csv',
-        # 'report/custom_template.xml',
+        'views/invoice_custom_template.xml',
         'views/airline_security_service_views.xml',
         'views/airline_security_service_line_views.xml',
         'views/menu_views.xml',
