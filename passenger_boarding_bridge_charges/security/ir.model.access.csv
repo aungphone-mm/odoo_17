@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_passenger_boarding_bridge_charges,access.passenger.boarding.bridge.charges,model_passenger_boarding_bridge_charges,base.group_user,1,1,1,1
+access_passenger_boarding_bridge_charges_line,access.passenger.boarding.bridge.charges.line,model_passenger_boarding_bridge_charges_line,base.group_user,1,1,1,1
+access_bridge_rate,access.passenger.boarding.bridge.charges.rate,model_passenger_boarding_bridge_charges_rate,base.group_user,1,1,1,1
+access_bridge_rate_line,access.passenger.boarding.bridge.charges.rate.line,model_passenger_boarding_bridge_charges_rate_line,base.group_user,1,1,1,1

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<template id="report_invoice_document" inherit_id="account.report_invoice_document">
+        <xpath expr="//t[@t-name='account.report_invoice_document']" position="inside">
+            <div class="page">
+                <div style="page-break-before: always;">
+                    <t t-if="o.form_type == 'bridge'">
+                        <t t-call="passenger_boarding_bridge_charges.report_additional_content"/>
+                    </t>
+                    <t t-else="">
+                        <p>This is a standard invoice.</p>
+                    </t>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="passenger_boarding_bridge_charges.report_additional_content">
+    <t t-foreach="docs" t-as="doc">
+        <div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3>Passenger Boarding Bridge Charges</h3>
+            </div>
+
+            <table class="table table-sm" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #b1c694; color: black; text-align: center;">
+                        <th style="border: 1px solid black;">No</th>
+                        <th style="border: 1px solid black;">Flight No.</th>
+                        <th style="border: 1px solid black;">Registration No.</th>
+                        <th style="border: 1px solid black;">Start Time</th>
+                        <th style="border: 1px solid black;">End Time</th>
+                        <th style="border: 1px solid black;">Total Minutes</th>
+                        <th style="border: 1px solid black;">Rate</th>
+                        <th style="border: 1px solid black;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="doc.passenger_boarding_bridge_charges_id.passenger_boarding_bridge_charges_line_ids" t-as="line">
+                        <tr style="text-align: center;">
+                            <td style="border: 1px solid black;"><t t-esc="line_index + 1"/></td>
+                            <td style="border: 1px solid black;"><t t-esc="line.flightno_id.name"/></td>
+                            <td style="border: 1px solid black;"><t t-esc="line.flight_registration_no"/></td>
+                            <td style="border: 1px solid black;"><t t-esc="line.start_time" t-options="{'widget': 'datetime'}"/></td>
+                            <td style="border: 1px solid black;"><t t-esc="line.end_time" t-options="{'widget': 'datetime'}"/></td>
+                            <td style="border: 1px solid black;"><t t-esc="line.total_minutes"/></td>
+                            <td style="border: 1px solid black;"><t t-esc="line.bridge_rate_id.name"/></td>
+                            <td style="border: 1px solid black;"><t t-esc="line.amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                        </tr>
+                    </t>
+                </tbody>
+                <tfoot>
+                    <tr style="background-color: #a8c9e2; color: black; text-align: center;">
+                        <td colspan="5" style="text-align: right; border: 1px solid black;">
+                            <strong>Total</strong>
+                        </td>
+                        <td style="text-align: right; border: 1px solid black;">
+                            <strong><t t-esc="'{:,.0f}'.format(sum(doc.passenger_boarding_bridge_charges_id.passenger_boarding_bridge_charges_line_ids.mapped('total_minutes')))"/></strong>
+                        </td>
+                        <td style="text-align: right; border: 1px solid black;">
+                        </td>
+                        <td style="text-align: right; border: 1px solid black;">
+                            <strong>
+                                <t t-esc="'{:,.2f}'.format(sum(doc.passenger_boarding_bridge_charges_id.passenger_boarding_bridge_charges_line_ids.mapped('amount')))"/>
+                            </strong>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div style="margin-top: 20px; text-align: right;">
+                <strong>Total Amount: </strong>
+                <span t-field="doc.amount_total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+            </div>
+        </div>
+    </t>
+</template>
+    </data>
+</odoo>
