@@ -24,7 +24,7 @@
         <field name="arch" type="xml">
             <div name="button_box" position="inside">
                 <button name="action_view_security_service" type="object"
-                        class="oe_stat_button" icon="fa-plane"
+                        class="oe_stat_button" icon="fa-user-secret"
                          invisible="not airline_security_service_id">
                     <span class="o_stat_text">Security Service</span>
                 </button>
