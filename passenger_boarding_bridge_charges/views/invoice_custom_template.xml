@@ -8,9 +8,6 @@
                     <t t-if="o.form_type == 'bridge'">
                         <t t-call="passenger_boarding_bridge_charges.report_additional_content"/>
                     </t>
-                    <t t-else="">
-                        <p>This is a standard invoice.</p>
-                    </t>
                 </div>
             </div>
         </xpath>
