@@ -8,10 +8,6 @@
                     <t t-if="o.form_type == 'security'">
                         <t t-call="airline_security_service_charges.report_additional_content"/>
                     </t>
-
-                    <t t-else="">
-                        <p>This is a standard invoice.</p>
-                    </t>
                 </div>
             </div>
         </xpath>
