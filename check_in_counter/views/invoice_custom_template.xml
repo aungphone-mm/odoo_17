@@ -8,10 +8,6 @@
                     <t t-if="o.form_type == 'checkin'">
                         <t t-call="check_in_counter.report_additional_content"/>
                     </t>
-
-                    <t t-else="">
-                        <p>This is a standard invoice.</p>
-                    </t>
                 </div>
             </div>
         </xpath>
