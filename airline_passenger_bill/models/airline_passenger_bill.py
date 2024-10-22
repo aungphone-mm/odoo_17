@@ -8,8 +8,8 @@ _logger = logging.getLogger(__name__)
 class AirlinePassengerBill(models.Model):
     _name = 'airline.passenger.bill'
     _description = 'Airline Passenger Bill'
-
     _inherit = ['mail.activity.mixin', 'mail.thread']
+    _order = 'id desc'
 
     name = fields.Char(string='Name', required=True, readonly=True, copy=False, index=True, default='New')
     type = fields.Selection([
@@ -48,6 +48,19 @@ class AirlinePassengerBill(models.Model):
     operator_id = fields.Many2one('hr.employee', string='Operator Name', required=True, default=lambda self: self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1))
 
 
+    def action_manually_add(self):
+        return {
+            'name': _('Add Passenger Line'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'airline.passenger.bill.line',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'view_id': self.env.ref('airline_passenger_bill.view_airline_passenger_bill_line_open_form').id,
+            'target': 'new',
+            'context': {
+                'default_airline_passenger_bill_id': self.id,
+            },
+        }
     @api.onchange('date')
     def _onchange_date(self):
         if self.date:

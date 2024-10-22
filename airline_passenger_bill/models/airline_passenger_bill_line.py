@@ -2,6 +2,9 @@ from odoo import fields, models, api, _
 import qrcode
 import base64
 from io import BytesIO
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class AirlinePassengerBillLine(models.Model):
     _name = 'airline.passenger.bill.line'
@@ -48,11 +51,48 @@ class AirlinePassengerBillLine(models.Model):
                                     ('invoicing_legacy', 'Invoicing App Legacy'),
                             ], String='State', related='invoice_id.payment_state')
     qr_code = fields.Binary("QR Code", compute='generate_qr_code')
-    journal_id = fields.Many2one('account.journal', string='Journal', compute="_compute_journal_id", store=True)
+    journal_id = fields.Many2one('account.journal', string='Payment', store=True,)
 
-    @api.depends('invoice_id.payment_state')
-    def _compute_journal_id(self):
-        print('HHHH')
+
+
+    def _generate_invoice(self):
+        parent_customer = self.env['res.partner'].search([('id', '=', self.airline_passenger_bill_id.passenger_rate_id.default_partner.id)])
+        partner = self.env['res.partner']
+        if parent_customer:
+            partner = partner.create({
+                'name': self.passenger_name,
+                'parent_id': parent_customer.id,
+            })
+        if self.passenger_name:
+            invoice = self.env['account.move'].create({
+                'partner_id': partner.id,
+                'currency_id': self.airline_passenger_bill_id.passenger_rate_id.currency_id.id,
+                'invoice_date': self.airline_passenger_bill_id.date,
+                'invoice_origin': self.passenger_name,
+                'journal_id': self.airline_passenger_bill_id.passenger_rate_id.journal_id.id,
+                'narration': f'Flight: {self.from_city_airport_code}-{self.to_city_airport_code} {self.flight_number}',
+                'move_type': 'out_invoice',
+                'invoice_line_ids': [],  # Start with no lines
+            })
+            self.env['account.move.line'].create({
+                'move_id': invoice.id,
+                'product_id': self.airline_passenger_bill_id.passenger_rate_id.product_id.id,
+                'quantity': 1,
+                'name': f'{self.passenger_name}',
+                'price_unit': self.airline_passenger_bill_id.passenger_rate_id.amount,
+            })
+
+            invoice.action_post()
+
+            self.invoice_id = invoice.id
+            self._create_invoice_download()
+
+    def _create_invoice_download(self):
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{self.invoice_id}/download',
+            'target': 'self',
+        }
 
     def generate_qr_code(self):
         for rec in self:
@@ -73,13 +113,24 @@ class AirlinePassengerBillLine(models.Model):
                 rec.update({'qr_code': qr_image})
 
     def action_print_slip(self):
+        self._generate_invoice()
         if self.airline_passenger_bill_id:
             self.airline_passenger_bill_id.ensure_one()
             self.airline_passenger_bill_id.write({})  # To trigger the recompute of the total amount
         return self.env.ref('airline_passenger_bill.action_airline_passenger_bill_slip').report_action(self)
 
+    def action_save_and_close(self):
+        self._generate_invoice()
+        self.ensure_one()
+        self.write({})
+
+        return {
+            'type': 'ir.actions.act_window_close',  # This will close the form
+        }
+
 
     def action_register_payment(self):
+        self._generate_invoice()
         return {
             'name': _('Register Payment'),
             'res_model': 'account.payment.register',
@@ -87,6 +138,7 @@ class AirlinePassengerBillLine(models.Model):
             'context': {
                 'active_model': 'account.move',
                 'active_ids': self.invoice_id.ids,
+                'default_journal_id': self.journal_id.id,
             },
             'target': 'new',
             'type': 'ir.actions.act_window',
@@ -206,8 +258,20 @@ class AccountPaymentRegister(models.TransientModel):
     _inherit = 'account.payment.register'
     _description = 'Register Payment'
 
+
     def action_create_payments(self):
-        payments = self._create_payments()
+        # Call super to handle the default payment creation logic
+        result = super(AccountPaymentRegister, self).action_create_payments()
+        # After payment is created, update the journal_id in airline.passenger.bill.line
+
+        move_ids = self.env.context.get('active_ids')
+        if move_ids:
+            moves = self.env['account.move'].browse(move_ids)
+            for move in moves:
+                # Find the corresponding airline.passenger.bill.line and update journal_id
+                bill_lines = self.env['airline.passenger.bill.line'].search([('invoice_id', '=', move.id)])
+                for bill_line in bill_lines:
+                    bill_line.write({'journal_id': self.journal_id.id})  # Update the journal_id
 
         if self._context.get('dont_redirect_to_payments'):
             return True

@@ -45,6 +45,9 @@
                         <field name="raw" style="width:100%;" nolabel="1" placeholder="Scan or Enter Boarding Pass Information Here" class="bill-raw" />
                         <button name="action_open_form" string="Parse Raw" type="object" class="btn-primary" id="parse_raw_button"/>
                     </div>
+                    <div>
+                        <button name="action_manually_add" string="Add Boarding Pass Manual" type="object" id="custom-button"/>
+                    </div>
                     <notebook>
                         <page string="Detail Information">
                             <field name="airline_passenger_bill_line_ids"
