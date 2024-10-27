@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_checkin_counter,access.checkin.counter,model_checkin_counter,base.group_user,1,1,1,1
+access_checkin_counter_line,access.checkin.counter.line,model_checkin_counter_line,base.group_user,1,1,1,1
+access_checkin_counter_rate,access.checkin.counter.rate,model_checkin_counter_rate,base.group_user,1,1,1,1
+access_checkin_counter_rate_line,access.checkin.counter.rate.line,model_checkin_counter_rate_line,base.group_user,1,1,1,1

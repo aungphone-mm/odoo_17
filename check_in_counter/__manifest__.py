@@ -1,0 +1,22 @@
+{
+    'name': 'Check in Counter Charges',
+    'version': '17.0.1.0',
+    'category': 'Utilities',
+    'license': 'AGPL-3',
+    'summary': """Manage the Check in Counter process for landing operations efficiently""",
+    'depends': ['mail', 'account', 'base','yacl_airline'],
+    'author': 'Mingalar Sky Co., Ltd.',
+    'website': 'https://www.mingalarsky.com',
+    'data': [
+        'security/ir.model.access.csv',
+        'views/invoice_custom_template.xml',
+        'views/checkin_counter_views.xml',
+        'views/checkin_counter_line_views.xml',
+        'views/menu_views.xml',
+        'data/ir_sequence_data.xml',
+        'report/airline_invoice_template.xml',
+    ],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}
