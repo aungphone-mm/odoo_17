@@ -16,6 +16,8 @@
         'views/invoice_custom_template.xml',
         'views/electric_meter.xml',
         'views/res_partner.xml',
+        'views/report_electric_meter_reading.xml',
+        'views/report_electric_invoice.xml',
         'data/ir_sequence_data.xml',
         'security/ir.model.access.csv',
     ],

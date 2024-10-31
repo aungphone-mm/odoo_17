@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Report Action -->
+    <record id="action_report_electric_meter_reading" model="ir.actions.report">
+        <field name="name">Electric Meter Reading Report</field>
+        <field name="model">electric.meter.reading</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">electric_meter_bill.report_electric_meter_reading</field>
+        <field name="report_file">electric_meter_bill.report_electric_meter_reading</field>
+        <field name="binding_model_id" ref="model_electric_meter_reading"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Document Template -->
+     <template id="report_electric_meter_reading">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Header Section with blue background -->
+                        <div class="row mb-4" style="background-color: #1a73e8; color: white; padding: 15px;">
+                            <div class="col-12">
+                                <h2>Electric Meter Reading</h2>
+                                <h3 t-field="doc.name" style="color: white;"/>
+                            </div>
+                        </div>
+
+                        <!-- Reading Information -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px;">
+                                    <strong style="color: #1a73e8;">Reading Information:</strong>
+                                    <div class="mt-2">
+                                        <strong>Reading Reference:</strong> <span t-field="doc.name"/>
+                                    </div>
+                                    <div>
+                                        <strong>Reading Date:</strong> <span t-field="doc.reading_date"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px;">
+                                    <strong style="color: #1a73e8;">Invoice Details:</strong>
+                                    <div class="mt-2">
+                                        <strong>Invoice For:</strong> <span t-field="doc.for_date"/>
+                                    </div>
+                                    <div>
+                                        <strong>Status:</strong> <span t-field="doc.state"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reading Lines Table -->
+                        <h4 class="mb-3" style="color: #1a73e8;">Meter Reading Details</h4>
+                        <table class="table table-sm" style="border: 1px solid #dee2e6;">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr>
+                                    <th>Meter</th>
+                                    <th>Customer</th>
+                                    <th class="text-right">Previous Reading</th>
+                                    <th class="text-right">Current Reading</th>
+                                    <th class="text-right">Total Units</th>
+                                    <th class="text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="doc.reading_line_ids" t-as="line">
+                                    <td><span t-field="line.meter_id.name"/></td>
+                                    <td><span t-field="line.partner_id.name"/></td>
+                                    <td class="text-right"><span t-field="line.latest_reading_unit"/></td>
+                                    <td class="text-right"><span t-field="line.current_reading_unit"/></td>
+                                    <td class="text-right"><span t-field="line.total_unit"/></td>
+                                    <td class="text-right" style="color: #1a73e8; font-weight: bold;">
+                                        <t t-if="line.currency_id">
+                                            <span t-field="line.amount"
+                                                  t-options='{"widget": "monetary", "display_currency": line.currency_id}'/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="line.amount"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Notes -->
+                        <div t-if="doc.description" class="mt-4">
+                            <h4 style="color: #1a73e8;">Notes</h4>
+                            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px;">
+                                <p t-field="doc.description"/>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="mt-5 mb-4 text-center" style="color: #666;">
+                            <small>This is a computer-generated document. No signature is required.</small>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

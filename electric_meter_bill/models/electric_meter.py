@@ -65,6 +65,7 @@ class ElectricMeterReading(models.Model):
     name = fields.Char(string='Name', required=True, readonly=True, copy=False, index=True, default='New')
     description = fields.Text(string='Description', tracking=True)
     reading_date = fields.Date(string='Reading Date', required=True, default=fields.Date.today, tracking=True)
+    for_date = fields.Date(string='Invoice For',default=fields.Date.today, tracking=True)
     reading_line_ids = fields.One2many(comodel_name='electric.meter.reading.line', inverse_name='reading_id',
                                        string='Reading Line', required=False)
     state = fields.Selection(
@@ -117,37 +118,73 @@ class ElectricMeterReading(models.Model):
 
     def action_confirm(self):
         self.write({'state': 'confirmed'})
+        # First group readings by meter number
+        meter_readings = {}
         for line in self.reading_line_ids:
-            line.narration = f'<b>Meter No : {line.meter_id.name}</b><br/>'
-            if line.total_unit > 0:
-                if line.partner_id and line.partner_id.business_source_id:
-                    rate = line.partner_id.business_source_id.rate_id
-                    remaining_units = line.total_unit
+            meter_number = line.meter_id.meter_number
+            if meter_number not in meter_readings:
+                meter_readings[meter_number] = []
+            meter_readings[meter_number].append(line)
+        # Process each meter's readings
+        for meter_number, lines in meter_readings.items():
+            if len(lines) > 1:
+                # Multiple readings for same meter - combine them
+                total_units = sum(line.total_unit for line in lines)
+                if total_units <= 0:
+                    continue
+                base_line = lines[0]  # Use first line as base for calculations
+                if base_line.partner_id and base_line.partner_id.business_source_id:
+                    rate = base_line.partner_id.business_source_id.rate_id
+                    remaining_units = total_units
                     total_amount = 0
-
+                    # narration = f'<b>Meter No : {base_line.meter_id.name}</b><br/>'
+                    # Calculate combined amount
                     for rate_line in rate.rate_line_ids:
-                        # Calculate units in the current bracket
-                        units_in_bracket = min(remaining_units, rate_line.to_unit - rate_line.from_unit + 1)
-
-                        # Calculate amount for the current bracket
+                        units_in_bracket = min(remaining_units,
+                                               rate_line.to_unit - rate_line.from_unit + 1)
                         bracket_amount = units_in_bracket * rate_line.unit_price
                         total_amount += bracket_amount
-
-                        # Subtract units that have been accounted for
+                        # narration += f'{rate_line.from_unit:,} - {rate_line.to_unit:,}: {units_in_bracket:,} units x {rate_line.unit_price:,} = {bracket_amount:,}<br/>'
                         remaining_units -= units_in_bracket
-
-                        line.narration += f'{rate_line.from_unit:,} - {rate_line.to_unit:,}: {units_in_bracket:,} units x {rate_line.unit_price:,} = {bracket_amount:,}<br/>'
-
-                        # Break if there are no remaining units
                         if remaining_units <= 0:
                             break
-                            #aung
-
-                    line.amount = total_amount
-                    if line.meter_id.mgm_percentage:
-                        mgm_charge = (line.amount / 100) * line.meter_id.mgm_percentage
-                        line.amount += mgm_charge
-                        line.narration += f'Management Charge ({line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
+                    # Apply management fee if any
+                    if base_line.meter_id.mgm_percentage:
+                        mgm_charge = (total_amount / 100) * base_line.meter_id.mgm_percentage
+                        total_amount += mgm_charge
+                        # narration += f'Management Charge ({base_line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
+                    # Distribute total amount proportionally among lines
+                    for line in lines:
+                        if total_units > 0:
+                            line_proportion = line.total_unit / total_units
+                            line.amount = total_amount * line_proportion
+                            # line.narration = narration
+            else:
+                # Single reading - process normally
+                line = lines[0]
+                # line.narration = f'<b>Meter No : {line.meter_id.name}</b><br/>'
+                if line.total_unit > 0:
+                    if line.partner_id and line.partner_id.business_source_id:
+                        rate = line.partner_id.business_source_id.rate_id
+                        remaining_units = line.total_unit
+                        total_amount = 0
+                        # Calculate charges for each rate bracket
+                        for rate_line in rate.rate_line_ids:
+                            units_in_bracket = min(remaining_units,
+                                                   rate_line.to_unit - rate_line.from_unit + 1)
+                            bracket_amount = units_in_bracket * rate_line.unit_price
+                            total_amount += bracket_amount
+                            # line.narration += f'{rate_line.from_unit:,} - {rate_line.to_unit:,}: {units_in_bracket:,} units x {rate_line.unit_price:,} = {bracket_amount:,}<br/>'
+                            remaining_units -= units_in_bracket
+                            if remaining_units <= 0:
+                                break
+                        # Set the total amount
+                        line.amount = total_amount
+                        # Apply management fee if configured
+                        if line.meter_id.mgm_percentage:
+                            mgm_charge = (line.amount / 100) * line.meter_id.mgm_percentage
+                            line.amount += mgm_charge
+                            # line.narration += f'Management Charge ({line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
 
     def action_done(self):
         self.write({'state': 'done'})
@@ -173,13 +210,22 @@ class ElectricMeterReading(models.Model):
                 line.meter_id.write({'latest_reading_unit': line.current_reading_unit})
 
     def _generate_invoice(self):
-        invoices = {}
+        meter_invoices = {}  # Will store {meter_number: invoice} for same meter invoices
+        partner_invoices = {}  # Will store {partner: invoice} for same partner invoices
 
         for line in self.reading_line_ids:
             if line.amount > 0:
                 partner = line.partner_id
-                if partner not in invoices:
-                    # Create a new invoice if it doesn't exist
+                meter_number = line.meter_id.meter_number
+
+                # First check if there's an existing invoice for this meter number
+                if meter_number in meter_invoices:
+                    invoice = meter_invoices[meter_number]
+                # Then check if there's an existing invoice for this partner
+                elif partner in partner_invoices:
+                    invoice = partner_invoices[partner]
+                else:
+                    # Create a new invoice
                     invoice = self.env['account.move'].create({
                         'partner_id': partner.id,
                         'currency_id': line.currency_id.id,
@@ -188,16 +234,22 @@ class ElectricMeterReading(models.Model):
                         'journal_id': partner.business_source_id.rate_id.journal_id.id,
                         'narration': line.narration,
                         'move_type': 'out_invoice',
-                        'reading_line_id': line.id,  # Link the reading line to the invoice
+                        'reading_line_id': line.id,
                         'invoice_line_ids': [],
                         'form_type': 'electric',
+                        'for_date': self.for_date,
                     })
-                    invoices[partner] = invoice
-                else:
-                    # Update existing invoice with additional details
-                    invoice = invoices[partner]
-                    invoice.narration = (invoice.narration or '') + Markup(line.narration) + Markup(
-                        '<div style="break-after:page"></div>' + partner.business_source_id.rate_id.description)
+                    # Store invoice reference in both dictionaries
+                    meter_invoices[meter_number] = invoice
+                    partner_invoices[partner] = invoice
+
+                # Update existing invoice with additional details
+                # if invoice.narration:
+                #     rate_description = partner.business_source_id.rate_id.description or ''
+                #     new_narration = Markup(line.narration or '') + \
+                #                     Markup('<div style="break-after:page"></div>') + \
+                #                     Markup(rate_description)
+                #     invoice.narration = (invoice.narration or '') + new_narration
 
                 # Create invoice lines
                 invoice_line = self.env['account.move.line'].create({
@@ -206,7 +258,7 @@ class ElectricMeterReading(models.Model):
                     'quantity': 1,
                     'name': f'{line.meter_id.name} - {line.total_unit} Units',
                     'price_unit': line.amount,
-                    'reading_line_id': line.id,  # Link the reading line to the invoice line
+                    'reading_line_id': line.id,
                 })
 
                 # Set invoice reference on reading line
@@ -265,6 +317,17 @@ class ElectricMeterReadingLine(models.Model):
         [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('done', 'Done'), ('canceled', 'Canceled')], string='Status',
         required=True, default='draft', related="reading_id.state")
     mgm_percentage = fields.Integer("Management Fee")
+    # currency_id = fields.Many2one('res.currency', string='Currency',
+    #                               compute='_compute_currency_id', store=True)
+    #
+    # @api.depends('partner_id', 'partner_id.business_source_id.rate_id.currency_id')
+    # def _compute_currency_id(self):
+    #     for record in self:
+    #         if record.partner_id and record.partner_id.business_source_id.rate_id.currency_id:
+    #             record.currency_id = record.partner_id.business_source_id.rate_id.currency_id
+    #         else:
+    #             # Default to company currency if no specific currency is set
+    #             record.currency_id = self.env.company.currency_id
 
     @api.depends('meter_id.latest_reading_unit')
     def _compute_latest_reading_unit(self):
@@ -282,6 +345,11 @@ class AccountMove(models.Model):
     reading_line_id = fields.Many2one('electric.meter.reading.line', string='Electric Meter Reading Line',
                                       required=False)
     form_type = fields.Char('Form Type')
+    for_date = fields.Date(string='Invoice For', tracking=True)
+
+    # In the AccountMove class
+    def action_print_electric_meter_invoice(self):
+        return self.env.ref('electric_meter_bill.action_report_electric_meter_invoice').report_action(self)
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'

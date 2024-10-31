@@ -120,12 +120,13 @@
                         </group>
                         <group>
                             <field name="description" widget="html"/>
+                            <field name="for_date"/>
                         </group>
                         <notebook>
                             <page string="Electric Meter Reading Detail">
                                 <field name="reading_line_ids" context="{'default_reading_id': active_id}" widget="section_and_note_one2many" >
                                     <tree string="reading_detail_tree" widget="section_and_note_one2many" create="0"
-                                          mode="tree" editable="bottom" select="multi" options="{'selectable': 'multi'}">
+                                          mode="tree" editable="bottom" select="multi" options="{'selectable': 'multi'}" default_order="partner_id">
                                         <field name="selection_line" nolabel="1" width="50px" />
                                         <field name="partner_id" width="300px" force_save="1"/>
                                         <field name="meter_id" width="300px" />
@@ -160,5 +161,31 @@
             </xpath>
         </field>
     </record>
+        <record id="view_move_form_inherit" model="ir.ui.view">
+        <field name="name">account.move.form.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- Choose where to add your field. For example, after invoice_date: -->
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="for_date"/>
+            </xpath>
+        </field>
+    </record>
+       <record id="view_move_form_inherit_electric_meter" model="ir.ui.view">
+    <field name="name">account.move.form.inherit.electric.meter</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="account.view_move_form"/>
+    <field name="arch" type="xml">
+        <xpath expr="//header" position="inside">
+            <field name="form_type" invisible="1"/>
+            <button name="action_print_electric_meter_invoice"
+                    string="Print Electric Meter Invoice"
+                    type="object"
+                    invisible="not form_type == 'electric'"
+                    class="oe_highlight"/>
+        </xpath>
+    </field>
+</record>
     </data>
 </odoo>
