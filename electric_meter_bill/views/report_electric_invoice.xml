@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- Report action definition -->
     <record id="action_report_electric_meter_invoice" model="ir.actions.report">
         <field name="name">Electric Meter Invoice With Breakdown</field>
         <field name="model">account.move</field>
@@ -12,118 +11,120 @@
         <field name="binding_type">report</field>
     </record>
 
-    <!-- Main template -->
     <template id="report_electric_meter_invoice">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="o">
-                <!-- First Page -->
-                <t t-call="web.external_layout">
-                    <div class="page" style="font-family: Arial, sans-serif;">
-                        <div style="text-align: center; margin-bottom: 20px;">
-                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-width: 300px;"/>
-                            <div style="font-size: 20px; color: #a94442; font-weight: bold;" t-field="o.company_id.name"/>
-                            <div style="font-size: 12px;" t-field="o.company_id.street"/>
-                            <div style="font-size: 12px;">
-                                Tel: <span t-field="o.company_id.phone"/> Email: <span t-field="o.company_id.email"/>
-                            </div>
-                        </div>
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <!-- Add styles here -->
+                        <style>
+                            .meter-reading-table th {
+                                background-color: #e9ecef;
+                            }
+                        </style>
 
-                        <div style="text-align: center; font-size: 18px; font-weight: bold; margin: 20px 0;">
-                            INVOICE
-                        </div>
+                        <div class="page">
+                            <!-- Invoice Info Section -->
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <div t-field="o.partner_id.name"/>
+                                    <div t-field="o.partner_id.street"/>
+                                    <!-- <div t-field="o.partner_id.street2"/> -->
+                                    <div t-field="o.partner_id.city"/>
+                                </div>
 
-                        <!-- Customer and Invoice Info -->
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                            <div style="width: 50%;">
-                                <div t-field="o.partner_id.name" style="font-weight: bold;"/>
-                                <div t-field="o.partner_id.street"/>
-                                <div t-field="o.partner_id.street2"/>
-                                <div t-field="o.partner_id.city"/>
-                                <div t-field="o.partner_id.country_id"/>
+                                <div class="col-6 d-flex justify-content-end">
+                                    <div>
+                                        <strong>Invoice No:</strong>
+                                        <span t-field="o.name"/><br/>
+                                        <strong>Date:</strong>
+                                        <span t-field="o.invoice_date"/><br/>
+                                        <strong>Due Date:</strong>
+                                        <span t-field="o.invoice_date_due"/>
+                                    </div>
+                                </div>
                             </div>
-                            <div style="width: 40%;">
-                                <table style="width: 100%;">
+
+                            <!-- Invoice Lines -->
+                            <table class="table table-bordered meter-reading-table" style="margin-top: 20px;">
+                                <thead>
                                     <tr>
-                                        <td style="padding: 3px;">Inv No.</td>
-                                        <td style="padding: 3px;">:</td>
-                                        <td style="padding: 3px;"><span t-field="o.name"/></td>
+                                        <th style="width: 5%;">Sr.</th>
+                                        <th style="width: 55%;">Description</th>
+                                        <th style="width: 20%;">Units</th>
+                                        <th style="width: 20%;">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>
+                                            Electrical Charges For:<br/>
+                                            Meter No :As per attached<br/>
+                                            <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
+                                        </td>
+                                        <t t-set="total_units" t-value="sum(o.invoice_line_ids.filtered(lambda l: l.reading_line_id).mapped('reading_line_id.total_unit'))"/>
+                                        <td style="text-align: center;">
+                                            <span t-esc="'{:,.0f}'.format(total_units)"/>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span t-field="o.amount_total"/>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td style="padding: 3px;">Date</td>
-                                        <td style="padding: 3px;">:</td>
-                                        <td style="padding: 3px;"><span t-field="o.invoice_date"/></td>
+                                        <td colspan="3" style="text-align: left; border-top: 1px solid black;">
+                                            <span t-esc="o.currency_id.amount_to_text(o.amount_total)"/> Only
+                                        </td>
+                                        <td style="text-align: right; border-top: 1px solid black;">
+                                            <span t-field="o.amount_total"/>
+                                        </td>
                                     </tr>
-                                    <tr>
-                                        <td style="padding: 3px;">Payment Due</td>
-                                        <td style="padding: 3px;">:</td>
-                                        <td style="padding: 3px;"><span t-field="o.invoice_date_due"/></td>
-                                    </tr>
-                                </table>
+                                </tbody>
+                            </table>
+
+                            <!-- Total Section -->
+                            <div class="row">
+                                <div class="col-6">
+                                    <div t-if="o.narration" class="mt-4">
+                                        <strong>Notes:</strong>
+                                        <p t-field="o.narration"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Information -->
+                            <div class="row mt-4">
+    <div class="col-12">
+        <strong>NOTE:</strong>
+        <p>- Payment has to be made in the currency stated above.<br/>
+           Should the payment be made in other currencies stated as above, the exchange rate shall be based on the prevailing rate. Please check before payment is made.
+        - For CASH payment, please pay at:<br/>
+           Yangon Aerodrome Company Limited Building, Finance Department, Infront of (T-2) Yangon International Airport<br/>
+        - For payment via ACCOUNT TRANSFER (bank charges to be borne by the payee), account no.:</p>
+        <ul>
+            <li>Myanmar Currency: Ayeyarwady Bank, MMK Account No. 1000 2103 936</li>
+            <li>Myanmar Currency: CB Bank, MMK Account No. 0010 1005 0003 8757</li>
+            <li>Myanmar Currency: KBZ Bank, MMK Account No. 2061 0320 6016 29501</li>
+            <li>Myanmar Currency: Industrial and Commercial Bank of China (ICBC),Yangon Branch,<br/>
+                <span style="padding-left: 150px;">MMK Account No. 60100 1000 0000 150872</span></li>
+            <li>Myanmar Currency: Myanma Apex Bank MMK Account No. 0740 1630 7400 2519 024</li>
+            <li>Myanmar Currency: United Amara Bank (Special) MMK Account No. 0281 0601 0000 7306</li>
+            <li>Myanmar Currency: KBZPay Merchant No. 70120501001</li>
+        </ul>
+
+        <p>Issued by:</p>
+    </div>
+</div>
+
+                            <!-- Signature -->
+                            <div class="row mt-5">
+                                <div class="col-6">
+                                    <p>____________________</p>
+                                    <p>Authorized Signature</p>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- Invoice Lines Table -->
-                        <table class="table table-bordered" style="margin-top: 20px;">
-                            <thead>
-                                <tr>
-                                    <th style="width: 5%;">Sr.</th>
-                                    <th style="width: 55%;">Description</th>
-                                    <th style="width: 20%;">Units</th>
-                                    <th style="width: 20%;">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>
-                                        Electrical Charges For:<br/>
-                                        Meter No :As per attached<br/>
-                                        <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
-                                    </td>
-                                    <td style="text-align: right;">
-                                        <span t-esc="sum(o.invoice_line_ids.mapped('quantity'))"/>
-                                    </td>
-                                    <td style="text-align: right;">
-                                        <span t-field="o.amount_total"/>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <!-- Amount in Words -->
-                        <div style="margin-top: 10px; border-top: 1px solid black; border-bottom: 1px solid black; padding: 5px;">
-                            <span t-esc="o.currency_id.amount_to_text(o.amount_total)"/> Only
-                        </div>
-
-                        <!-- Payment Notes -->
-                        <div style="margin-top: 20px; font-size: 12px;">
-                            <strong>NOTE:</strong>
-                            <ul style="list-style-type: none; padding-left: 20px;">
-                                <li>- Payment has to be made in the currency stated above.</li>
-                                <li>- Should the payment be made in other currencies stated as above, the exchange rate shall be based on the prevailing rate. Please check before payment is made.</li>
-                                <li>- For CASH payment, please pay at:</li>
-                                <li style="padding-left: 20px;">Yangon Aerodrome Company Limited Building, Finance Department, Infront of (T-2) Yangon International Airport</li>
-                                <li>- For payment via ACCOUNT TRANSFER (bank charges to be borne by the payee), account no.:</li>
-                                <t t-foreach="o.company_id.bank_ids" t-as="bank">
-                                    <li style="padding-left: 20px;">
-                                        Myanmar Currency: <span t-field="bank.bank_id.name"/>, MMK Account No. <span t-field="bank.acc_number"/>
-                                    </li>
-                                </t>
-                            </ul>
-                        </div>
-
-                        <!-- Signature -->
-                        <div style="margin-top: 50px;">
-                            <div>Issued by:</div>
-                            <div style="margin-top: 30px;">
-                                ____________________<br/>
-                                General Manager
-                            </div>
-                        </div>
-                    </div>
-                </t>
-
-                <!-- Second Page -->
+                    </t>
+                    <!-- Second Page -->
                 <t t-if="o.invoice_line_ids.filtered(lambda l: l.reading_line_id)">
                     <t t-call="web.external_layout">
                         <div class="page" style="font-family: Arial, sans-serif;">
@@ -191,7 +192,7 @@
                                                 <t t-set="subtotal_amount" t-value="0"/>
                                                 <t t-foreach="o.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">
                                                     <t t-if="remain_unit > 0">
-                                                        <t t-set="units_in_bracket" t-value="min(remain_unit, rate_line.to_unit - rate_line.from_unit + 1)"/>
+                                                        <t t-set="units_in_bracket" t-value="min(remain_unit, rate_line.to_unit - rate_line.from_unit)+1"/>
                                                         <t t-set="bracket_amount" t-value="units_in_bracket * rate_line.unit_price"/>
                                                         <span t-esc="'{:,.0f}'.format(bracket_amount)"/>
                                                         <br/>
@@ -242,7 +243,7 @@
                         </div>
                     </t>
                 </t>
+                </t>
             </t>
-        </t>
-    </template>
+        </template>
 </odoo>

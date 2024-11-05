@@ -7,10 +7,11 @@
                 This module allows you to track meter readings, calculate consumption, generate invoices, 
                 and manage payment collections seamlessly. 
                 Ideal for utility companies and property managers to streamline their billing processes.""",
-    'depends': ['sale_subscription'],
+    'depends': ['sale_subscription','web'],
     'author': 'Mingalar Sky Co., Ltd.',
     'website': 'https://www.mingalarsky.com',
     'data': [
+        'security/ir.model.access.csv',
         'views/location.xml',
         'views/menu_views.xml',
         'views/invoice_custom_template.xml',
@@ -19,7 +20,6 @@
         'views/report_electric_meter_reading.xml',
         'views/report_electric_invoice.xml',
         'data/ir_sequence_data.xml',
-        'security/ir.model.access.csv',
     ],
     'installable': True,
     'application': False,
