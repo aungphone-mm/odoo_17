@@ -9,10 +9,13 @@
                     <field name="name"/>
                     <field name="meter_number"/>
                     <field name="latest_reading_unit" width="300px"/>
+                    <field name="partner_id" options="{'no_create': True}"/>
+                    <field name="cus_branch"/>
+                    <field name="mgm_percentage"/>
                     <field name="location_id"/>
                     <field name="product_id"/>
-                    <field name="mgm_percentage"/>
-                    <field name="partner_id" widget="many2one_avatar_employee"/>
+
+
                 </tree>
             </field>
         </record>
@@ -129,6 +132,7 @@
                                           mode="tree" editable="bottom" select="multi" options="{'selectable': 'multi'}" default_order="partner_id">
                                         <field name="selection_line" nolabel="1" width="50px" />
                                         <field name="partner_id" width="300px" force_save="1"/>
+                                        <field name="cus_branch" width="300px" />
                                         <field name="meter_id" width="300px" />
                                         <field name="latest_reading_unit" width="200px" readonly="True"/>
                                         <field name="current_reading_unit" width="200px"/>

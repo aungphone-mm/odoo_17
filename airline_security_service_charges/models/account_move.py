@@ -17,4 +17,7 @@ class AccountMove(models.Model):
             'context': {'create': False},
         }
 
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
 
+    airline_security_service_line_id = fields.Many2one('airline.security.service.line', string='Security Service Line')

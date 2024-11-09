@@ -12,11 +12,11 @@ class ElectricMeter(models.Model):
     meter_number = fields.Char(string='Meter Number', required=True)
     location_id = fields.Many2one('location', string='Location', required=True)
     latest_reading_unit = fields.Integer(string='Latest Reading Unit')
-    partner_id = fields.Many2one('res.partner', string="Customer", domain=[('customer_rank', '>', 0)])
+    partner_id = fields.Many2one('res.partner', string="Customer", domain=[('customer_rank', '>', 0), ('is_company', '=', True), ('active', '=', True)])
     product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
     active = fields.Boolean(string='Active', required=False, default=True)
     mgm_percentage= fields.Integer("Management Fee")
-
+    cus_branch = fields.Char("Customer Branch")
 
 class ElectricRate(models.Model):
     _name = 'electric.rate'
@@ -302,7 +302,7 @@ class ElectricMeterReadingLine(models.Model):
 
     reading_id = fields.Many2one('electric.meter.reading', string='Reading', required=True)
     selection_line = fields.Boolean(string='Select', default=False)
-    partner_id = fields.Many2one('res.partner', string="Customer", readonly=True, automatice=True, store=True)
+    partner_id = fields.Many2one('res.partner', string="Customer", readonly=True, automatic=True, store=True)
     meter_id = fields.Many2one('electric.meter', string='Electric Meter', required=True)
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=True)
     latest_reading_unit = fields.Integer(string='Latest Reading Unit', compute='_compute_latest_reading_unit',
@@ -317,6 +317,7 @@ class ElectricMeterReadingLine(models.Model):
         [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('done', 'Done'), ('canceled', 'Canceled')], string='Status',
         required=True, default='draft', related="reading_id.state")
     mgm_percentage = fields.Integer("Management Fee")
+    cus_branch = fields.Char("Customer Branch")
     # currency_id = fields.Many2one('res.currency', string='Currency',
     #                               compute='_compute_currency_id', store=True)
     #
@@ -337,7 +338,7 @@ class ElectricMeterReadingLine(models.Model):
                 record.latest_reading_unit = meter.latest_reading_unit
                 record.partner_id = meter.partner_id
                 record.currency_id = meter.partner_id.business_source_id.rate_id.currency_id
-
+                record.cus_branch = meter.cus_branch
 
 class AccountMove(models.Model):
     _inherit = 'account.move'

@@ -74,6 +74,7 @@ class AirlineSecurityService(models.Model):
                 'name': f"Security Service for Flight {line.flightno_id.name}",
                 'quantity': 1,
                 'price_unit': line.amount,  # You need to set the appropriate price
+                'airline_security_service_line_id': line.id,
             })
         return lines
 
