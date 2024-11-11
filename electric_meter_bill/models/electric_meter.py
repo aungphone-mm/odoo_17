@@ -16,7 +16,6 @@ class ElectricMeter(models.Model):
     product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
     active = fields.Boolean(string='Active', required=False, default=True)
     mgm_percentage= fields.Integer("Management Fee")
-    cus_branch = fields.Char("Customer Branch")
 
 class ElectricRate(models.Model):
     _name = 'electric.rate'
@@ -59,6 +58,7 @@ class ElectricRateLine(models.Model):
 class ElectricMeterReading(models.Model):
     _name = 'electric.meter.reading'
     _description = 'Electric Meter Reading'
+    _order = 'id desc'
 
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
@@ -317,7 +317,8 @@ class ElectricMeterReadingLine(models.Model):
         [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('done', 'Done'), ('canceled', 'Canceled')], string='Status',
         required=True, default='draft', related="reading_id.state")
     mgm_percentage = fields.Integer("Management Fee")
-    cus_branch = fields.Char("Customer Branch")
+    location_id = fields.Many2one('location', string='Location', related='meter_id.location_id', store=True,
+                                  readonly=True)
     # currency_id = fields.Many2one('res.currency', string='Currency',
     #                               compute='_compute_currency_id', store=True)
     #
@@ -338,7 +339,6 @@ class ElectricMeterReadingLine(models.Model):
                 record.latest_reading_unit = meter.latest_reading_unit
                 record.partner_id = meter.partner_id
                 record.currency_id = meter.partner_id.business_source_id.rate_id.currency_id
-                record.cus_branch = meter.cus_branch
 
 class AccountMove(models.Model):
     _inherit = 'account.move'

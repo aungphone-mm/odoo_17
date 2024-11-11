@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-<template id="report_invoice_document" inherit_id="account.report_invoice_document">
-        <xpath expr="//t[@t-name='account.report_invoice_document']" position="inside">
-            <div class="page">
-                <div style="page-break-before: always;">
-                    <t t-if="o.form_type == 'security'">
-                        <t t-call="airline_security_service_charges.report_additional_content"/>
-                    </t>
-                </div>
-            </div>
-        </xpath>
-    </template>
+<!--<template id="report_invoice_document" inherit_id="account.report_invoice_document">-->
+<!--        <xpath expr="//t[@t-name='account.report_invoice_document']" position="inside">-->
+<!--            <div class="page">-->
+<!--                <div style="page-break-before: always;">-->
+<!--                    <t t-if="o.form_type == 'security'">-->
+<!--                        <t t-call="airline_security_service_charges.report_additional_content"/>-->
+<!--                    </t>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </xpath>-->
+<!--    </template>-->
+        <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+    <xpath expr="//div[hasclass('page')]" position="after">
+        <div t-if="o.invoice_line_ids.filtered(lambda l: l.airline_security_service_line_id)" style="page-break-before: always;">
+            <t t-call="airline_security_service_charges.report_additional_content"/>
+        </div>
+    </xpath>
+</template>
 
     <template id="airline_security_service_charges.report_additional_content">
     <t t-foreach="docs" t-as="doc">

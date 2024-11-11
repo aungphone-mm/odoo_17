@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+    <xpath expr="//div[hasclass('page')]" position="after">
+        <div t-if="o.invoice_line_ids.filtered(lambda l: l.reading_line_id)" style="page-break-before: always;">
+            <t t-call="electric_meter_bill.report_additional_content"/>
+        </div>
+    </xpath>
+</template>
+
+<template id="electric_meter_bill.report_additional_content">
+    <t t-foreach="docs" t-as="doc">
+        <div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3>Electric Meter Rate Breakdown</h3>
+            </div>
+
+            <table class="table table-sm" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #b1c694; color: black; text-align: center;">
+                        <th style="border: 1px solid black;">No</th>
+                        <th style="border: 1px solid black;">Service Area</th>
+                        <th style="border: 1px solid black;">Meter No.</th>
+                        <th style="border: 1px solid black;">Units</th>
+                        <th style="border: 1px solid black;">Rate</th>
+                        <th style="border: 1px solid black;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Initialize the totals -->
+                    <t t-set="total_units" t-value="0.0"/>
+                    <t t-set="total_amount" t-value="0.0"/>
+                    <t t-set="total_mgm_charge" t-value="0.0"/>
+
+                    <t t-set="index" t-value="0"/>
+                    <t t-foreach="doc.invoice_line_ids.filtered(lambda l: l.reading_line_id)" t-as="line">
+                        <tr>
+                            <td style="border: 1px solid black; text-align: center;">
+                                <t t-esc="index + 1"/>
+                            </td>
+
+                            <td style="border: 1px solid black;">
+                                <span t-field="line.reading_line_id.meter_id.partner_id.name"/>
+                            </td>
+
+                            <td style="border: 1px solid black;">
+                                <span t-field="line.reading_line_id.meter_id.name"/>
+                            </td>
+
+                            <td style="border: 1px solid black;">
+                                <t t-set="total_unit" t-value="line.reading_line_id.total_unit"/>
+                                <t t-set="remain_unit" t-value="total_unit"/>
+                                <t t-foreach="doc.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">
+                                    <t t-if="remain_unit > 0">
+                                        <t t-set="units_in_bracket" t-value="min(remain_unit, rate_line.to_unit - rate_line.from_unit + 1)"/>
+                                        <span t-esc="'{:,.0f}'.format(units_in_bracket)"/>
+                                        <br/>
+                                        <t t-set="remain_unit" t-value="remain_unit - units_in_bracket"/>
+                                    </t>
+                                </t>
+                            </td>
+
+                            <td style="border: 1px solid black;">
+                                <t t-foreach="doc.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">
+                                    <span t-esc="'{:,.0f}'.format(rate_line.unit_price)"/>
+                                    ( <span t-esc="'{:,.0f}'.format(rate_line.from_unit)"/> - <span t-esc="'{:,.0f}'.format(rate_line.to_unit)"/> )
+                                    <br/>
+                                </t>
+                            </td>
+
+                            <td style="border: 1px solid black; text-align: right">
+                                <t t-set="total_unit" t-value="line.reading_line_id.total_unit"/>
+                                <t t-set="remain_unit" t-value="total_unit"/>
+                                <t t-set="subtotal_amount" t-value="0"/>
+                                <t t-foreach="doc.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">
+                                    <t t-if="remain_unit > 0">
+                                        <t t-set="units_in_bracket" t-value="min(remain_unit, rate_line.to_unit - rate_line.from_unit + 1)"/>
+                                        <t t-set="bracket_amount" t-value="units_in_bracket * rate_line.unit_price"/>
+                                        <span t-esc="'{:,.0f}'.format(bracket_amount)"/>
+                                        <br/>
+                                        <t t-set="remain_unit" t-value="remain_unit - units_in_bracket"/>
+                                        <t t-set="subtotal_amount" t-value="subtotal_amount + bracket_amount"/>
+                                    </t>
+                                </t>
+                                <t t-if="line.reading_line_id.meter_id.mgm_percentage">
+                                    <t t-set="mgm_charge" t-value="(subtotal_amount / 100) * line.reading_line_id.meter_id.mgm_percentage"/>
+                                    <strong>MGM (<t t-esc="line.reading_line_id.meter_id.mgm_percentage"/>%): <t t-esc="'{:,.0f}'.format(mgm_charge)"/></strong>
+                                    <br/>
+                                    <t t-set="total_mgm_charge" t-value="total_mgm_charge + mgm_charge"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-set="mgm_charge" t-value="0"/>
+                                </t>
+                                <strong>Total: <t t-esc="'{:,.0f}'.format(subtotal_amount + mgm_charge)"/></strong>
+                            </td>
+                        </tr>
+
+                        <!-- Accumulate the totals -->
+                        <t t-set="total_units" t-value="total_units + line.reading_line_id.total_unit"/>
+                        <t t-set="total_amount" t-value="total_amount + line.price_subtotal"/>
+                        <t t-set="index" t-value="index + 1"/>
+                    </t>
+                </tbody>
+                <tfoot>
+                    <tr style="background-color: #a8c9e2; color: black; text-align: center;">
+                        <td colspan="3" style="text-align: right; border: 1px solid black;">
+                            <strong>Total (Units)</strong>
+                        </td>
+
+                        <td style="text-align: right; border: 1px solid black;">
+                            <strong><t t-esc="'{:,.0f}'.format(total_units)"/></strong>
+                        </td>
+
+                        <td style="text-align: right; border: 1px solid black;">
+                        </td>
+
+                        <td style="text-align: right; border: 1px solid black;">
+                            <strong>
+                                <t t-esc="'{:,.0f}'.format(total_amount)"/>
+                                <t t-if="total_mgm_charge > 0">
+<!--                                    (inc. MGM <t t-esc="'{:,.0f}'.format(total_mgm_charge)"/>)-->
+                                </t>
+                            </strong>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </t>
+</template>
+    </data>
+</odoo>
