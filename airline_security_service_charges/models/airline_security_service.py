@@ -1,10 +1,12 @@
 from odoo import fields, models, api, _
 from datetime import datetime
+from odoo.exceptions import ValidationError
 
 class AirlineSecurityService(models.Model):
     _name = 'airline.security.service'
     _description = 'Airline Security Service'
     _inherit = ['mail.activity.mixin', 'mail.thread']
+    _order = 'id desc'
 
     name = fields.Char(string='Name', required=True, readonly=True, copy=False, index=True, default='New')
     type = fields.Selection([
@@ -12,13 +14,14 @@ class AirlineSecurityService(models.Model):
         ('international', 'International')
     ], default='domestic', string='Type', track_visibility='always', tracking=True)
     airline_id = fields.Many2one('airline',string='Airline')
-    airline_user_id = fields.Many2one('res.partner', string='Receptionist', tracking=True)
+    airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, track_visibility='always')
     end_time = fields.Datetime(string='End Date & Time', tracking=True, track_visibility='always')
     airline_security_service_line_ids = fields.One2many('airline.security.service.line', 'airline_security_service_id',
                                                       string='Security Details', tracking=True)
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
     security_rate_id = fields.Many2one('airline.security.rate', string='Security Rate')
+    for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
@@ -55,14 +58,19 @@ class AirlineSecurityService(models.Model):
 
     def _prepare_invoice_vals(self):
         self.ensure_one()
+        partner = self.airline_id.partner_id
+        if not partner:
+            raise ValidationError(_("No partner found for airline %s") % self.airline_id.name)
+
         return {
             'move_type': 'out_invoice',
-            'partner_id': self.airline_user_id.id,  # You may want to change this to an actual customer
+            'partner_id': partner.id,
             'invoice_date': fields.Date.today(),
             'invoice_line_ids': [(0, 0, line) for line in self._prepare_invoice_line_vals()],
             'airline_security_service_id': self.id,
             'currency_id': self.security_rate_id.currency_id.id,
             'form_type': 'security',
+            'for_date': self.for_date,
         }
 
     def _prepare_invoice_line_vals(self):

@@ -3,7 +3,6 @@ from odoo import fields, models, api
 from odoo.exceptions import UserError, ValidationError
 from datetime import datetime
 
-
 class ElectricMeter(models.Model):
     _name = 'electric.meter'
     _description = 'Electric Meter'

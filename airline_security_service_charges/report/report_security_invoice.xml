@@ -24,10 +24,23 @@
                     <div class="page">
                         <!-- Invoice Info Section -->
                         <div class="row mb-4">
-                            <div class="col-6">
+                                 <div class="col-6">
                                 <div t-field="o.partner_id.name"/>
                                 <div t-field="o.partner_id.street"/>
-                                <div t-field="o.partner_id.city"/>
+                            <!--    <div t-field="o.partner_id.street2"/>-->
+                                <div t-if="o.partner_id.city">
+                                    <t t-esc="o.partner_id.city"/> Township
+                                </div>
+                                <t t-if="o.partner_id.state_id">
+                                    <div>
+                                        <t t-esc="o.partner_id.state_id.name"/>
+                                        <t t-if="o.partner_id.zip">, <t t-esc="o.partner_id.zip"/></t>
+                                        <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
+                                    </div>
+                                </t>
+                                     <div t-if="o.airline_security_service_id.airline_user_id.name">
+                                    Attention: <t t-esc="o.airline_security_service_id.airline_user_id.name"/>
+                                </div>
                             </div>
 
                             <div class="col-6 d-flex justify-content-end">
@@ -54,16 +67,20 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>1</td>
+                                    <td><br/><br/><br/><br/>1</td>
                                     <td>
+                                        <br/><br/><br/><br/>
                                         Security Service Charges for:<br/>
                                         Flight No: As per attached<br/>
                                         <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
+                                        <br/><br/><br/><br/><br/><br/><br/><br/>
                                     </td>
                                     <td style="text-align: center;">
+                                        <br/><br/><br/><br/>
                                         <span t-esc="len(o.invoice_line_ids)"/>
                                     </td>
                                     <td style="text-align: right;">
+                                        <br/><br/><br/><br/>
                                         <span t-field="o.amount_total"/>
                                     </td>
                                 </tr>
@@ -107,7 +124,7 @@
                 </t>
 
                 <!-- Second Page - Breakdown -->
-                <t t-call="web.external_layout">
+                <t t-call="web.basic_layout">
                     <div class="page">
                         <div style="text-align: center; margin-bottom: 20px;">
                             <h3>DETAIL STATEMENT OF SECURITY SERVICE CHARGES</h3>
@@ -143,7 +160,7 @@
                                             <!-- Gate field - you may need to add this -->
                                         </td>
                                         <td style="border: 1px solid black;">
-                                            <!-- Registration number field -->
+                                            <span t-field="line.airline_security_service_line_id.flight_registration_no"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: center;">4</td>
                                         <td style="border: 1px solid black; text-align: center;">
