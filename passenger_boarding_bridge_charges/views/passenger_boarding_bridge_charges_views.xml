@@ -5,7 +5,7 @@
         <field name="name">passenger.boarding.bridge.charges.tree</field>
         <field name="model">passenger.boarding.bridge.charges</field>
         <field name="arch" type="xml">
-            <tree string="Passenger Boarding Bridge Charges">
+            <tree string="Passenger Loading Bridge Charges">
                 <field name="name"/>
                 <field name="type"/>
                 <field name="airline_id"/>
@@ -45,6 +45,7 @@
                         <field name="bridge_rate_id"/>
                         <field name="start_time"/>
                         <field name="end_time" />
+                        <field name="for_date" />
                     </group>
                     <group>
                     <group>
@@ -58,6 +59,7 @@
                             <tree editable="bottom">
                                 <field name="flightno_id"/>
                                 <field name="flight_registration_no"/>
+                                <field name="flight_aircraft"/>
                                 <field name="start_time" />
                                 <field name="end_time" />
                                 <field name="total_minutes"/>

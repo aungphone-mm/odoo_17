@@ -14,6 +14,7 @@
                     <field name="electric_meter_ids" widget="many2many_tags" options="{'no_edit': True, 'no_create': True, 'no_open': True}" />
                     <field name="contact_name"/>
                     <field name="contact_job_position"/>
+                    <field name="is_airline"/>
                 </xpath>
             </field>
         </record>

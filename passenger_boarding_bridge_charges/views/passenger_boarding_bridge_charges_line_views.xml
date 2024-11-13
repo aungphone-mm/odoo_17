@@ -4,7 +4,7 @@
             <field name="name">passenger.boarding.bridge.charges.line.tree</field>
             <field name="model">passenger.boarding.bridge.charges.line</field>
             <field name="arch" type="xml">
-                <tree string="Passenger Boarding Bridge Charges Line">
+                <tree string="Passenger Loading Bridge Charges Line">
                     <header>
 <!--                        <button name="action_register_payment" string="Pay" type="object" class="oe_highlight"/>-->
                     </header>

@@ -9,6 +9,7 @@ class PassengerBoardingBridgeChargesLine(models.Model):
     passenger_boarding_bridge_charges_id = fields.Many2one('passenger.boarding.bridge.charges', string='Passenger Boarding Bridge Charges', tracking=True, track_visibility='always')
     flightno_id = fields.Many2one('flights',string='Flight No.')
     flight_registration_no = fields.Char(string='Registration No.', related='flightno_id.register_no', store=True)
+    flight_aircraft = fields.Char(string='Aircraft Type', related='flightno_id.aircraft_type', store=True)
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, track_visibility='always')
     end_time = fields.Datetime(string='End Date & Time', tracking=True, track_visibility='always')
     total_minutes = fields.Integer(string='Total Minutes', compute='_compute_total_minutes', store=True)

@@ -1,10 +1,12 @@
 from odoo import fields, models, api, _
 from datetime import datetime
+from odoo.exceptions import ValidationError
 
 class PassengerBoardingBridgeCharges(models.Model):
     _name = 'passenger.boarding.bridge.charges'
     _description = 'Passenger Boarding Bridge Charges'
     _inherit = ['mail.activity.mixin', 'mail.thread']
+    _order = 'id desc'
 
     name = fields.Char(string='Name', required=True, readonly=True, copy=False, index=True, default='New')
     type = fields.Selection([
@@ -12,13 +14,14 @@ class PassengerBoardingBridgeCharges(models.Model):
         ('international', 'International')
     ], default='domestic', string='Type', track_visibility='always', tracking=True)
     airline_id = fields.Many2one('airline',string='Airline')
-    airline_user_id = fields.Many2one('res.partner', string='Receptionist', tracking=True)
+    airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, track_visibility='always')
     end_time = fields.Datetime(string='End Date & Time', tracking=True, track_visibility='always')
     passenger_boarding_bridge_charges_line_ids = fields.One2many('passenger.boarding.bridge.charges.line', 'passenger_boarding_bridge_charges_id',
                                                       string='bridge Details', tracking=True)
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
     bridge_rate_id = fields.Many2one('passenger.boarding.bridge.charges.rate', string='Bridge Rate')
+    for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
@@ -55,14 +58,20 @@ class PassengerBoardingBridgeCharges(models.Model):
 
     def _prepare_invoice_vals(self):
         self.ensure_one()
+        partner = self.airline_id.partner_id
+        if not partner:
+            raise ValidationError(_("No partner found for airline %s") % self.airline_id.name)
+
         return {
             'move_type': 'out_invoice',
-            'partner_id': self.airline_user_id.id,  # You may want to change this to an actual customer
+            'partner_id': partner.id,  # You may want to change this to an actual customer
             'invoice_date': fields.Date.today(),
             'invoice_line_ids': [(0, 0, line) for line in self._prepare_invoice_line_vals()],
             'passenger_boarding_bridge_charges_id': self.id,
             'currency_id': self.bridge_rate_id.currency_id.id,
             'form_type': 'bridge',
+            'for_date': self.for_date,
+            'journal_id': self.bridge_rate_id.journal_id.id,
         }
 
     def _prepare_invoice_line_vals(self):
@@ -71,9 +80,10 @@ class PassengerBoardingBridgeCharges(models.Model):
         for line in self.passenger_boarding_bridge_charges_line_ids:
             lines.append({
                 'product_id': line.bridge_rate_id.product_id.id,
-                'name': f"bridge Service for Flight {line.flightno_id.name}",
+                'name': f"Bridge Service for Flight {line.flightno_id.name}",
                 'quantity': 1,
                 'price_unit': line.amount,  # You need to set the appropriate price
+                'passenger_boarding_bridge_charges_line_id': line.id,
             })
         return lines
 

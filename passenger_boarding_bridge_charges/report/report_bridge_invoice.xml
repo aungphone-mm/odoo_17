@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_security_service_report" model="ir.actions.report">
+        <field name="name">Loading Bridge Invoice With Breakdown</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">passenger_boarding_bridge_charges.report_bridge_service</field>
+        <field name="report_file">passenger_boarding_bridge_charges.report_bridge_service</field>
+        <field name="print_report_name">(object.name) and ('Security-' + object.name) or 'Security-Invoice'</field>
+        <field name="binding_model_id" ref="model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_bridge_service">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <!-- First Page - Invoice -->
+                <t t-call="web.external_layout">
+                     <style>
+                            .security-table th {
+                                background-color: #e9ecef;
+                            }
+                        </style>
+                    <div class="page">
+                        <!-- Invoice Info Section -->
+                        <div class="row mb-4">
+                                 <div class="col-6">
+                                <div t-field="o.partner_id.name"/>
+                                <div t-field="o.partner_id.street"/>
+                            <!--    <div t-field="o.partner_id.street2"/>-->
+                                <div t-if="o.partner_id.city">
+                                    <t t-esc="o.partner_id.city"/> Township
+                                </div>
+                                <t t-if="o.partner_id.state_id">
+                                    <div>
+                                        <t t-esc="o.partner_id.state_id.name"/>
+                                        <t t-if="o.partner_id.zip">, <t t-esc="o.partner_id.zip"/></t>
+                                        <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
+                                    </div>
+                                </t>
+                                     <div t-if="o.passenger_boarding_bridge_charges_id.airline_user_id.name">
+                                    Attention: <t t-esc="o.passenger_boarding_bridge_charges_id.airline_user_id.name"/>
+                                </div>
+                            </div>
+
+                            <div class="col-6 d-flex justify-content-end">
+                                <div>
+                                    <strong>Invoice No:</strong>
+                                    <span t-field="o.name"/><br/>
+                                    <strong>Date:</strong>
+                                    <span t-field="o.invoice_date"/><br/>
+                                    <strong>Due Date:</strong>
+                                    <span t-field="o.invoice_date_due"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Invoice Lines -->
+                        <table class="table table-bordered security-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%;">Sr.</th>
+                                    <th style="width: 55%;">Description</th>
+                                    <th style="width: 20%;">Units</th>
+                                    <th style="width: 20%;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><br/><br/><br/><br/>1</td>
+                                    <td>
+                                        <br/><br/><br/><br/>
+                                        Loading Bridge Service Charges for:<br/>
+                                        Flight No: As per attached<br/>
+                                        <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
+                                        <br/><br/><br/><br/><br/><br/><br/><br/>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <br/><br/><br/><br/>
+                                        <span t-esc="len(o.invoice_line_ids)"/>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <br/><br/><br/><br/>
+                                        <span t-field="o.amount_total"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: left;">
+                                        <span t-esc="o.currency_id.amount_to_text(o.amount_total)"/> Only
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <span t-field="o.amount_total"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+<!--                        &lt;!&ndash; Payment Information &ndash;&gt;-->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <strong>NOTE:</strong>
+                                <p>- Payment has to be made in the currency stated above.<br/>
+                                   - For CASH payment, please pay at:<br/>
+                                   Yangon Aerodrome Company Limited Building, Finance Department, Infront of (T-2) Yangon International Airport<br/>
+                                   - For payment via ACCOUNT TRANSFER (bank charges to be borne by the payee), account no.:</p>
+                                <ul>
+                                    <li>CB Bank, USD Account No. 0010101200703796, (Swift Code- CPOBMMMY)</li>
+                                    <li>Industrial and Commercial Bank of China (ICBC), Yangon Branch,<br/>
+                                        USD Account No. 6010010000000150996, (Swift Code- ICBKMMMY)</li>
+                                    <li>Bank of China (BOC), Yangon Branch,<br/>
+                                        USD Account No. 05312220007069, (Swift Code- BKCHMMMY)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Signature -->
+                        <div class="row mt-5">
+                            <div class="col-6">
+                                <p>____________________</p>
+                                <p>Authorized Signature</p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Second Page - Breakdown -->
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h3>DETAIL STATEMENT OF LOADING BRIGED SERVICE CHARGES</h3>
+                            <h4>AIRLINES - <span t-field="o.partner_id.name"/></h4>
+                        </div>
+
+                        <table class="table table-sm" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background-color: #e9ecef;">
+                                    <th style="border: 1px solid black;">Sr.No</th>
+                                    <th style="border: 1px solid black;">Date</th>
+                                    <th style="border: 1px solid black;">Flight No</th>
+                                    <th style="border: 1px solid black;">Aircraft Type</th>
+                                    <th style="border: 1px solid black;">Reg. No.</th>
+
+                                    <th style="border: 1px solid black;">Total Service/hr</th>
+                                    <th style="border: 1px solid black;">Rate($)</th>
+                                    <th style="border: 1px solid black;">Amount($)</th>
+                                    <th style="border: 1px solid black;">Remark</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.invoice_line_ids" t-as="line">
+                                    <tr>
+                                        <td style="border: 1px solid black; text-align: center;"><t t-esc="line_index + 1"/></td>
+                                        <td style="border: 1px solid black;">
+                                            <span t-field="o.invoice_date" t-options='{"format": "dd.MM.yy"}'/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <span t-field="line.name"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <span t-field="line.passenger_boarding_bridge_charges_line_id.flight_aircraft"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <span t-field="line.passenger_boarding_bridge_charges_line_id.flight_registration_no"/>
+                                        </td>
+
+                                        <td style="border: 1px solid black; text-align: center;">
+                                            <t t-if="line.passenger_boarding_bridge_charges_line_id">
+                                                <t t-set="hours" t-value="int(line.passenger_boarding_bridge_charges_line_id.total_minutes // 60)"/>
+                                                <t t-set="minutes" t-value="int(line.passenger_boarding_bridge_charges_line_id.total_minutes % 60)"/>
+                                                <span t-esc="'%02d:%02d' % (hours, minutes)"/>
+                                            </t>
+                                            <t t-else="">
+                                                00:00
+                                            </t>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <span t-field="line.price_unit"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <span t-field="line.price_subtotal"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <!-- Remarks field -->
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="7" style="text-align: right; border: 1px solid black;">
+                                        <strong>Total</strong>
+                                    </td>
+                                    <td style="text-align: right; border: 1px solid black;">
+                                        <strong>
+                                            <span t-field="o.amount_total"/>
+                                        </strong>
+                                    </td>
+                                    <td style="border: 1px solid black;"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

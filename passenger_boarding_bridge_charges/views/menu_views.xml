@@ -3,18 +3,18 @@
     <data>
         <!-- Actions -->
         <record id="action_passenger_boarding_bridge_charges" model="ir.actions.act_window">
-            <field name="name">Passenger Boarding Bridge Charges</field>
+            <field name="name">Passenger Loading Bridge Charges</field>
             <field name="res_model">passenger.boarding.bridge.charges</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                    Click to create a new session of Passenger Boarding Bridge Charges record.
+                    Click to create a new session of Passenger Loading Bridge Charges record.
                 </p>
             </field>
         </record>
 
         <record id="action_passenger_boarding_bridge_charges_line" model="ir.actions.act_window">
-            <field name="name">Passenger Boarding Bridge Charges Line</field>
+            <field name="name">Passenger Loading Bridge Charges Line</field>
             <field name="res_model">passenger.boarding.bridge.charges.line</field>
             <field name="view_mode">tree</field>
         </record>
@@ -30,13 +30,13 @@
                   web_icon="passenger_boarding_bridge_charges,static/description/icon.png"/>
 
         <menuitem id="menu_passenger_boarding_bridge_charges"
-                  name="Passenger Boarding Bridge Charges"
+                  name="Passenger Loading Bridge Charges"
                   parent="menu_passenger_boarding_bridge_charges_root"
                   action="action_passenger_boarding_bridge_charges"
                   sequence="10"/>
 
         <menuitem id="menu_passenger_boarding_bridge_charges_line"
-                  name="Passenger Boarding Bridge Charges Line"
+                  name="Passenger Loading Bridge Charges Line"
                   parent="menu_passenger_boarding_bridge_charges_root"
                   action="action_passenger_boarding_bridge_charges_line"
                   sequence="10"/>
