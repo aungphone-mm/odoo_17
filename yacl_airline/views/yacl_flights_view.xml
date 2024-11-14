@@ -18,6 +18,7 @@
                     <field name="aircraft_type"/>
                     <field name="register_no"/>
                     <field name="airline_id"/>
+                    <field name="seat_capacity"/>
                 </tree>
             </field>
         </record>

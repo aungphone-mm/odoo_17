@@ -18,7 +18,7 @@ class PassengerBoardingBridgeCharges(models.Model):
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, track_visibility='always')
     end_time = fields.Datetime(string='End Date & Time', tracking=True, track_visibility='always')
     passenger_boarding_bridge_charges_line_ids = fields.One2many('passenger.boarding.bridge.charges.line', 'passenger_boarding_bridge_charges_id',
-                                                      string='bridge Details', tracking=True)
+                                                      string='Bridge Details', tracking=True)
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
     bridge_rate_id = fields.Many2one('passenger.boarding.bridge.charges.rate', string='Bridge Rate')
     for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
@@ -80,7 +80,7 @@ class PassengerBoardingBridgeCharges(models.Model):
         for line in self.passenger_boarding_bridge_charges_line_ids:
             lines.append({
                 'product_id': line.bridge_rate_id.product_id.id,
-                'name': f"Bridge Service for Flight {line.flightno_id.name}",
+                'name': f"{line.flightno_id.name}",
                 'quantity': 1,
                 'price_unit': line.amount,  # You need to set the appropriate price
                 'passenger_boarding_bridge_charges_line_id': line.id,

@@ -9,3 +9,4 @@ class FlightInfo(models.Model):
     airline_id = fields.Many2one('airline',string='Airline', tracking=True)
     aircraft_type = fields.Char('Aircraft Type')
     register_no = fields.Char("Registration No.")
+    seat_capacity = fields.Integer(string='Seat Capacity', required=True, tracking=True)

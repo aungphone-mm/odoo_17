@@ -58,6 +58,7 @@
                         <group>
                             <field name="name"/>
                             <field name="product_id"/>
+                            <field name="seat_capacity"/>
                         </group>
                         <group>
                             <field name="journal_id"/>

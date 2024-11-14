@@ -13,6 +13,7 @@
                 <field name="start_time" />
                 <field name="end_time" />
                 <field name="security_rate_id"/>
+
             </tree>
         </field>
     </record>
@@ -40,12 +41,14 @@
                         <field name="airline_id"/>
                         <field name="type"/>
                         <field name="airline_user_id" options="{'no_create': True}"/>
+
                     </group>
                     <group>
                         <field name="security_rate_id"/>
                         <field name="start_time"/>
                         <field name="end_time" />
                         <field name="for_date"/>
+
                     </group>
                     <group>
                     <group>
@@ -58,9 +61,12 @@
                         <field name="airline_security_service_line_ids">
                             <tree editable="bottom">
                                 <field name="flightno_id"/>
+                                <field name="gate" />
+                                <field name="avsec" />
                                 <field name="flight_registration_no"/>
                                 <field name="start_time" />
                                 <field name="end_time" />
+                                <field name="subtract_minutes" />
                                 <field name="total_minutes"/>
                                 <field name="security_rate_id" />
                                 <field name="amount" />

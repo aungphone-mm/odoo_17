@@ -54,7 +54,7 @@
                 </group>
                 </group>
                 <notebook>
-                    <page string="bridge Details">
+                    <page string="Bridge Details">
                         <field name="passenger_boarding_bridge_charges_line_ids">
                             <tree editable="bottom">
                                 <field name="flightno_id"/>

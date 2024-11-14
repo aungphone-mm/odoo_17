@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="action_security_service_report" model="ir.actions.report">
-        <field name="name">Security Service Invoice With Breakdown</field>
+        <field name="name">Check-In Counter Invoice With Breakdown</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-html</field>
-        <field name="report_name">airline_security_service_charges.report_security_service</field>
-        <field name="report_file">airline_security_service_charges.report_security_service</field>
-        <field name="print_report_name">(object.name) and ('Security-' + object.name) or 'Security-Invoice'</field>
+        <field name="report_name">check_in_counter.report_checkin_service</field>
+        <field name="report_file">check_in_counter.report_checkin_service</field>
+        <field name="print_report_name">(object.name) and ('Checkin-' + object.name) or 'Checkin-Invoice'</field>
         <field name="binding_model_id" ref="model_account_move"/>
         <field name="binding_type">report</field>
     </record>
 
-    <template id="report_security_service">
+    <template id="report_checkin_service">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <!-- First Page - Invoice -->
@@ -27,9 +27,9 @@
                                  <div class="col-6">
                                 <div t-field="o.partner_id.name"/>
                                 <div t-field="o.partner_id.street"/>
-                                <div t-field="o.partner_id.street2"/>
+                            <!--    <div t-field="o.partner_id.street2"/>-->
                                 <div t-if="o.partner_id.city">
-                                    <t t-esc="o.partner_id.city"/>
+                                    <t t-esc="o.partner_id.city"/> Township
                                 </div>
                                 <t t-if="o.partner_id.state_id">
                                     <div>
@@ -38,8 +38,8 @@
                                         <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
                                     </div>
                                 </t>
-                                     <div t-if="o.airline_security_service_id.airline_user_id.name">
-                                    Attention: <t t-esc="o.airline_security_service_id.airline_user_id.name"/>
+                                     <div t-if="o.checkin_counter_id.airline_user_id.name">
+                                    Attention: <t t-esc="o.checkin_counter_id.airline_user_id.name"/>
                                 </div>
                             </div>
 
@@ -70,9 +70,8 @@
                                     <td><br/><br/><br/><br/>1</td>
                                     <td>
                                         <br/><br/><br/><br/>
-                                        Security Service Charges for:<br/>
+                                        Check-In Counter Service Charges for:<br/>
                                         Flight No: As per attached<br/>
-<!--                                        <span t-field="o.airline_security_service_id.inv_desc"/>-->
                                         <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
                                         <br/><br/><br/><br/><br/><br/><br/><br/>
                                     </td>
@@ -87,7 +86,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="3" style="text-align: left;">
-                                        <span t-esc="o.currency_id.amount_to_text(o.amount_total)+' Only'"/>
+                                        <span t-esc="o.currency_id.amount_to_text(o.amount_total)"/> Only
                                     </td>
                                     <td style="text-align: right;">
                                         <span t-field="o.amount_total"/>
@@ -96,7 +95,7 @@
                             </tbody>
                         </table>
 
-                        <!-- Payment Information -->
+<!--                        &lt;!&ndash; Payment Information &ndash;&gt;-->
                         <div class="row mt-4">
                             <div class="col-12">
                                 <strong>NOTE:</strong>
@@ -107,31 +106,28 @@
                                 <ul>
                                     <li>CB Bank, USD Account No. 0010101200703796, (Swift Code- CPOBMMMY)</li>
                                     <li>Industrial and Commercial Bank of China (ICBC), Yangon Branch,<br/>
-                                    USD Account No. 6010010000000150996, (Swift Code- ICBKMMMY)</li>
+                                        USD Account No. 6010010000000150996, (Swift Code- ICBKMMMY)</li>
                                     <li>Bank of China (BOC), Yangon Branch,<br/>
-                                    USD Account No. 05312220007069, (Swift Code- BKCHMMMY)</li>
+                                        USD Account No. 05312220007069, (Swift Code- BKCHMMMY)</li>
                                 </ul>
                             </div>
                         </div>
-
                         <!-- Signature -->
                         <div class="row mt-5">
                             <div class="col-6">
-                                <p>Issued by:</p><br/><br/><br/>
                                 <p>____________________</p>
-                                <p>Aye Thida</p>
-                                <p>General Manager</p>
+                                <p>Authorized Signature</p>
                             </div>
                         </div>
                     </div>
                 </t>
 
                 <!-- Second Page - Breakdown -->
-                <t t-call="web.basic_layout">
+                <t t-call="web.external_layout">
                     <div class="page">
                         <div style="text-align: center; margin-bottom: 20px;">
-                            <h3>DETAIL STATEMENT OF SECURITY SERVICE CHARGES</h3>
-                            <h4>AIRLINES - <span t-field="o.partner_id.name"/></h4>
+                            <h3>DETAIL STATEMENT OF CHECK-IN COUNTER SERVICE CHARGES</h3>
+                            <h4>AIRLINES-<span t-field="o.partner_id.name"/></h4>
                         </div>
 
                         <table class="table table-sm" style="width: 100%; border-collapse: collapse;">
@@ -140,12 +136,12 @@
                                     <th style="border: 1px solid black;">Sr.No</th>
                                     <th style="border: 1px solid black;">Date</th>
                                     <th style="border: 1px solid black;">Flight No</th>
-                                    <th style="border: 1px solid black;">Gate</th>
+                                    <th style="border: 1px solid black;">Aircraft Type</th>
                                     <th style="border: 1px solid black;">Reg. No.</th>
-                                    <th style="border: 1px solid black;">AVSEC Qty</th>
+
                                     <th style="border: 1px solid black;">Total Service/hr</th>
-                                    <th style="border: 1px solid black;">Rate($)</th>
-                                    <th style="border: 1px solid black;">Amount($)</th>
+                                    <th style="border: 1px solid black;">Rate</th>
+                                    <th style="border: 1px solid black;">Amount</th>
                                     <th style="border: 1px solid black;">Remark</th>
                                 </tr>
                             </thead>
@@ -160,18 +156,16 @@
                                             <span t-field="line.name"/>
                                         </td>
                                         <td style="border: 1px solid black;">
-                                            <span t-field="line.airline_security_service_line_id.gate"/>
+                                            <span t-field="line.checkin_counter_line_id.flight_aircraft"/>
                                         </td>
                                         <td style="border: 1px solid black;">
-                                            <span t-field="line.airline_security_service_line_id.flight_registration_no"/>
+                                            <span t-field="line.checkin_counter_line_id.flight_registration_no"/>
                                         </td>
+
                                         <td style="border: 1px solid black; text-align: center;">
-                                            <span t-field="line.airline_security_service_line_id.avsec"/>
-                                        </td>
-                                        <td style="border: 1px solid black; text-align: center;">
-                                            <t t-if="line.airline_security_service_line_id">
-                                                <t t-set="hours" t-value="int(line.airline_security_service_line_id.total_minutes // 60)"/>
-                                                <t t-set="minutes" t-value="int(line.airline_security_service_line_id.total_minutes % 60)"/>
+                                            <t t-if="line.checkin_counter_line_id">
+                                                <t t-set="hours" t-value="int(line.checkin_counter_line_id.total_minutes // 60)"/>
+                                                <t t-set="minutes" t-value="int(line.checkin_counter_line_id.total_minutes % 60)"/>
                                                 <span t-esc="'%02d:%02d' % (hours, minutes)"/>
                                             </t>
                                             <t t-else="">
@@ -192,7 +186,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="8" style="text-align: right; border: 1px solid black;">
+                                    <td colspan="7" style="text-align: right; border: 1px solid black;">
                                         <strong>Total</strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">

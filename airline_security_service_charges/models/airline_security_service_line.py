@@ -12,11 +12,14 @@ class AirlineSecurityServiceLine(models.Model):
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, track_visibility='always')
     end_time = fields.Datetime(string='End Date & Time', tracking=True, track_visibility='always')
     total_minutes = fields.Integer(string='Total Minutes', compute='_compute_total_minutes', store=True)
+    subtract_minutes = fields.Integer(string='Subtract Minutes', default=0, tracking=True)
     security_rate_id = fields.Many2one('airline.security.rate', string='Rate',
                                        compute='_compute_security_rate',
                                        inverse='_inverse_security_rate',
                                        store=True, tracking=True)
     amount = fields.Float(string="Amount", compute='_compute_amount', store=True)
+    gate = fields.Integer(string="Gate")
+    avsec = fields.Integer(string="AVSEC QTY",default = 4)
 
     @api.depends('airline_security_service_id.security_rate_id')
     def _compute_security_rate(self):
@@ -29,12 +32,13 @@ class AirlineSecurityServiceLine(models.Model):
                 # You can add any necessary logic here when the rate changes
                 pass
     #aungphone
-    @api.depends('start_time', 'end_time')
+    @api.depends('start_time', 'end_time', 'subtract_minutes')
     def _compute_total_minutes(self):
         for record in self:
             if record.start_time and record.end_time:
                 duration = record.end_time - record.start_time
-                record.total_minutes = int(duration.total_seconds() / 60)
+                total = int(duration.total_seconds() / 60)
+                record.total_minutes = max(0, total - record.subtract_minutes)
             else:
                 record.total_minutes = 0
 

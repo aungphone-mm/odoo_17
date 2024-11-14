@@ -80,7 +80,7 @@ class AirlineSecurityService(models.Model):
         for line in self.airline_security_service_line_ids:
             lines.append({
                 'product_id': line.security_rate_id.product_id.id,
-                'name': f"Security Service for Flight {line.flightno_id.name}",
+                'name': f"{line.flightno_id.name}",
                 'quantity': 1,
                 'price_unit': line.amount,  # You need to set the appropriate price
                 'airline_security_service_line_id': line.id,
@@ -93,8 +93,8 @@ class AirlineSecurityService(models.Model):
             current_date = datetime.now().strftime('%Y/%m')
             sequence = self.env['ir.sequence'].next_by_code('airline.security.bill.seq') or '00001'
             if vals['type'] == 'domestic':
-                vals['name'] = f'DPB/{current_date}/{sequence}'
+                vals['name'] = f'DSC/{current_date}/{sequence}'
             else:
-                vals['name'] = f'IPB/{current_date}/{sequence}'
+                vals['name'] = f'ISC/{current_date}/{sequence}'
         return super(AirlineSecurityService, self).create(vals)
 

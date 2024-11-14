@@ -5,6 +5,7 @@ class CheckinCounter(models.Model):
     _name = 'checkin.counter'
     _description = 'Checkin Counter'
     _inherit = ['mail.activity.mixin', 'mail.thread']
+    _order = 'id desc'
 
     name = fields.Char(string='Name', required=True, readonly=True, copy=False, index=True, default='New')
     type = fields.Selection([
@@ -12,13 +13,14 @@ class CheckinCounter(models.Model):
         ('international', 'International')
     ], default='domestic', string='Type', track_visibility='always', tracking=True)
     airline_id = fields.Many2one('airline',string='Airline')
-    airline_user_id = fields.Many2one('res.partner', string='Receptionist', tracking=True)
+    airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, track_visibility='always')
     end_time = fields.Datetime(string='End Date & Time', tracking=True, track_visibility='always')
     checkin_counter_line_ids = fields.One2many('checkin.counter.line', 'checkin_counter_id',
                                                       string='Checkin Details', tracking=True)
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
     checkin_counter_rate_id = fields.Many2one('checkin.counter.rate', string='Checkin Counter Rate')
+    for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
@@ -63,6 +65,8 @@ class CheckinCounter(models.Model):
             'checkin_counter_id': self.id,
             'currency_id': self.checkin_counter_rate_id.currency_id.id,
             'form_type': 'checkin',
+            'for_date': self.for_date,
+            'journal_id': self.checkin_counter_rate_id.journal_id.id,
         }
 
     def _prepare_invoice_line_vals(self):
@@ -74,6 +78,7 @@ class CheckinCounter(models.Model):
                 'name': f"Checkin Counter {line.flightno_id.name}",
                 'quantity': 1,
                 'price_unit': line.amount,  # You need to set the appropriate price
+                'checkin_counter_line_id': line.id,
             })
         return lines
 
@@ -83,8 +88,8 @@ class CheckinCounter(models.Model):
             current_date = datetime.now().strftime('%Y/%m')
             sequence = self.env['ir.sequence'].next_by_code('checkin.counter.bill.seq') or '00001'
             if vals['type'] == 'domestic':
-                vals['name'] = f'DPB/{current_date}/{sequence}'
+                vals['name'] = f'DCI/{current_date}/{sequence}'
             else:
-                vals['name'] = f'IPB/{current_date}/{sequence}'
+                vals['name'] = f'ICI/{current_date}/{sequence}'
         return super(CheckinCounter, self).create(vals)
 

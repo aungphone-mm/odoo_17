@@ -121,6 +121,8 @@
                         <group>
                             <field name="description" widget="html"/>
                             <field name="for_date"/>
+                            <field name="inv_desc"/>
+                            <field name="note_desc"/>
                         </group>
                         <notebook>
                             <page string="Electric Meter Reading Detail">

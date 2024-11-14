@@ -6,7 +6,7 @@
         <field name="report_type">qweb-html</field>
         <field name="report_name">passenger_boarding_bridge_charges.report_bridge_service</field>
         <field name="report_file">passenger_boarding_bridge_charges.report_bridge_service</field>
-        <field name="print_report_name">(object.name) and ('Security-' + object.name) or 'Security-Invoice'</field>
+        <field name="print_report_name">(object.name) and ('Bridge-' + object.name) or 'Bridge-Invoice'</field>
         <field name="binding_model_id" ref="model_account_move"/>
         <field name="binding_type">report</field>
     </record>
@@ -73,7 +73,7 @@
                                         Loading Bridge Service Charges for:<br/>
                                         Flight No: As per attached<br/>
                                         <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
-                                        <br/><br/><br/><br/><br/><br/><br/><br/>
+                                        <br/><br/><br/><br/><br/>
                                     </td>
                                     <td style="text-align: center;">
                                         <br/><br/><br/><br/>
@@ -95,7 +95,6 @@
                             </tbody>
                         </table>
 
-<!--                        &lt;!&ndash; Payment Information &ndash;&gt;-->
                         <div class="row mt-4">
                             <div class="col-12">
                                 <strong>NOTE:</strong>
@@ -115,8 +114,10 @@
                         <!-- Signature -->
                         <div class="row mt-5">
                             <div class="col-6">
+                                <p>Issued by:</p><br/><br/><br/>
                                 <p>____________________</p>
-                                <p>Authorized Signature</p>
+                                <p>Aye Thida</p>
+                                <p>General Manager</p>
                             </div>
                         </div>
                     </div>
@@ -126,7 +127,7 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <div style="text-align: center; margin-bottom: 20px;">
-                            <h3>DETAIL STATEMENT OF LOADING BRIGED SERVICE CHARGES</h3>
+                            <h3>DETAIL STATEMENT OF LOADING BRIDGE SERVICE CHARGES</h3>
                             <h4>AIRLINES - <span t-field="o.partner_id.name"/></h4>
                         </div>
 
@@ -140,8 +141,8 @@
                                     <th style="border: 1px solid black;">Reg. No.</th>
 
                                     <th style="border: 1px solid black;">Total Service/hr</th>
-                                    <th style="border: 1px solid black;">Rate($)</th>
-                                    <th style="border: 1px solid black;">Amount($)</th>
+                                    <th style="border: 1px solid black;">Rate</th>
+                                    <th style="border: 1px solid black;">Amount</th>
                                     <th style="border: 1px solid black;">Remark</th>
                                 </tr>
                             </thead>

@@ -70,6 +70,8 @@ class ElectricMeterReading(models.Model):
     state = fields.Selection(
         [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('done', 'Done'), ('canceled', 'Canceled')], string='Status',
         required=True, default='draft', tracking=True)
+    inv_desc = fields.Html(string='Invoice Description')
+    note_desc = fields.Html(string='Note Description')
 
     @api.model
     def read(self, fields=None, load='_classic_read'):

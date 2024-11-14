@@ -18,11 +18,29 @@ class PassengerBoardingBridgeChargesLine(models.Model):
                                        inverse='_inverse_bridge_rate',
                                        store=True, tracking=True)
     amount = fields.Float(string="Amount", compute='_compute_amount', store=True)
+    seat_capacity = fields.Integer(related='flightno_id.seat_capacity', store=True,
+                                   string='Seat Capacity')
 
-    @api.depends('passenger_boarding_bridge_charges_id.bridge_rate_id')
+    @api.depends('flightno_id')
     def _compute_bridge_rate(self):
         for line in self:
-            line.bridge_rate_id = line.passenger_boarding_bridge_charges_id.bridge_rate_id
+            if line.flightno_id and line.seat_capacity:
+                rate = self.env['passenger.boarding.bridge.charges.rate'].search([
+                    ('seat_capacity', '=', line.seat_capacity),
+                    ('active', '=', True)
+                ], limit=1)
+                if not rate:
+                    raise ValidationError(
+                        f"{line.flightno_id.name} is {line.seat_capacity} seats. But No bridge rate found for aircraft with {line.seat_capacity} seats"
+                    )
+            #     line.bridge_rate_id = rate.id
+            # else:
+            #     line.bridge_rate_id = False
+
+    # @api.depends('passenger_boarding_bridge_charges_id.bridge_rate_id')
+    # def _compute_bridge_rate(self):
+    #     for line in self:
+    #         line.bridge_rate_id = line.passenger_boarding_bridge_charges_id.bridge_rate_id
 
     def _inverse_bridge_rate(self):
         for line in self:
@@ -78,4 +96,15 @@ class PassengerBoardingBridgeChargesLine(models.Model):
             if not record.flightno_id:
                 raise ValidationError(_("Flight No. must be set for each bridge service line."))
 
-
+    @api.onchange('flightno_id')
+    def _onchange_flight(self):
+        if self.flightno_id:
+            try:
+                self._compute_bridge_rate()
+            except ValidationError as e:
+                return {
+                    'warning': {
+                        'title': 'Error',
+                        'message': str(e)
+                    }
+                }

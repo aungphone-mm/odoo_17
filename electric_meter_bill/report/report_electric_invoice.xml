@@ -21,24 +21,29 @@
                                 background-color: #e9ecef;
                             }
                         </style>
-
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
+                            </div>
+                        </div>
                         <div class="page">
                             <!-- Invoice Info Section -->
                             <div class="row mb-4">
                                 <div class="col-6">
-    <div t-field="o.partner_id.name"/>
-    <div t-field="o.partner_id.street"/>
-<!--    <div t-field="o.partner_id.street2"/>-->
-    <div t-field="o.partner_id.city"/>
-    <t t-if="o.partner_id.state_id">
-        <div>
-            <t t-esc="o.partner_id.state_id.name"/>
-            <t t-if="o.partner_id.zip">, <t t-esc="o.partner_id.zip"/></t>
-        </div>
-    </t>
-    <div t-if="o.partner_id.country_id" t-field="o.partner_id.country_id.name"/>
-</div>
+                                <div t-field="o.partner_id.name"/>
+                                <div t-field="o.partner_id.street"/>
+                                <div t-field="o.partner_id.street2"/>
+                                <div t-field="o.partner_id.city"/>
+                                <t t-if="o.partner_id.state_id">
+                                    <div>
+                                        <t t-esc="o.partner_id.state_id.name"/>
+                                        <t t-if="o.partner_id.zip">, <t t-esc="o.partner_id.zip"/></t>
+                                        <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
+<!--                                        <div t-if="o.partner_id.country_id" t-field="o.partner_id.country_id.name"/>-->
+                                    </div>
 
+                                </t>
+                            </div>
                                 <div class="col-6 d-flex justify-content-end">
                                     <div>
                                         <strong>Invoice No:</strong>
@@ -63,31 +68,57 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>1</td>
+                                        <td><br/><br/><br/><br/>1</td>
                                         <td>
                                             <br/><br/><br/><br/>
-                                            Electrical Charges For:<br/>
-                                            Meter No :As per attached<br/>
-                                            <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
-                                            <br/><br/><br/><br/><br/><br/><br/><br/>
+                                            <span t-field="o.reading_line_id.reading_id.inv_desc"/>
+<!--                                            <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>-->
+                                            <br/><br/><br/>
                                         </td>
                                         <t t-set="total_units" t-value="sum(o.invoice_line_ids.filtered(lambda l: l.reading_line_id).mapped('reading_line_id.total_unit'))"/>
                                         <td style="text-align: center;">
                                             <br/><br/><br/><br/>
-                                            <span t-esc="'{:,.0f}'.format(total_units)"/>
+                                            <t t-if="total_units > 0">
+                                                <span t-esc="'{:,.0f}'.format(total_units)"/>
+                                            </t>
                                         </td>
+<!--                                        <td style="text-align: right;">-->
+<!--                                            <br/><br/><br/><br/>-->
+<!--                                            <span t-field="o.amount_total"/>-->
+<!--                                        </td>-->
                                         <td style="text-align: right;">
                                             <br/><br/><br/><br/>
-                                            <span t-field="o.amount_total"/>
+                                            <t t-if="o.currency_id.name == 'MMK'">
+                                                <span t-esc="'MMK ' + '{:,.2f}'.format(o.amount_total)"/>
+                                            </t>
+                                            <t t-elif="o.currency_id.name == 'USD'">
+                                                <span t-esc="'$ ' + '{:,.2f}'.format(o.amount_total)"/>
+                                            </t>
+<!--                                            <t t-elif="o.currency_id.name == 'USD'">-->
+<!--                                                $ <span t-esc="'{:,.2f}'.format(o.amount_total)"/>-->
+<!--                                            </t>-->
+                                            <t t-else="">
+                                                <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </t>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" style="text-align: left; border-top: 1px solid black;">
-                                            <span t-esc="o.currency_id.amount_to_text(o.amount_total)"/> Only
+                                            <span t-esc="o.currency_id.amount_to_text(o.amount_total)+' Only'"/>
+<!--                                            <span t-esc="'$ ' + '{:,.2f}'.format(o.amount_total)+' Only'"/>-->
                                         </td>
-                                        <td style="text-align: right; border-top: 1px solid black;">
-                                            <span t-field="o.amount_total"/>
-                                        </td>
+
+                                        <td colspan="3" style="text-align: right; border-top: 1px solid black;">
+                                        <t t-if="o.currency_id.name == 'MMK'">
+                                            <span t-esc="'MMK ' + '{:,.2f}'.format(o.amount_total)"/>
+                                        </t>
+                                        <t t-elif="o.currency_id.name == 'USD'">
+                                            <span t-esc="'$ ' + '{:,.2f}'.format(o.amount_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </t>
+                                    </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -104,35 +135,21 @@
 
                             <!-- Payment Information -->
                             <div class="row mt-4">
-    <div class="col-12">
-        <strong>NOTE:</strong>
-        <p>- Payment has to be made in the currency stated above.<br/>
-           Should the payment be made in other currencies stated as above, the exchange rate shall be based on the prevailing rate. Please check before payment is made.
-        <br/>-For CASH payment, please pay at:<br/>
-            Yangon Aerodrome Company Limited Building, Finance Department, Infront of (T-2) Yangon International Airport<br/>
-        - For payment via ACCOUNT TRANSFER (bank charges to be borne by the payee), account no.:</p>
-        <ul>
-            <li>Myanmar Currency: Ayeyarwady Bank, MMK Account No. 1000 2103 936</li>
-            <li>Myanmar Currency: CB Bank, MMK Account No. 0010 1005 0003 8757</li>
-            <li>Myanmar Currency: KBZ Bank, MMK Account No. 2061 0320 6016 29501</li>
-            <li>Myanmar Currency: Industrial and Commercial Bank of China (ICBC),Yangon Branch,<br/>
-                <span style="padding-left: 150px;">MMK Account No. 60100 1000 0000 150872</span></li>
-            <li>Myanmar Currency: Myanma Apex Bank MMK Account No. 0740 1630 7400 2519 024</li>
-            <li>Myanmar Currency: United Amara Bank (Special) MMK Account No. 0281 0601 0000 7306</li>
-            <li>Myanmar Currency: KBZPay Merchant No. 70120501001</li>
-        </ul>
+                                <div class="col-12">
 
-        <p>Issued by:</p>
-    </div>
-</div>
-
-                            <!-- Signature -->
-                            <div class="row mt-5">
-                                <div class="col-6">
-                                    <p>____________________</p>
-                                    <p>Authorized Signature</p>
+                                    <span t-field="o.reading_line_id.reading_id.note_desc"/>
+<!--                                    <p>Issued by:</p>-->
                                 </div>
                             </div>
+
+                            <!-- Signature -->
+<!--                            <div class="row mt-5">-->
+<!--                                <div class="col-6">-->
+<!--                                    <p>____________________</p>-->
+<!--                                    <p>Aye Thida</p>-->
+<!--                                     <p>General Manager</p>-->
+<!--                                </div>-->
+<!--                            </div>-->
                         </div>
                     </t>
                     <!-- Second Page -->
