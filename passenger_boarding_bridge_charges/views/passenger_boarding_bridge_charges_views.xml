@@ -13,6 +13,7 @@
                 <field name="start_time" />
                 <field name="end_time" />
                 <field name="bridge_rate_id"/>
+                <field name="currency_id"/>
             </tree>
         </field>
     </record>
@@ -39,6 +40,7 @@
                         <field name="name"/>
                         <field name="airline_id"/>
                         <field name="type"/>
+                        <field name="currency_id"/>
                         <field name="airline_user_id" options="{'no_create': True}"/>
                     </group>
                     <group>

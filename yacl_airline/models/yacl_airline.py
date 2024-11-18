@@ -3,6 +3,7 @@ from odoo import fields, models, api
 class Airline(models.Model):
     _name = 'airline'
     _description = 'Airline Information'
+    _inherit = ['mail.activity.mixin', 'mail.thread']
 
     name = fields.Char('Airline', required=True)
     description = fields.Text('Code', required=True)

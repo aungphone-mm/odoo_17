@@ -27,9 +27,9 @@
                                  <div class="col-6">
                                 <div t-field="o.partner_id.name"/>
                                 <div t-field="o.partner_id.street"/>
-                            <!--    <div t-field="o.partner_id.street2"/>-->
+                                <div t-field="o.partner_id.street2"/>
                                 <div t-if="o.partner_id.city">
-                                    <t t-esc="o.partner_id.city"/> Township
+                                    <t t-esc="o.partner_id.city"/>
                                 </div>
                                 <t t-if="o.partner_id.state_id">
                                     <div>
@@ -86,7 +86,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="3" style="text-align: left;">
-                                        <span t-esc="o.currency_id.amount_to_text(o.amount_total)"/> Only
+                                        <span t-esc="o.currency_id.amount_to_text(o.amount_total)+' Only'"/>
                                     </td>
                                     <td style="text-align: right;">
                                         <span t-field="o.amount_total"/>
@@ -116,7 +116,8 @@
                         <div class="row mt-5">
                             <div class="col-6">
                                 <p>____________________</p>
-                                <p>Authorized Signature</p>
+                                <p>Aye Thida</p>
+                                <p>General Manager</p>
                             </div>
                         </div>
                     </div>

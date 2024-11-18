@@ -21,6 +21,35 @@ class PassengerBoardingBridgeChargesLine(models.Model):
     seat_capacity = fields.Integer(related='flightno_id.seat_capacity', store=True,
                                    string='Seat Capacity')
 
+    @api.constrains('flightno_id')
+    def _check_airline(self):
+        for record in self:
+            if not record.flightno_id:
+                raise ValidationError(_("Flight No. must be set for each bridge service line."))
+    @api.onchange('flightno_id')
+    def _onchange_flight(self):
+        if self.flightno_id:
+            if not self.flightno_id.seat_capacity or self.flightno_id.seat_capacity <= 0:
+                return {
+                    'warning': {
+                        'title': 'Error',
+                        'message': _(
+                            "Please define seat capacity for flight %s before proceeding.") % self.flightno_id.name
+                    }
+                }
+
+            rate = self.env['passenger.boarding.bridge.charges.rate'].search([
+                ('seat_capacity', '=', self.seat_capacity),
+                ('active', '=', True)
+            ], limit=1)
+
+            if not rate:
+                return {
+                    'warning': {
+                        'title': 'Missing Bridge Rate',
+                        'message': f"{self.flightno_id.name} is {self.seat_capacity} seats. No bridge rate found for aircraft with {self.seat_capacity} seats"
+                    }
+                }
     @api.depends('flightno_id')
     def _compute_bridge_rate(self):
         for line in self:
@@ -30,12 +59,12 @@ class PassengerBoardingBridgeChargesLine(models.Model):
                     ('active', '=', True)
                 ], limit=1)
                 if not rate:
-                    raise ValidationError(
-                        f"{line.flightno_id.name} is {line.seat_capacity} seats. But No bridge rate found for aircraft with {line.seat_capacity} seats"
-                    )
-            #     line.bridge_rate_id = rate.id
-            # else:
-            #     line.bridge_rate_id = False
+                    line.bridge_rate_id = False
+                    # Instead of raising ValidationError, we'll handle this in onchange
+                else:
+                    line.bridge_rate_id = rate.id
+            else:
+                line.bridge_rate_id = False
 
     # @api.depends('passenger_boarding_bridge_charges_id.bridge_rate_id')
     # def _compute_bridge_rate(self):
@@ -73,7 +102,7 @@ class PassengerBoardingBridgeChargesLine(models.Model):
                     if max_rate_line:
                         amount = max_rate_line.unit_price
                     else:
-                        raise ValidationError(f"No rates defined for bridge rate {record.bridge_rate_id.name}")
+                        raise ValidationError(f"{record.bridge_rate_id.name} rate has no rate lines. Please add rate lines in Bridge Rate!")
             record.amount = amount
 
     @api.onchange('total_minutes', 'bridge_rate_id')
@@ -87,24 +116,5 @@ class PassengerBoardingBridgeChargesLine(models.Model):
                     'warning': {
                         'title': "Maximum Rate Used",
                         'message': f"Using maximum rate {self.amount} for {self.total_minutes} minutes"
-                    }
-                }
-
-    @api.constrains('flightno_id')
-    def _check_airline(self):
-        for record in self:
-            if not record.flightno_id:
-                raise ValidationError(_("Flight No. must be set for each bridge service line."))
-
-    @api.onchange('flightno_id')
-    def _onchange_flight(self):
-        if self.flightno_id:
-            try:
-                self._compute_bridge_rate()
-            except ValidationError as e:
-                return {
-                    'warning': {
-                        'title': 'Error',
-                        'message': str(e)
                     }
                 }

@@ -17,6 +17,9 @@ class PassengerBoardingBridgeCharges(models.Model):
     airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, track_visibility='always')
     end_time = fields.Datetime(string='End Date & Time', tracking=True, track_visibility='always')
+    currency_id = fields.Many2one('res.currency', string='Currency', related='bridge_rate_id.currency_id',
+                                  store=True,
+                                  readonly=True)
     passenger_boarding_bridge_charges_line_ids = fields.One2many('passenger.boarding.bridge.charges.line', 'passenger_boarding_bridge_charges_id',
                                                       string='Bridge Details', tracking=True)
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)

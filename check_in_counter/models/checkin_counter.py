@@ -1,5 +1,6 @@
 from odoo import fields, models, api, _
 from datetime import datetime
+from odoo.exceptions import ValidationError
 
 class CheckinCounter(models.Model):
     _name = 'checkin.counter'
@@ -14,6 +15,9 @@ class CheckinCounter(models.Model):
     ], default='domestic', string='Type', track_visibility='always', tracking=True)
     airline_id = fields.Many2one('airline',string='Airline')
     airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
+    currency_id = fields.Many2one('res.currency', string='Currency', related='checkin_counter_rate_id.currency_id', store=True,
+                                  readonly=True)
+
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, track_visibility='always')
     end_time = fields.Datetime(string='End Date & Time', tracking=True, track_visibility='always')
     checkin_counter_line_ids = fields.One2many('checkin.counter.line', 'checkin_counter_id',
@@ -57,9 +61,13 @@ class CheckinCounter(models.Model):
 
     def _prepare_invoice_vals(self):
         self.ensure_one()
+        partner = self.airline_id.partner_id
+        if not partner:
+            raise ValidationError(_("No partner found for airline %s") % self.airline_id.name)
+
         return {
             'move_type': 'out_invoice',
-            'partner_id': self.airline_user_id.id,  # You may want to change this to an actual customer
+            'partner_id': partner.id,  # You may want to change this to an actual customer
             'invoice_date': fields.Date.today(),
             'invoice_line_ids': [(0, 0, line) for line in self._prepare_invoice_line_vals()],
             'checkin_counter_id': self.id,
@@ -75,7 +83,7 @@ class CheckinCounter(models.Model):
         for line in self.checkin_counter_line_ids:
             lines.append({
                 'product_id': line.checkin_counter_rate_id.product_id.id,
-                'name': f"Checkin Counter {line.flightno_id.name}",
+                'name': f"{line.flightno_id.name}",
                 'quantity': 1,
                 'price_unit': line.amount,  # You need to set the appropriate price
                 'checkin_counter_line_id': line.id,
