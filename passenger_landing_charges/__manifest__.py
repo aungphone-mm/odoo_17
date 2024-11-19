@@ -1,0 +1,22 @@
+{
+    'name': 'Passenger Landing Charges',
+    'version': '17.0.1.0',
+    'category': 'Utilities',
+    'license': 'AGPL-3',
+    'summary': """Manage the Passenger Landing process for landing operations efficiently""",
+    'depends': ['mail', 'account', 'base','yacl_airline','web'],
+    'author': 'Mingalar Sky Co., Ltd.',
+    'website': 'https://www.mingalarsky.com',
+    'data': [
+        'security/ir.model.access.csv',
+        'views/passenger_landing_views.xml',
+        'views/passenger_landing_line_views.xml',
+        'views/menu_views.xml',
+        'data/ir_sequence_data.xml',
+        'report/invoice_custom_template.xml',
+        'report/report_passengerlanding_invoice.xml',
+    ],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}

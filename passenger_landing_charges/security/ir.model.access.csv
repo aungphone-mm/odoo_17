@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_passenger_landing,access.passenger.landing,model_passenger_landing,base.group_user,1,1,1,1
+access_passenger_landing_line,access.passenger.landing.line,model_passenger_landing_line,base.group_user,1,1,1,1
+access_passenger_landing_rate,access.passenger.landing.rate,model_passenger_landing_rate,base.group_user,1,1,1,1
+access_passenger_landing_rate_line,access.passenger.landing.rate.line,model_passenger_landing_rate_line,base.group_user,1,1,1,1

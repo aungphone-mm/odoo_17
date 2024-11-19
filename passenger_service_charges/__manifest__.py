@@ -1,0 +1,23 @@
+{
+    'name': 'Passenger Service Charges',
+    'version': '17.0.1.0',
+    'category': 'Utilities',
+    'license': 'AGPL-3',
+    'summary': """Manage the Passenger Service process for landing operations efficiently""",
+    'depends': ['mail', 'account', 'base','yacl_airline','web'],
+    'author': 'Mingalar Sky Co., Ltd.',
+    'website': 'https://www.mingalarsky.com',
+    'data': [
+        'security/ir.model.access.csv',
+        'views/passenger_service_views.xml',
+        'views/passenger_service_line_views.xml',
+        'views/menu_views.xml',
+        'data/ir_sequence_data.xml',
+        # 'report/invoice_custom_template.xml',
+        'report/report_passengerservice_invoice.xml',
+        'report/report_passengerservice_invoice_international.xml',
+    ],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}

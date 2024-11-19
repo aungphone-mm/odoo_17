@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Actions -->
+        <record id="action_passenger_landing" model="ir.actions.act_window">
+            <field name="name">Passenger Landing</field>
+            <field name="res_model">passenger.landing</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new session of Passenger Landing record.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_passenger_landing_line" model="ir.actions.act_window">
+            <field name="name">Passenger Landing Charges Line</field>
+            <field name="res_model">passenger.landing.line</field>
+            <field name="view_mode">tree</field>
+        </record>
+        <record id="action_passenger_landing_rate" model="ir.actions.act_window">
+            <field name="name">Passenger Landing Rates</field>
+            <field name="res_model">passenger.landing.rate</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!-- Menus -->
+        <menuitem id="menu_passenger_landing_root"
+                  name="Passenger Landing Charges"
+                  sequence="10"
+                  web_icon="passenger_landing_charges,static/description/icon.png"/>
+
+        <menuitem id="menu_passenger_landing"
+                  name="Passenger Landing Charges"
+                  parent="menu_passenger_landing_root"
+                  action="action_passenger_landing"
+                  sequence="10"/>
+
+        <menuitem id="menu_airline_passenger_landing_line"
+                  name="Passenger Landing Charges Line"
+                  parent="menu_passenger_landing_root"
+                  action="action_passenger_landing_line"
+                  sequence="10"/>
+
+        <menuitem id="menu_passenger_landing_configuration"
+                  name="Configuration"
+                  parent="menu_passenger_landing_root"
+                  sequence="11"/>
+
+<!--        <menuitem id="menu_airline" name="Airline" action="airline_passenger_bill.action_airline"-->
+<!--                  parent="menu_airline_passenger_landing_configuration" sequence="1"/>-->
+<!--        <menuitem id="menu_flight_no" name="Flight Numbers" action="airline_passenger_bill.action_flight_no"-->
+<!--                  parent="menu_airline_passenger_landing_configuration" sequence="10"/>-->
+<!--        <menuitem id="menu_passenger_rate" name="Passenger Rates" action="airline_passenger_bill.action_passenger_rate"-->
+<!--                  parent="menu_airline_passenger_landing_configuration" sequence="20"/>-->
+<!--        <menuitem id="menu_bridge_rate" name="Bridge Rates" action="airline_passenger_bill.action_bridge_rate"-->
+<!--                  parent="menu_airline_passenger_landing_configuration" sequence="30"/>-->
+        <menuitem id="menu_passenger_landing_rate" name="Passenger Landing Rates" action="action_passenger_landing_rate"
+                  parent="menu_passenger_landing_configuration" sequence="10"/>
+    </data>
+</odoo>

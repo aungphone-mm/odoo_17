@@ -12,37 +12,37 @@ class AirlinePassengerBillLine(models.Model):
 
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
-    format_code = fields.Char(string='Code', tracking=True, track_visibility='always')
+    format_code = fields.Char(string='Code', tracking=True)
     # Number of Legs Encoded: 1 leg for direct flight (RGN-KUL), 2 legs if there's a stopover (RGN-KUL-SIN).
-    number_of_legs_encoded = fields.Integer(string='Legs', tracking=True, track_visibility='always')
-    passenger_name = fields.Char(string='Passenger', tracking=True, track_visibility='always')
+    number_of_legs_encoded = fields.Integer(string='Legs', tracking=True)
+    passenger_name = fields.Char(string='Passenger', tracking=True)
     # Electronic Ticket Indicator: 'E' for E-ticket (issued electronically), 'P' for paper ticket (rarely used).
-    electronic_ticket_indicator = fields.Char(string='Ticket', tracking=True, track_visibility='always')
+    electronic_ticket_indicator = fields.Char(string='Ticket', tracking=True)
     # Operating Carrier PNR [Booking Reference] Code: PNR code of the airline that operates the flight.
-    pnr_code = fields.Char(string='PNR', tracking=True, track_visibility='always')
+    pnr_code = fields.Char(string='PNR', tracking=True)
     # From City/Airport Code: IATA code of the departure city or airport.
-    from_city_airport_code = fields.Char(string='From', tracking=True, track_visibility='always')
+    from_city_airport_code = fields.Char(string='From', tracking=True)
     # To City/Airport Code: IATA code of the arrival city or airport.
-    to_city_airport_code = fields.Char(string='To', tracking=True, track_visibility='always')
+    to_city_airport_code = fields.Char(string='To', tracking=True)
     # Operating Carrier Designator: IATA code of the airline that operates the flight.
     # operating_carrier_designator = fields.Char(string='Airline')
-    operating_carrier_designator = fields.Many2one('airline', string='Airline', tracking=True, track_visibility='always')
+    operating_carrier_designator = fields.Many2one('airline', string='Airline', tracking=True)
     # Flight Number: Flight number of the flight.
-    flight_number = fields.Char(string='Flight', tracking=True, track_visibility='always')
+    flight_number = fields.Char(string='Flight', tracking=True)
     # Date of Flight: Date of the flight in DDMM format.
-    date_of_flight = fields.Char(string='Date', tracking=True, track_visibility='always')
+    date_of_flight = fields.Char(string='Date', tracking=True)
     # Compartment Code: Class of service (F = First, J = Business, Y = Economy).
-    compartment_code = fields.Char(string='Class', tracking=True, track_visibility='always')
+    compartment_code = fields.Char(string='Class', tracking=True)
     # Seat Number: Seat number of the passenger.
-    seat_number = fields.Char(string='Seat', tracking=True, track_visibility='always')
+    seat_number = fields.Char(string='Seat', tracking=True)
     # Check-in Sequence Number: Sequence number of the passenger during check-in.
-    check_in_sequence_number = fields.Char(string='SEQ', tracking=True, track_visibility='always')
+    check_in_sequence_number = fields.Char(string='SEQ', tracking=True)
     # Passenger Status: Status of the passenger (A = Adult, C = Child, I = Infant).
-    passenger_status = fields.Char(string='Status', tracking=True, track_visibility='always')
-    airline_passenger_bill_id = fields.Many2one('airline.passenger.bill', string='Airlines Passenger Bill', tracking=True, track_visibility='always')
+    passenger_status = fields.Char(string='Status', tracking=True)
+    airline_passenger_bill_id = fields.Many2one('airline.passenger.bill', string='Airlines Passenger Bill', tracking=True)
     # Bar Code Raw Data: Raw data of the bar code.
     raw = fields.Char(string='Raw',)
-    invoice_id = fields.Many2one('account.move', string='Invoice', tracking=True, track_visibility='always')
+    invoice_id = fields.Many2one('account.move', string='Invoice', tracking=True)
     payment_state = fields.Selection([('not_paid', 'Not Paid'),
                                     ('in_payment', 'In Payment'),
                                     ('paid', 'Paid'),

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_passenger_service,access.passenger.service,model_passenger_service,base.group_user,1,1,1,1
+access_passenger_service_line,access.passenger.service.line,model_passenger_service_line,base.group_user,1,1,1,1
+access_passenger_service_rate,access.passenger.service.rate,model_passenger_service_rate,base.group_user,1,1,1,1
+access_passenger_service_rate_line,access.passenger.service.rate.line,model_passenger_service_rate_line,base.group_user,1,1,1,1

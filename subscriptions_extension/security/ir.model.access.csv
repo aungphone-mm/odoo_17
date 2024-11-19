@@ -1,4 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_subscription_customer,access.subscription.customer,model_subscription_customer,base.group_user,1,1,1,1
 access_create_subscription_wizard_user,create.subscription.wizard,model_create_subscription_wizard,base.group_user,1,1,1,1
-access_edit_html_wizard_user,edit.html.wizard,model_edit_html_wizard,base.group_user,1,1,1,1
+access_sale_order_line_wizard_user,sale_order_line_wizard,model_sale_order_line_wizard,base.group_user,1,1,1,1
+access_sale_order_line_wizard_line_user,sale_order_line_wizard_line,model_sale_order_line_wizard_line,base.group_user,1,1,1,1

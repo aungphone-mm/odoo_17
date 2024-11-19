@@ -12,13 +12,13 @@ class AirlineSecurityService(models.Model):
     type = fields.Selection([
         ('domestic', 'Domestic'),
         ('international', 'International')
-    ], default='domestic', string='Type', track_visibility='always', tracking=True)
+    ], default='domestic', string='Type', tracking=True)
     airline_id = fields.Many2one('airline',string='Airline')
     airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
-    start_time = fields.Datetime(string='Start Date & Time', tracking=True, track_visibility='always')
-    end_time = fields.Datetime(string='End Date & Time', tracking=True, track_visibility='always')
+    start_time = fields.Datetime(string='Start Date & Time', tracking=True)
+    end_time = fields.Datetime(string='End Date & Time', tracking=True)
     airline_security_service_line_ids = fields.One2many('airline.security.service.line', 'airline_security_service_id',
-                                                      string='Security Details', tracking=True)
+                                                      string='Security Details')
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
     security_rate_id = fields.Many2one('airline.security.rate', string='Security Rate')
     for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)

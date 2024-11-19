@@ -2,9 +2,9 @@ from odoo import fields, models, api, _
 from datetime import datetime
 from odoo.exceptions import ValidationError
 
-class PassengerBoardingBridgeCharges(models.Model):
-    _name = 'passenger.boarding.bridge.charges'
-    _description = 'Passenger Boarding Bridge Charges'
+class PassengerService(models.Model):
+    _name = 'passenger.service'
+    _description = 'Passenger Service'
     _inherit = ['mail.activity.mixin', 'mail.thread']
     _order = 'id desc'
 
@@ -17,14 +17,16 @@ class PassengerBoardingBridgeCharges(models.Model):
     airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
     start_time = fields.Datetime(string='Start Date & Time', tracking=True)
     end_time = fields.Datetime(string='End Date & Time', tracking=True)
-    currency_id = fields.Many2one('res.currency', string='Currency', related='bridge_rate_id.currency_id',
-                                  store=True,
-                                  readonly=True)
-    passenger_boarding_bridge_charges_line_ids = fields.One2many('passenger.boarding.bridge.charges.line', 'passenger_boarding_bridge_charges_id',
-                                                      string='Bridge Details')
+    passenger_service_line_ids = fields.One2many('passenger.service.line', 'passenger_service_id',
+                                                      string='Passenger Service Details')
+    currency_id = fields.Many2one('res.currency', string='Currency', store=True,tracking=True, required=True)
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
-    bridge_rate_id = fields.Many2one('passenger.boarding.bridge.charges.rate', string='Bridge Rate')
+    # passenger_service_rate_id = fields.Many2one('passenger.service.rate', string='Passenger Service Rate')
     for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
+    product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
+    journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', domain=[('type', '=', 'sale')],
+                                 required=True)
+    pax_price = fields.Integer(string='Pax Price',tracking=True, required=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
@@ -70,23 +72,23 @@ class PassengerBoardingBridgeCharges(models.Model):
             'partner_id': partner.id,  # You may want to change this to an actual customer
             'invoice_date': fields.Date.today(),
             'invoice_line_ids': [(0, 0, line) for line in self._prepare_invoice_line_vals()],
-            'passenger_boarding_bridge_charges_id': self.id,
-            'currency_id': self.bridge_rate_id.currency_id.id,
-            'form_type': 'bridge',
+            'passenger_service_id': self.id,
+            'currency_id': self.currency_id.id,
+            'form_type': 'passengerservice',
             'for_date': self.for_date,
-            'journal_id': self.bridge_rate_id.journal_id.id,
+            'journal_id': self.journal_id.id,
         }
 
     def _prepare_invoice_line_vals(self):
         self.ensure_one()
         lines = []
-        for line in self.passenger_boarding_bridge_charges_line_ids:
+        for line in self.passenger_service_line_ids:
             lines.append({
-                'product_id': line.bridge_rate_id.product_id.id,
+                'product_id': self.product_id.id,
                 'name': f"{line.flightno_id.name}",
-                'quantity': 1,
-                'price_unit': line.amount,  # You need to set the appropriate price
-                'passenger_boarding_bridge_charges_line_id': line.id,
+                'quantity': line.invoice_pax,
+                'price_unit':self.pax_price,  # You need to set the appropriate price
+                'passenger_service_line_id': line.id,
             })
         return lines
 
@@ -94,10 +96,10 @@ class PassengerBoardingBridgeCharges(models.Model):
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             current_date = datetime.now().strftime('%Y/%m')
-            sequence = self.env['ir.sequence'].next_by_code('passenger.boarding.bridge.charges.seq') or '00001'
+            sequence = self.env['ir.sequence'].next_by_code('passenger.service.bill.seq') or '00001'
             if vals['type'] == 'domestic':
-                vals['name'] = f'DPB/{current_date}/{sequence}'
+                vals['name'] = f'DPS/{current_date}/{sequence}'
             else:
-                vals['name'] = f'IPB/{current_date}/{sequence}'
-        return super(PassengerBoardingBridgeCharges, self).create(vals)
+                vals['name'] = f'IPS/{current_date}/{sequence}'
+        return super(PassengerService, self).create(vals)
 

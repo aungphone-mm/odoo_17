@@ -88,4 +88,14 @@
             </form>
         </field>
     </record>
+    <template id="airline_passenger_bridge_line_template">
+    <div>
+        <strong>Passenger Loading Bridge Line Has Been Created:</strong>
+        <ul>
+            <t t-foreach="changes" t-as="change">
+                <li t-esc="change"/>
+            </t>
+        </ul>
+    </div>
+</template>
 </odoo>

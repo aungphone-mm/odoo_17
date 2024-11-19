@@ -313,10 +313,13 @@ class ElectricMeterReadingLine(models.Model):
     invoice_id = fields.Many2one(comodel_name='account.move', string='Invoice', required=False,
                                  inverse_name="reading_line_id")
     amount = fields.Float(string='Amount', required=True, default=0.0, currency_field='currency_id')
+    # Update amount field definition
+    # amount = fields.Monetary(string='Amount', required=True, default=0.0, currency_field='currency_id')
     narration = fields.Text(string='Narration')
-    state = fields.Selection(
-        [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('done', 'Done'), ('canceled', 'Canceled')], string='Status',
-        required=True, default='draft', related="reading_id.state")
+    # state = fields.Selection(
+    #     [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('done', 'Done'), ('canceled', 'Canceled')], string='Status',
+    #     required=True, default='draft', related="reading_id.state")
+    state = fields.Selection(related="reading_id.state", readonly=True)
     mgm_percentage = fields.Integer("Management Fee")
     location_id = fields.Many2one('location', string='Location', related='meter_id.location_id', store=True,
                                   readonly=True)

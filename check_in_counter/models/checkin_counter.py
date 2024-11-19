@@ -12,16 +12,16 @@ class CheckinCounter(models.Model):
     type = fields.Selection([
         ('domestic', 'Domestic'),
         ('international', 'International')
-    ], default='domestic', string='Type', track_visibility='always', tracking=True)
+    ], default='domestic', string='Type', tracking=True)
     airline_id = fields.Many2one('airline',string='Airline')
     airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
     currency_id = fields.Many2one('res.currency', string='Currency', related='checkin_counter_rate_id.currency_id', store=True,
                                   readonly=True)
 
-    start_time = fields.Datetime(string='Start Date & Time', tracking=True, track_visibility='always')
-    end_time = fields.Datetime(string='End Date & Time', tracking=True, track_visibility='always')
+    start_time = fields.Datetime(string='Start Date & Time', tracking=True)
+    end_time = fields.Datetime(string='End Date & Time', tracking=True)
     checkin_counter_line_ids = fields.One2many('checkin.counter.line', 'checkin_counter_id',
-                                                      string='Checkin Details', tracking=True)
+                                                      string='Checkin Details')
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
     checkin_counter_rate_id = fields.Many2one('checkin.counter.rate', string='Checkin Counter Rate')
     for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)

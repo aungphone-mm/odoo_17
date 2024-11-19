@@ -88,6 +88,15 @@
             </form>
         </field>
     </record>
-
+    <template id="airline_passenger_security_line_template">
+    <div>
+        <strong>Passenger Security Line Has Been Created:</strong>
+        <ul>
+            <t t-foreach="changes" t-as="change">
+                <li t-esc="change"/>
+            </t>
+        </ul>
+    </div>
+</template>
 
 </odoo>

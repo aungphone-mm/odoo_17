@@ -15,35 +15,34 @@ class AirlinePassengerBill(models.Model):
     type = fields.Selection([
         ('domestic', 'Domestic'),
         ('international', 'International')
-    ], default='domestic', string='Type', track_visibility='always', tracking=True)
+    ], default='domestic', string='Type', tracking=True)
 
-    user_id = fields.Many2one('res.users', string='Receptionist', default=lambda self: self.env.uid, required=True,
-                              track_visibility='always', tracking=True)
-    date = fields.Date('Date', default=fields.Date.context_today, required=True, track_visibility='always',
+    user_id = fields.Many2one('res.users', string='Receptionist', default=lambda self: self.env.uid, required=True,tracking=True)
+    date = fields.Date('Date', default=fields.Date.context_today, required=True,
                        tracking=True)
-    start_time = fields.Float(string='Start Time', required=True, track_visibility='always', tracking=True)
-    end_time = fields.Float(string='End Time', required=True, track_visibility='always', tracking=True)
+    start_time = fields.Float(string='Start Time', required=True, tracking=True)
+    end_time = fields.Float(string='End Time', required=True, tracking=True)
     airline_passenger_bill_line_ids = fields.One2many('airline.passenger.bill.line', 'airline_passenger_bill_id',
                                                       string='Passenger Details')
-    passenger_rate_id = fields.Many2one('passenger.rate', string='Passenger Rate', required=True, track_visibility='always',
+    passenger_rate_id = fields.Many2one('passenger.rate', string='Passenger Rate', required=True,
                                         tracking=True, domain="[('type', '=', type)]")
-    format_code = fields.Char(string='Code', tracking=True, track_visibility='always')
-    number_of_legs_encoded = fields.Integer(string='Legs', tracking=True, track_visibility='always')
-    passenger_name = fields.Char(string='Passenger', tracking=True, track_visibility='always')
-    electronic_ticket_indicator = fields.Char(string='Ticket', tracking=True, track_visibility='always')
-    pnr_code = fields.Char(string='PNR', tracking=True, track_visibility='always')
-    from_city_airport_code = fields.Char(string='From', tracking=True, track_visibility='always')
-    to_city_airport_code = fields.Char(string='To', tracking=True, track_visibility='always')
+    format_code = fields.Char(string='Code', tracking=True)
+    number_of_legs_encoded = fields.Integer(string='Legs', tracking=True)
+    passenger_name = fields.Char(string='Passenger', tracking=True)
+    electronic_ticket_indicator = fields.Char(string='Ticket', tracking=True)
+    pnr_code = fields.Char(string='PNR', tracking=True)
+    from_city_airport_code = fields.Char(string='From', tracking=True)
+    to_city_airport_code = fields.Char(string='To', tracking=True)
     operating_carrier_designator = fields.Many2one('airline', string='Airline', tracking=True,
-                                                   track_visibility='always')
-    flight_number = fields.Char(string='Flight', tracking=True, track_visibility='always')
-    date_of_flight = fields.Char(string='Date', tracking=True, track_visibility='always')
-    compartment_code = fields.Char(string='Class', tracking=True, track_visibility='always')
-    seat_number = fields.Char(string='Seat', tracking=True, track_visibility='always')
-    check_in_sequence_number = fields.Char(string='SEQ', tracking=True, track_visibility='always')
-    passenger_status = fields.Char(string='Status', tracking=True, track_visibility='always')
+                                                   )
+    flight_number = fields.Char(string='Flight', tracking=True)
+    date_of_flight = fields.Char(string='Date', tracking=True)
+    compartment_code = fields.Char(string='Class', tracking=True)
+    seat_number = fields.Char(string='Seat', tracking=True)
+    check_in_sequence_number = fields.Char(string='SEQ', tracking=True)
+    passenger_status = fields.Char(string='Status', tracking=True)
     raw = fields.Char(string='Raw')
-    invoice_id = fields.Many2one('account.move', string='Invoice', tracking=True, track_visibility='always')
+    invoice_id = fields.Many2one('account.move', string='Invoice', tracking=True)
     counter_id = fields.Many2one('airline.bill.counter', string='Counter Name', required=True)
     operator_id = fields.Many2one('hr.employee', string='Operator Name', required=True, default=lambda self: self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1))
 
@@ -194,18 +193,18 @@ class PassengerRate(models.Model):
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
     name = fields.Char(string='Name', required=True)
-    receivable_account_id = fields.Many2one(comodel_name='account.account', string='Receivable Account', required=True,
-                                            track_visibility='always')
-    from_date = fields.Date('From Date', default=fields.Date.context_today, required=True, track_visibility='always')
-    to_date = fields.Date('To Date', default=fields.Date.context_today, required=True, track_visibility='always')
-    currency_id = fields.Many2one('res.currency', string='Currency', required=True, track_visibility='always')
-    amount = fields.Monetary(string='Amount', currency_field='currency_id', required=True, track_visibility='always')
+    receivable_account_id = fields.Many2one(comodel_name='account.account', string='Receivable Account', required=True
+                                            )
+    from_date = fields.Date('From Date', default=fields.Date.context_today, required=True)
+    to_date = fields.Date('To Date', default=fields.Date.context_today, required=True)
+    currency_id = fields.Many2one('res.currency', string='Currency', required=True)
+    amount = fields.Monetary(string='Amount', currency_field='currency_id', required=True)
     product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
-    journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', required=True,
-                                 track_visibility='always')
-    default_partner = fields.Many2one(comodel_name='res.partner', string='Default Partner', track_visibility='always')
-    active = fields.Boolean(string='Active', default=True, track_visibility='onchange')
+    journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', required=True
+                                 )
+    default_partner = fields.Many2one(comodel_name='res.partner', string='Default Partner')
+    active = fields.Boolean(string='Active', default=True, tracking=True)
     type = fields.Selection([
         ('domestic', 'Domestic'),
         ('international', 'International')
-    ], default='domestic', string='Domestic/International', track_visibility='always', tracking=True)
+    ], default='domestic', string='Domestic/International', tracking=True)

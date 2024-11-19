@@ -6,12 +6,12 @@ class PassengerBoardingBridgeChargesLine(models.Model):
     _description = 'Passenger Boarding Bridge Charges Line'
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
-    passenger_boarding_bridge_charges_id = fields.Many2one('passenger.boarding.bridge.charges', string='Passenger Boarding Bridge Charges', tracking=True, track_visibility='always')
+    passenger_boarding_bridge_charges_id = fields.Many2one('passenger.boarding.bridge.charges', string='Passenger Boarding Bridge Charges', tracking=True, )
     flightno_id = fields.Many2one('flights',string='Flight No.')
     flight_registration_no = fields.Char(string='Registration No.', related='flightno_id.register_no', store=True)
     flight_aircraft = fields.Char(string='Aircraft Type', related='flightno_id.aircraft_type', store=True)
-    start_time = fields.Datetime(string='Start Date & Time', tracking=True, track_visibility='always')
-    end_time = fields.Datetime(string='End Date & Time', tracking=True, track_visibility='always')
+    start_time = fields.Datetime(string='Start Date & Time', tracking=True, )
+    end_time = fields.Datetime(string='End Date & Time', tracking=True, )
     total_minutes = fields.Integer(string='Total Minutes', compute='_compute_total_minutes', store=True)
     bridge_rate_id = fields.Many2one('passenger.boarding.bridge.charges.rate', string='Rate',
                                        compute='_compute_bridge_rate',
@@ -118,3 +118,47 @@ class PassengerBoardingBridgeChargesLine(models.Model):
                         'message': f"Using maximum rate {self.amount} for {self.total_minutes} minutes"
                     }
                 }
+
+    @api.model
+    def create(self, vals):
+        passenger_lines = super(PassengerBoardingBridgeChargesLine, self).create(vals)
+        for passenger_line in passenger_lines:
+            passenger_line._log_bridge_tracking(vals)
+            return passenger_lines
+
+    def _log_bridge_tracking(self, vals):
+        template_id = self.env.ref('passenger_boarding_bridge_charges.airline_passenger_bridge_line_template')
+        changes = []
+
+        if 'flightno_id' in vals:
+            flight = self.env['flights'].browse(vals['flightno_id'])
+            changes.append(f"Flight Number: → {flight.name}")
+            changes.append(f"Flight Registration No: → {flight.register_no or 'N/A'}")
+
+        if 'start_time' in vals:
+            new_value = vals.get('start_time', 'N/A')
+            changes.append(f"Start Time:  → {new_value}")
+
+        if 'end_time' in vals:
+            new_value = vals.get('end_time', 'N/A')
+            changes.append(f"End Time:  → {new_value}")
+
+        if 'start_time' in vals or 'end_time' in vals:
+            self._compute_total_minutes()
+            changes.append(f"Total Minutes: → {self.total_minutes}")
+
+        if 'bridge_rate_id' in vals:
+            bridge_rate = self.env['passenger.boarding.bridge.charges.rate'].browse(vals['bridge_rate_id'])
+            new_value = bridge_rate.name  # or whatever field contains the rate name
+            changes.append(f"Bridge Rate: → {new_value}")
+
+        if changes:
+            rendered_message = self.env['ir.qweb']._render(
+                template_id.id, {'changes': changes}
+            )
+
+            self.passenger_boarding_bridge_charges_id.message_post(
+                body=rendered_message,
+                message_type='notification',
+                subtype_xmlid="mail.mt_note"
+            )
