@@ -13,13 +13,21 @@ class AccountCashbook(models.Model):
                             required=True)
     journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', required=True, tracking=True)
     main_account_id = fields.Many2one(comodel_name='account.account', string='Main Account Name',
-                                      domain='[("account_type", "=", "asset_cash")]', related='journal_id.default_account_id', required=True, tracking=True)
+                                      domain='[("account_type", "=", "asset_cash")]', related='journal_id.default_account_id', readonly=False, tracking=True)
     currency_id = fields.Many2one(comodel_name='res.currency', string='Currency', required=True, tracking=True)
     description = fields.Html(string='Description', required=False, tracking=True)
     line_ids = fields.One2many(comodel_name='account.cashbook.line', inverse_name='cashbook_id', string='Cashbook Line',
                                required=False, tracking=True)
-    state = fields.Selection(string='State', selection=[('draft', 'Draft'), ('done', 'Done'), ('cancel', 'Cancel') ], required=True,
-                             default='draft', tracking=True)
+    state = fields.Selection(
+        string='State',
+        selection=[
+            ('draft', 'Draft'),
+            ('confirm', 'Confirm'),
+            ('done', 'Done'),
+            ('cancel', 'Cancel')
+        ],
+        required=True,
+        default='draft', tracking=True)
     move_id = fields.Many2one(comodel_name='account.move', string='Journal Entry', readonly=True, copy=False)
     move_line_ids = fields.One2many(related='move_id.line_ids', string='Journal Items', readonly=True)
 
@@ -41,13 +49,20 @@ class AccountCashbook(models.Model):
         vals['name'] = name
         return super(AccountCashbook, self).create(vals)
 
-    def action_done(self):
+    def action_confirm(self):
         self.create_journal_entries()
+        self.write({'state': 'confirm'})
+
+    def action_done(self):
+        self.env['account.move'].browse(self.move_id.id).action_post()
         self.write({'state': 'done'})
 
     def action_cancel(self):
         self.cancel_journal_entries()
         self.write({'state': 'cancel'})
+
+    def action_reset_to_draft(self):
+        self.update({'state': 'draft'})
 
     def cancel_journal_entries(self):
         for record in self:
