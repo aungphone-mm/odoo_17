@@ -5,7 +5,7 @@
         <field name="name">passenger.boarding.bridge.charges.tree</field>
         <field name="model">passenger.boarding.bridge.charges</field>
         <field name="arch" type="xml">
-            <tree string="Passenger Loading Bridge Charges">
+            <tree string="Passenger Boarding Bridge Charges">
                 <field name="name"/>
                 <field name="type"/>
                 <field name="airline_id"/>

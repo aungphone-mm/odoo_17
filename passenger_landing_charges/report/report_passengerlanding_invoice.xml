@@ -21,6 +21,11 @@
                                 background-color: #e9ecef;
                             }
                         </style>
+                    <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
+                            </div>
+                        </div>s
                     <div class="page">
                         <!-- Invoice Info Section -->
                         <div class="row mb-4">

@@ -22,6 +22,7 @@ class AirlineSecurityService(models.Model):
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
     security_rate_id = fields.Many2one('airline.security.rate', string='Security Rate')
     for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
+    inv_desc = fields.Html(string='Invoice Description')
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),

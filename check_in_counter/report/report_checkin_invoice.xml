@@ -21,6 +21,11 @@
                                 background-color: #e9ecef;
                             }
                         </style>
+                    <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
+                            </div>
+                        </div>
                     <div class="page">
                         <!-- Invoice Info Section -->
                         <div class="row mb-4">
@@ -70,10 +75,10 @@
                                     <td><br/><br/><br/><br/>1</td>
                                     <td>
                                         <br/><br/><br/><br/>
-                                        Check-In Counter Service Charges for:<br/>
+                                        <span>Check-In Counter Service Charges for:<br/>
                                         Flight No: As per attached<br/>
                                         <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
-                                        <br/><br/><br/><br/><br/><br/><br/><br/>
+                                        <br/><br/><br/><br/><br/></span>
                                     </td>
                                     <td style="text-align: center;">
                                         <br/><br/><br/><br/>
@@ -81,7 +86,7 @@
                                     </td>
                                     <td style="text-align: right;">
                                         <br/><br/><br/><br/>
-                                        <span t-field="o.amount_total"/>
+                                        <span t-field="o.amount_untaxed"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -89,7 +94,7 @@
                                         <span t-esc="o.currency_id.amount_to_text(o.amount_total)+' Only'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-field="o.amount_total"/>
+                                        <span t-field="o.amount_untaxed"/>
                                     </td>
                                 </tr>
                             </tbody>
@@ -97,24 +102,28 @@
 
 <!--                        &lt;!&ndash; Payment Information &ndash;&gt;-->
                         <div class="row mt-4">
-                            <div class="col-12">
-                                <strong>NOTE:</strong>
-                                <p>- Payment has to be made in the currency stated above.<br/>
-                                   - For CASH payment, please pay at:<br/>
-                                   Yangon Aerodrome Company Limited Building, Finance Department, Infront of (T-2) Yangon International Airport<br/>
-                                   - For payment via ACCOUNT TRANSFER (bank charges to be borne by the payee), account no.:</p>
-                                <ul>
-                                    <li>CB Bank, USD Account No. 0010101200703796, (Swift Code- CPOBMMMY)</li>
-                                    <li>Industrial and Commercial Bank of China (ICBC), Yangon Branch,<br/>
-                                        USD Account No. 6010010000000150996, (Swift Code- ICBKMMMY)</li>
-                                    <li>Bank of China (BOC), Yangon Branch,<br/>
-                                        USD Account No. 05312220007069, (Swift Code- BKCHMMMY)</li>
-                                </ul>
-                            </div>
+                       <div class="col-12">
+                           <strong>NOTE: -</strong>
+                           <p style="margin-bottom: 0;">1 Payment has to be made in the currency stated above</p>
+                           <p style="margin-bottom: 0;">2 For CASH payment, please pay at:</p>
+                           <p style="margin-left: 20px; margin-bottom: 0;">Finance Department, Yangon Aerodrome Co Ltd Building (Opposite Terminal 2, Yangon International Airport).</p>
+                           <p style="margin-bottom: 0;">3 For payment via ACCOUNT TRANSFER (all Local and Overseas bank charges to be borne by the remitter),</p>
+                           <p style="margin-bottom: 0;">4 Account Name: Yangon Aerodrome Company Limited</p>
+                           <p style="margin-bottom: 10px;">5 Account option (Foreign Currency) as below -</p>
+                           <div style="margin-left: 20px;">
+                               <p style="margin-bottom: 0;">(a) CB Bank,</p>
+                               <p style="margin-left: 25px; margin-bottom: 0;">USD Account No. 0010101200703796, (Swift Code- CPOBMMMY)</p>
+                               <p style="margin-bottom: 0;">(b) Industrial and Commercial Bank of China (ICBC), Yangon Branch -</p>
+                               <p style="margin-left: 25px; margin-bottom: 0;">USD Account No. 6010010000000150996, (Swift Code- ICBKMMMY)</p>
+                               <p style="margin-bottom: 0;">(c) Bank of China (Hong Kong) Limited Yangon Branch -</p>
+                               <p style="margin-left: 25px; margin-bottom: 0;">USD Account No. 053-122-2-000706-9, (Swift Code- BKCHMMY)</p>
+                           </div>
+                       </div>
                         </div>
                         <!-- Signature -->
                         <div class="row mt-5">
                             <div class="col-6">
+                                <p>Issued by:</p><br/><br/><br/>
                                 <p>____________________</p>
                                 <p>Aye Thida</p>
                                 <p>General Manager</p>
@@ -137,12 +146,11 @@
                                     <th style="border: 1px solid black;">Sr.No</th>
                                     <th style="border: 1px solid black;">Date</th>
                                     <th style="border: 1px solid black;">Flight No</th>
-                                    <th style="border: 1px solid black;">Aircraft Type</th>
-                                    <th style="border: 1px solid black;">Reg. No.</th>
-
-                                    <th style="border: 1px solid black;">Total Service/hr</th>
+                                    <th style="border: 1px solid black;">Counter Open time</th>
+                                    <th style="border: 1px solid black;">Counter Close time</th>
+                                    <th style="border: 1px solid black;">Used of Total Hour</th>
                                     <th style="border: 1px solid black;">Rate</th>
-                                    <th style="border: 1px solid black;">Amount</th>
+                                    <th style="border: 1px solid black;">1No Used Amount</th>
                                     <th style="border: 1px solid black;">Remark</th>
                                 </tr>
                             </thead>
@@ -157,12 +165,11 @@
                                             <span t-field="line.name"/>
                                         </td>
                                         <td style="border: 1px solid black;">
-                                            <span t-field="line.checkin_counter_line_id.flight_aircraft"/>
+                                           <span t-field="line.checkin_counter_line_id.start_time" t-options='{"format": "HH:mm"}'/>
                                         </td>
                                         <td style="border: 1px solid black;">
-                                            <span t-field="line.checkin_counter_line_id.flight_registration_no"/>
+                                           <span t-field="line.checkin_counter_line_id.end_time" t-options='{"format": "HH:mm"}'/>
                                         </td>
-
                                         <td style="border: 1px solid black; text-align: center;">
                                             <t t-if="line.checkin_counter_line_id">
                                                 <t t-set="hours" t-value="int(line.checkin_counter_line_id.total_minutes // 60)"/>
@@ -187,18 +194,79 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="7" style="text-align: right; border: 1px solid black;">
+                                    <td style="border: 1px solid black; text-align: center;">
                                         <strong>Total</strong>
                                     </td>
+                                    <td style="border: 1px solid black;"></td>
+                                    <td colspan="3" style="border: 1px solid black; text-align: center;">
+                                        Total (<t t-esc="len(o.invoice_line_ids)"/>) Counters for (<t t-esc="len(set(o.invoice_line_ids.mapped('name')))"/>) Flights
+                                    </td>
+                                    <td style="text-align: right; border: 1px solid black;"></td>
+                                    <td style="text-align: right; border: 1px solid black;"></td>
                                     <td style="text-align: right; border: 1px solid black;">
                                         <strong>
-                                            <span t-field="o.amount_total"/>
+                                            <span t-field="o.amount_untaxed"/>
                                         </strong>
                                     </td>
                                     <td style="border: 1px solid black;"></td>
                                 </tr>
                             </tfoot>
                         </table>
+<!--                        <table class="table table-sm mt-4" style="width: 100%; border-collapse: collapse;">-->
+<!--                            <thead>-->
+<!--                                <tr style="background-color: #e9ecef;">-->
+<!--                                    <th style="border: 1px solid black;">Rate Type</th>-->
+<!--                                    <th style="border: 1px solid black; text-align: right;">Amount</th>-->
+<!--                                </tr>-->
+<!--                            </thead>-->
+<!--                            <tbody>-->
+<!--                                <t t-foreach="o._get_rate_totals().items()" t-as="rate">-->
+<!--                                    <tr>-->
+<!--                                        <td style="border: 1px solid black;"><t t-esc="rate[0]"/></td>-->
+<!--                                        <td style="border: 1px solid black; text-align: right;">-->
+<!--                                            <span t-esc="rate[1]" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+<!--                                        </td>-->
+<!--                                    </tr>-->
+<!--                                </t>-->
+<!--                            </tbody>-->
+<!--                        </table>-->
+                        <table class="table table-sm mt-4" style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr style="background-color: #e9ecef;">
+            <th style="border: 1px solid black;">Rate Amount</th>
+            <th style="border: 1px solid black; text-align: center;">Count</th>
+            <th style="border: 1px solid black; text-align: right;">Total Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        <t t-set="total_count" t-value="0"/>
+        <t t-foreach="o._get_amount_totals().items()" t-as="amount_data">
+            <t t-set="total_count" t-value="total_count + amount_data[1]['count']"/>
+            <tr>
+                <td style="border: 1px solid black;">
+                    <span t-esc="amount_data[0]" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                </td>
+                <td style="border: 1px solid black; text-align: center;">
+                    <t t-esc="amount_data[1]['count']"/>
+                </td>
+                <td style="border: 1px solid black; text-align: right;">
+                    <span t-esc="amount_data[1]['total']" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                </td>
+            </tr>
+        </t>
+        <tr>
+            <td style="border: 1px solid black;">
+                Total (<t t-esc="len(o.invoice_line_ids)"/>) Counters for (<t t-esc="len(set(o.invoice_line_ids.mapped('name')))"/>) Flights
+            </td>
+            <td style="border: 1px solid black; text-align: center;">
+                <t t-esc="total_count"/>
+            </td>
+            <td style="border: 1px solid black; text-align: right;">
+                <strong><span t-field="o.amount_untaxed"/></strong>
+            </td>
+        </tr>
+    </tbody>
+</table>
                     </div>
                 </t>
             </t>

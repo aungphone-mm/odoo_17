@@ -25,26 +25,30 @@
         </record>
         <!-- Menus -->
         <menuitem id="menu_passenger_service_root"
-                  name="Passenger Service Charges"
+                  name="Invoicing"
                   sequence="10"
                   web_icon="passenger_service_charges,static/description/icon.png"/>
 
         <menuitem id="menu_passenger_service"
-                  name="Passenger Service Charges"
+                  name="Passenger Service"
                   parent="menu_passenger_service_root"
+                  sequence="1"/>
+        <menuitem id="menu_passenger_service_sub"
+                  name="Passenger Service"
+                  parent="menu_passenger_service"
                   action="action_passenger_service"
                   sequence="10"/>
 
         <menuitem id="menu_airline_passenger_service_line"
-                  name="Passenger Service Charges Line"
-                  parent="menu_passenger_service_root"
+                  name="Passenger Service Line"
+                  parent="menu_passenger_service"
                   action="action_passenger_service_line"
-                  sequence="10"/>
+                  sequence="20"/>
 
-        <menuitem id="menu_passenger_service_configuration"
-                  name="Configuration"
-                  parent="menu_passenger_service_root"
-                  sequence="11"/>
+<!--        <menuitem id="menu_passenger_service_configuration"-->
+<!--                  name="Configuration"-->
+<!--                  parent="menu_passenger_service_root"-->
+<!--                  sequence="11"/>-->
 
 <!--        <menuitem id="menu_airline" name="Airline" action="airline_passenger_bill.action_airline"-->
 <!--                  parent="menu_airline_passenger_service_configuration" sequence="1"/>-->
@@ -55,6 +59,6 @@
 <!--        <menuitem id="menu_bridge_rate" name="Bridge Rates" action="airline_passenger_bill.action_bridge_rate"-->
 <!--                  parent="menu_airline_passenger_service_configuration" sequence="30"/>-->
         <menuitem id="menu_passenger_service_rate" name="Passenger Service Rates" action="action_passenger_service_rate"
-                  parent="menu_passenger_service_configuration" sequence="10"/>
+                  parent="menu_passenger_service" sequence="30"/>
     </data>
 </odoo>

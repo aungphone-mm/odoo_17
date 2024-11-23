@@ -48,7 +48,7 @@
                         <field name="start_time"/>
                         <field name="end_time" />
                         <field name="for_date"/>
-
+                        <field name="inv_desc"/>
                     </group>
                     <group>
                     <group>

@@ -31,30 +31,21 @@
 
         <menuitem id="menu_checkin_counter"
                   name="Check In Counter"
-                  parent="menu_checkin_counter_root"
+                  parent="passenger_service_charges.menu_passenger_service_root"
+                  sequence="50"/>
+        <menuitem id="menu_checkin_counter1"
+                  name="Check In Counter"
+                  parent="menu_checkin_counter"
                   action="action_checkin_counter"
                   sequence="10"/>
 
         <menuitem id="menu_airline_checkin_counter_line"
                   name="Check In Counter Line"
-                  parent="menu_checkin_counter_root"
+                  parent="menu_checkin_counter"
                   action="action_checkin_counter_line"
-                  sequence="10"/>
+                  sequence="20"/>
 
-        <menuitem id="menu_checkin_counter_configuration"
-                  name="Configuration"
-                  parent="menu_checkin_counter_root"
-                  sequence="11"/>
-
-<!--        <menuitem id="menu_airline" name="Airline" action="airline_passenger_bill.action_airline"-->
-<!--                  parent="menu_airline_checkin_counter_configuration" sequence="1"/>-->
-<!--        <menuitem id="menu_flight_no" name="Flight Numbers" action="airline_passenger_bill.action_flight_no"-->
-<!--                  parent="menu_airline_checkin_counter_configuration" sequence="10"/>-->
-<!--        <menuitem id="menu_passenger_rate" name="Passenger Rates" action="airline_passenger_bill.action_passenger_rate"-->
-<!--                  parent="menu_airline_checkin_counter_configuration" sequence="20"/>-->
-<!--        <menuitem id="menu_bridge_rate" name="Bridge Rates" action="airline_passenger_bill.action_bridge_rate"-->
-<!--                  parent="menu_airline_checkin_counter_configuration" sequence="30"/>-->
         <menuitem id="menu_checkin_counter_rate" name="Check In Counter Rates" action="action_checkin_counter_rate"
-                  parent="menu_checkin_counter_configuration" sequence="10"/>
+                  parent="menu_checkin_counter" sequence="30"/>
     </data>
 </odoo>

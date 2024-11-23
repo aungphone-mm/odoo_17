@@ -68,9 +68,9 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><br/><br/><br/><br/>1</td>
+                                        <td><br/><br/><br/>1</td>
                                         <td>
-                                            <br/><br/><br/><br/>
+                                            <br/><br/><br/>
                                             <span t-field="o.reading_line_id.reading_id.inv_desc"/>
 <!--                                            <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>-->
                                             <br/><br/><br/>
@@ -87,7 +87,7 @@
 <!--                                            <span t-field="o.amount_total"/>-->
 <!--                                        </td>-->
                                         <td style="text-align: right;">
-                                            <br/><br/><br/><br/>
+                                            <br/><br/><br/>
                                             <t t-if="o.currency_id.name == 'MMK'">
                                                 <span t-esc="'MMK ' + '{:,.2f}'.format(o.amount_total)"/>
                                             </t>

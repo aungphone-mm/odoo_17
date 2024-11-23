@@ -7,6 +7,7 @@ class PassengerBoardingBridgeChargesRateLine(models.Model):
     from_unit = fields.Integer(string='From', required=True)
     to_unit = fields.Integer(string='To')
     unit_price = fields.Float(string='Unit Price', required=True)
+    time = fields.Integer(string='Time', required=True)
     currency_id = fields.Many2one(
         'res.currency',
         string='Currency',

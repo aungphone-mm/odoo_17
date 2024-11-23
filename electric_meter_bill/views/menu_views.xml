@@ -7,12 +7,16 @@
             <field name="res_model">location</field>
             <field name="view_mode">tree</field>
         </record>
+        <menuitem id="menu_meter"
+                  name="Electric Meter"
+                  parent="passenger_service_charges.menu_passenger_service_root"
+                  sequence="50"/>
         <!-- This Menu Item will appear in the Upper bar, That's why It needs NO parent or action -->
         <menuitem id="menu_electric_meter_main" name="Electric Meter" sequence="10" web_icon="electric_meter_bill,static/images/electric_meter.png" />
         <!-- This Menu Item Must have a parent -->
-        <menuitem id="menu_electric_meter_configuration" name="Configuration" parent="menu_electric_meter_main" sequence="100"/>
+<!--        <menuitem id="menu_electric_meter_configuration" name="Configuration" parent="menu_electric_meter_main" sequence="100"/>-->
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="menu_location" name="Location" parent="menu_electric_meter_configuration" action="electric_meter_bill.location_action" sequence="10"/>
+        <menuitem id="menu_location" name="Location" parent="menu_meter" action="electric_meter_bill.location_action" sequence="10"/>
 
         <record id="electric_meter_action" model="ir.actions.act_window">
             <field name="name">Meter Box</field>
@@ -21,7 +25,7 @@
             <field name="view_mode">tree</field>
         </record>
 
-        <menuitem id="menu_electric_meter" name="Meter Box" parent="menu_electric_meter_main" action="electric_meter_bill.electric_meter_action" sequence="1"/>
+        <menuitem id="menu_electric_meter" name="Meter Box" parent="menu_meter" action="electric_meter_bill.electric_meter_action" sequence="1"/>
 
         <record id="electric_rate_action" model="ir.actions.act_window">
             <field name="name">Electric Rate</field>
@@ -31,7 +35,7 @@
         </record>
 
         <!-- This Menu Item Must have a parent -->
-        <menuitem id="menu_electric_rate" name="Rate" parent="menu_electric_meter_configuration" sequence="20" action="electric_meter_bill.electric_rate_action"/>
+        <menuitem id="menu_electric_rate" name="Rate" parent="menu_meter" sequence="20" action="electric_meter_bill.electric_rate_action"/>
 
         <record id="business_source_action" model="ir.actions.act_window">
             <field name="name">Business Source</field>

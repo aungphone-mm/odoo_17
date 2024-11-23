@@ -4,7 +4,7 @@
             <field name="name">passenger.boarding.bridge.charges.line.tree</field>
             <field name="model">passenger.boarding.bridge.charges.line</field>
             <field name="arch" type="xml">
-                <tree string="Passenger Loading Bridge Charges Line">
+                <tree string="Passenger Boarding Bridge Charges Line">
                     <header>
 <!--                        <button name="action_register_payment" string="Pay" type="object" class="oe_highlight"/>-->
                     </header>
@@ -75,6 +75,7 @@
                                     <field name="to_unit"/>
                                     <field name="currency_id"/>
                                     <field name="unit_price"/>
+                                    <field name="time"/>
                                 </tree>
                             </field>
                         </page>
@@ -90,7 +91,7 @@
     </record>
     <template id="airline_passenger_bridge_line_template">
     <div>
-        <strong>Passenger Loading Bridge Line Has Been Created:</strong>
+        <strong>Passenger Boarding Bridge Line Has Been Created:</strong>
         <ul>
             <t t-foreach="changes" t-as="change">
                 <li t-esc="change"/>

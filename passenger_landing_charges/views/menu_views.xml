@@ -25,26 +25,25 @@
         </record>
         <!-- Menus -->
         <menuitem id="menu_passenger_landing_root"
-                  name="Passenger Landing Charges"
+                  name="Passenger Landing"
                   sequence="10"
                   web_icon="passenger_landing_charges,static/description/icon.png"/>
 
         <menuitem id="menu_passenger_landing"
-                  name="Passenger Landing Charges"
-                  parent="menu_passenger_landing_root"
+                  name="Passenger Landing"
+                  parent="passenger_service_charges.menu_passenger_service_root"
+                  sequence="10"/>
+        <menuitem id="menu_passenger_landing_sub"
+                  name="Passenger Landing"
+                  parent="menu_passenger_landing"
                   action="action_passenger_landing"
                   sequence="10"/>
 
         <menuitem id="menu_airline_passenger_landing_line"
-                  name="Passenger Landing Charges Line"
-                  parent="menu_passenger_landing_root"
+                  name="Passenger Landing Line"
+                  parent="menu_passenger_landing"
                   action="action_passenger_landing_line"
-                  sequence="10"/>
-
-        <menuitem id="menu_passenger_landing_configuration"
-                  name="Configuration"
-                  parent="menu_passenger_landing_root"
-                  sequence="11"/>
+                  sequence="20"/>
 
 <!--        <menuitem id="menu_airline" name="Airline" action="airline_passenger_bill.action_airline"-->
 <!--                  parent="menu_airline_passenger_landing_configuration" sequence="1"/>-->
@@ -54,7 +53,7 @@
 <!--                  parent="menu_airline_passenger_landing_configuration" sequence="20"/>-->
 <!--        <menuitem id="menu_bridge_rate" name="Bridge Rates" action="airline_passenger_bill.action_bridge_rate"-->
 <!--                  parent="menu_airline_passenger_landing_configuration" sequence="30"/>-->
-        <menuitem id="menu_passenger_landing_rate" name="Passenger Landing Rates" action="action_passenger_landing_rate"
-                  parent="menu_passenger_landing_configuration" sequence="10"/>
+        <menuitem id="menu_passenger_landing_rate" name="Landing Rates" action="action_passenger_landing_rate"
+                  parent="menu_passenger_landing" sequence="30"/>
     </data>
 </odoo>

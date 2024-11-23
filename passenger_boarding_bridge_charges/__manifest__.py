@@ -1,9 +1,9 @@
 {
-    'name': 'Passenger Loading Bridge Charges',
+    'name': 'Passenger Boarding Bridge Charges',
     'version': '17.0.1.0',
     'category': 'Utilities',
     'license': 'AGPL-3',
-    'summary': """Manage the Passenger loading Bridge process for landing operations efficiently""",
+    'summary': """Manage the Passenger Boarding Bridge process for landing operations efficiently""",
     'depends': ['mail', 'account', 'base','yacl_airline'],
     'author': 'Mingalar Sky Co., Ltd.',
     'website': 'https://www.mingalarsky.com',

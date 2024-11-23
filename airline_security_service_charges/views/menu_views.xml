@@ -31,30 +31,21 @@
 
         <menuitem id="menu_airline_security"
                   name="Airline Security Service"
-                  parent="menu_airline_security_bill_root"
+                  parent="passenger_service_charges.menu_passenger_service_root"
+                  sequence="60"/>
+        <menuitem id="menu_airline_security1"
+                  name="Airline Security Service"
+                  parent="menu_airline_security"
                   action="action_airline_security_bill"
                   sequence="10"/>
 
         <menuitem id="menu_airline_security_bill_line"
                   name="Airline Security Service Line"
-                  parent="menu_airline_security_bill_root"
+                  parent="menu_airline_security"
                   action="action_airline_security_bill_line"
-                  sequence="10"/>
+                  sequence="20"/>
 
-        <menuitem id="menu_airline_security_bill_configuration"
-                  name="Configuration"
-                  parent="menu_airline_security_bill_root"
-                  sequence="11"/>
-
-<!--        <menuitem id="menu_airline" name="Airline" action="airline_passenger_bill.action_airline"-->
-<!--                  parent="menu_airline_security_bill_configuration" sequence="1"/>-->
-<!--        <menuitem id="menu_flight_no" name="Flight Numbers" action="airline_passenger_bill.action_flight_no"-->
-<!--                  parent="menu_airline_security_bill_configuration" sequence="10"/>-->
-<!--        <menuitem id="menu_passenger_rate" name="Passenger Rates" action="airline_passenger_bill.action_passenger_rate"-->
-<!--                  parent="menu_airline_security_bill_configuration" sequence="20"/>-->
-<!--        <menuitem id="menu_bridge_rate" name="Bridge Rates" action="airline_passenger_bill.action_bridge_rate"-->
-<!--                  parent="menu_airline_security_bill_configuration" sequence="30"/>-->
         <menuitem id="menu_security_rate" name="Security Rates" action="action_security_rate"
-                  parent="menu_airline_security_bill_configuration" sequence="10"/>
+                  parent="menu_airline_security" sequence="30"/>
     </data>
 </odoo>

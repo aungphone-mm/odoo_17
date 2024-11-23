@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="action_security_service_report" model="ir.actions.report">
-        <field name="name">Loading Bridge Invoice With Breakdown</field>
+        <field name="name">Boarding Bridge Invoice With Breakdown</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-html</field>
         <field name="report_name">passenger_boarding_bridge_charges.report_bridge_service</field>
@@ -21,6 +21,11 @@
                                 background-color: #e9ecef;
                             }
                         </style>
+                    <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
+                            </div>
+                        </div>
                     <div class="page">
                         <!-- Invoice Info Section -->
                         <div class="row mb-4">
@@ -70,9 +75,10 @@
                                     <td><br/><br/><br/><br/>1</td>
                                     <td>
                                         <br/><br/><br/><br/>
-                                        Loading Bridge Service Charges for:<br/>
+                                        <span>Passenger Boarding Bridge Service Charges for:<br/>
                                         Flight No: As per attached<br/>
                                         <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
+                                        </span>
                                         <br/><br/><br/><br/><br/>
                                     </td>
                                     <td style="text-align: center;">
@@ -81,15 +87,16 @@
                                     </td>
                                     <td style="text-align: right;">
                                         <br/><br/><br/><br/>
-                                        <span t-field="o.amount_total"/>
+                                        <span t-field="o.amount_untaxed"/>
                                     </td>
                                 </tr>
+
                                 <tr>
-                                    <td colspan="3" style="text-align: left;">
-                                        <span t-esc="o.currency_id.amount_to_text(o.amount_total)"/> Only
+                                    <td colspan="3" style="text-align: center;">
+                                        <span t-esc="o.currency_id.amount_to_text(o.amount_untaxed)+ ' Only'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-field="o.amount_total"/>
+                                        <span t-field="o.amount_untaxed"/>
                                     </td>
                                 </tr>
                             </tbody>
@@ -98,17 +105,19 @@
                         <div class="row mt-4">
                             <div class="col-12">
                                 <strong>NOTE:</strong>
-                                <p>- Payment has to be made in the currency stated above.<br/>
-                                   - For CASH payment, please pay at:<br/>
-                                   Yangon Aerodrome Company Limited Building, Finance Department, Infront of (T-2) Yangon International Airport<br/>
-                                   - For payment via ACCOUNT TRANSFER (bank charges to be borne by the payee), account no.:</p>
-                                <ul>
-                                    <li>CB Bank, USD Account No. 0010101200703796, (Swift Code- CPOBMMMY)</li>
-                                    <li>Industrial and Commercial Bank of China (ICBC), Yangon Branch,<br/>
-                                        USD Account No. 6010010000000150996, (Swift Code- ICBKMMMY)</li>
-                                    <li>Bank of China (BOC), Yangon Branch,<br/>
-                                        USD Account No. 05312220007069, (Swift Code- BKCHMMMY)</li>
-                                </ul>
+                                <p style="margin-bottom: 0;">1 Payment has to be made in the currency stated above.</p>
+                                <p style="margin-bottom: 0;">2 For CASH payment, please pay at:</p>
+                                <p style="margin-left: 20px; margin-bottom: 0;">Finance Department, Yangon Aerodrome Co Ltd Building (Opposite Terminal 2, Yangon International Airport)</p>
+                                <p style="margin-bottom: 0;">3 For payment via ACCOUNT TRANSFER (all Local and Overseas bank charges to be borne by the remitter),</p>
+                                <p style="margin-bottom: 0;">4 Account Name: Yangon Aerodrome Company Limited</p>
+                                <p style="margin-bottom: 10px;">5 Account option (Foreign Currency) as below -</p>
+                                <div style="margin-left: 20px;">
+                                    <p style="margin-bottom: 0;">(a) CB Bank, USD Account No. 0010101200703796, (Swift Code- CPOBMMMY)</p>
+                                    <p style="margin-bottom: 0;">(b) Industrial and Commercial Bank of China (ICBC), Yangon Branch,</p>
+                                    <p style="margin-left: 25px; margin-bottom: 0;">USD Account No. 6010010000000150996, (Swift Code- ICBKMMMY)</p>
+                                    <p style="margin-bottom: 0;">(c) Bank of China (BOC), Yangon Branch,</p>
+                                    <p style="margin-left: 25px; margin-bottom: 0;">USD Account No. 05312220007069, (Swift Code- BKCHMMMY)</p>
+                                </div>
                             </div>
                         </div>
                         <!-- Signature -->
@@ -127,7 +136,7 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <div style="text-align: center; margin-bottom: 20px;">
-                            <h3>DETAIL STATEMENT OF LOADING BRIDGE SERVICE CHARGES</h3>
+                            <h3>DETAIL STATEMENT OF BOARDING BRIDGE SERVICE CHARGES</h3>
                             <h4>AIRLINES - <span t-field="o.partner_id.name"/></h4>
                         </div>
 
@@ -138,10 +147,10 @@
                                     <th style="border: 1px solid black;">Date</th>
                                     <th style="border: 1px solid black;">Flight No</th>
                                     <th style="border: 1px solid black;">Aircraft Type</th>
-                                    <th style="border: 1px solid black;">Reg. No.</th>
-
-                                    <th style="border: 1px solid black;">Total Service/hr</th>
+                                    <th style="border: 1px solid black;">Registration</th>
+                                    <th style="border: 1px solid black;">Docking Hour</th>
                                     <th style="border: 1px solid black;">Rate</th>
+                                    <th style="border: 1px solid black;">Time</th>
                                     <th style="border: 1px solid black;">Amount</th>
                                     <th style="border: 1px solid black;">Remark</th>
                                 </tr>
@@ -176,6 +185,13 @@
                                         <td style="border: 1px solid black; text-align: right;">
                                             <span t-field="line.price_unit"/>
                                         </td>
+                                        <td style="border: 1px solid black; text-align: center;">
+                                            <t t-if="line.passenger_boarding_bridge_charges_line_id">
+                                                <t t-set="time_value" t-value="line._get_time_from_rate()"/>
+                                                <t t-esc="time_value if time_value else '-'"/>
+                                            </t>
+                                        </td>
+
                                         <td style="border: 1px solid black; text-align: right;">
                                             <span t-field="line.price_subtotal"/>
                                         </td>
@@ -187,12 +203,12 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="7" style="text-align: right; border: 1px solid black;">
+                                    <td colspan="8" style="text-align: right; border: 1px solid black;">
                                         <strong>Total</strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
                                         <strong>
-                                            <span t-field="o.amount_total"/>
+                                            <span t-field="o.amount_untaxed"/>
                                         </strong>
                                     </td>
                                     <td style="border: 1px solid black;"></td>
