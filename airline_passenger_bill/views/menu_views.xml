@@ -34,17 +34,19 @@
         <!-- Menu -->
         <menuitem id="menu_airline_passenger_bill_root" name="Passenger Bill" sequence="10"
                   web_icon="airline_passenger_bill,static/description/icon.png"/>
-        <menuitem id="menu_airline_passenger" name="Airline Passenger Bill" parent="menu_airline_passenger_bill_root"
+        <menuitem id="menu_airline_passenger" name="Airline Passenger Bill" parent="passenger_service_charges.menu_passenger_service_root"
                   action="action_airline_passenger_bill" sequence="10"/>
+        <menuitem id="menu_airline_passenger_sub" name="Airline Passenger Bill" parent="menu_airline_passenger"
+                  action="action_airline_passenger_bill" sequence="1"/>
         <menuitem id="menu_airline_passenger_bill_line" name="Airline Passenger Bill Line"
-                  parent="menu_airline_passenger_bill_root" action="action_airline_passenger_bill_line" sequence="10"/>
-        <menuitem id="menu_airline_passenger_bill_configuration" name="Configuration"
-                  parent="menu_airline_passenger_bill_root" sequence="100"/>
-        <menuitem id="menu_airline" name="Airline" sequence="1" parent="menu_airline_passenger_bill_configuration"
+                  parent="menu_airline_passenger" action="action_airline_passenger_bill_line" sequence="2"/>
+<!--        <menuitem id="menu_airline_passenger_bill_configuration" name="Configuration"-->
+<!--                  parent="menu_airline_passenger_bill_root" sequence="100"/>-->
+        <menuitem id="menu_airline" name="Airline" sequence="3" parent="menu_airline_passenger"
                   action="airline_passenger_bill.action_airline"/>
-        <menuitem id="menu_passenger_rate" name="Rate" sequence="2" parent="menu_airline_passenger_bill_configuration"
+        <menuitem id="menu_passenger_rate" name="Rate" sequence="4" parent="menu_airline_passenger"
                   action="action_passenger_rate"/>
-        <menuitem id="menu_airline_bill_counter" name="Bill Counter" sequence="3" parent="menu_airline_passenger_bill_configuration"
+        <menuitem id="menu_airline_bill_counter" name="Bill Counter" sequence="5" parent="menu_airline_passenger"
                   action="action_airline_bill_counter"/>
 
     </data>

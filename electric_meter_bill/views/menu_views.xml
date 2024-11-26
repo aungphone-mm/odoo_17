@@ -55,6 +55,6 @@
         </record>
 
         <!-- This Menu Item Must have a parent -->
-        <menuitem id="menu_electric_meter_reading" name="Meter Reading" parent="menu_electric_meter_main" sequence="20" action="electric_meter_bill.electric_meter_reading_action"/>
+        <menuitem id="menu_electric_meter_reading" name="Meter Reading" parent="menu_meter" sequence="2" action="electric_meter_bill.electric_meter_reading_action"/>
     </data>
 </odoo>

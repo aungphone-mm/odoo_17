@@ -17,6 +17,20 @@ class AccountMove(models.Model):
             'context': {'create': False},
         }
 
+    def _get_amount_totals_bridge(self):
+        amount_totals = {}
+        for line in self.invoice_line_ids:
+            amount = line.passenger_boarding_bridge_charges_line_id.amount
+            if amount in amount_totals:
+                amount_totals[amount]['count'] += 1
+                amount_totals[amount]['total'] += line.price_subtotal
+            else:
+                amount_totals[amount] = {
+                    'count': 1,
+                    'total': line.price_subtotal
+                }
+        return amount_totals
+
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
