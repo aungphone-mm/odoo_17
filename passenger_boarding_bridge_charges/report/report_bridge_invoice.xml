@@ -72,21 +72,21 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><br/><br/><br/><br/>1</td>
+                                    <td><br/><br/>1</td>
                                     <td>
-                                        <br/><br/><br/><br/>
+                                        <br/><br/>
                                         <span>Passenger Boarding Bridge Service Charges for:<br/>
                                         Flight No: As per attached<br/>
                                         <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
                                         </span>
-                                        <br/><br/><br/><br/><br/>
+                                        <br/><br/>
                                     </td>
                                     <td style="text-align: center;">
-                                        <br/><br/><br/><br/>
+                                        <br/><br/>
                                         <span t-esc="len(o.invoice_line_ids)"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <br/><br/><br/><br/>
+                                        <br/><br/>
                                         <span t-field="o.amount_untaxed"/>
                                     </td>
                                 </tr>
@@ -203,8 +203,13 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="8" style="text-align: right; border: 1px solid black;">
+
+                                    <td colspan="7" style="text-align: right; border: 1px solid black;">
                                         <strong>Total</strong>
+                                    </td>
+                                    <td style="text-align: center; border: 1px solid black;">
+                                        <t t-set="total_time" t-value="sum(line._get_time_from_rate() or 0 for line in o.invoice_line_ids)"/>
+                                        <strong><span t-esc="total_time"/></strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
                                         <strong>

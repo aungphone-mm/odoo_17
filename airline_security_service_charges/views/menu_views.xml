@@ -33,7 +33,7 @@
                   name="Airline Security Service"
                   parent="passenger_service_charges.menu_passenger_service_root"
                   sequence="60"/>
-        <menuitem id="menu_airline_security1"
+        <menuitem id="menu_airline_security_sub"
                   name="Airline Security Service"
                   parent="menu_airline_security"
                   action="action_airline_security_bill"

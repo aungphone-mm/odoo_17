@@ -129,6 +129,7 @@
                                 <field name="reading_line_ids" context="{'default_reading_id': active_id}" widget="section_and_note_one2many" >
                                     <tree string="reading_detail_tree" widget="section_and_note_one2many" create="0"
                                           mode="tree" editable="bottom" select="multi" options="{'selectable': 'multi'}" default_order="partner_id">
+                                        <field name="invoice_id" width="200px" readonly="True"/>
                                         <field name="selection_line" nolabel="1" width="50px" />
                                         <field name="partner_id" width="300px" force_save="1"/>
                                         <field name="location_id" width="100px"/>
@@ -136,9 +137,8 @@
                                         <field name="latest_reading_unit" width="200px" readonly="True"/>
                                         <field name="current_reading_unit" width="200px"/>
                                         <field name="total_unit" width="100px"/>
-                                        <field name="currency_id" width="100px" readonly="True" invisiable="1"/>
                                         <field name="amount" width="200px" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="True"/>
-                                        <field name="invoice_id" width="200px" readonly="True"/>
+                                        <field name="currency_id" width="100px" readonly="True" invisiable="1"/>
                                     </tree>
                                 </field>
                             </page>
