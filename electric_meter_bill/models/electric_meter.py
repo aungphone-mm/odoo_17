@@ -138,14 +138,14 @@ class ElectricMeterReading(models.Model):
                     rate = base_line.partner_id.business_source_id.rate_id
                     remaining_units = total_units
                     total_amount = 0
-                    # narration = f'<b>Meter No : {base_line.meter_id.name}</b><br/>'
+                    narration = f'<b>Meter No : {base_line.meter_id.name}</b><br/>'
                     # Calculate combined amount
                     for rate_line in rate.rate_line_ids:
                         units_in_bracket = min(remaining_units,
                                                rate_line.to_unit - rate_line.from_unit + 1)
                         bracket_amount = units_in_bracket * rate_line.unit_price
                         total_amount += bracket_amount
-                        # narration += f'{rate_line.from_unit:,} - {rate_line.to_unit:,}: {units_in_bracket:,} units x {rate_line.unit_price:,} = {bracket_amount:,}<br/>'
+                        narration += f'{rate_line.from_unit:,} - {rate_line.to_unit:,}: {units_in_bracket:,} units x {rate_line.unit_price:,} = {bracket_amount:,}<br/>'
                         remaining_units -= units_in_bracket
                         if remaining_units <= 0:
                             break
@@ -153,17 +153,17 @@ class ElectricMeterReading(models.Model):
                     if base_line.meter_id.mgm_percentage:
                         mgm_charge = (total_amount / 100) * base_line.meter_id.mgm_percentage
                         total_amount += mgm_charge
-                        # narration += f'Management Charge ({base_line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
+                        narration += f'Management Charge ({base_line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
                     # Distribute total amount proportionally among lines
                     for line in lines:
                         if total_units > 0:
                             line_proportion = line.total_unit / total_units
                             line.amount = total_amount * line_proportion
-                            # line.narration = narration
+                            line.narration = narration
             else:
                 # Single reading - process normally
                 line = lines[0]
-                # line.narration = f'<b>Meter No : {line.meter_id.name}</b><br/>'
+                line.narration = f'<b>Meter No : {line.meter_id.name}</b><br/>'
                 if line.total_unit > 0:
                     if line.partner_id and line.partner_id.business_source_id:
                         rate = line.partner_id.business_source_id.rate_id
@@ -175,7 +175,7 @@ class ElectricMeterReading(models.Model):
                                                    rate_line.to_unit - rate_line.from_unit + 1)
                             bracket_amount = units_in_bracket * rate_line.unit_price
                             total_amount += bracket_amount
-                            # line.narration += f'{rate_line.from_unit:,} - {rate_line.to_unit:,}: {units_in_bracket:,} units x {rate_line.unit_price:,} = {bracket_amount:,}<br/>'
+                            line.narration += f'{rate_line.from_unit:,} - {rate_line.to_unit:,}: {units_in_bracket:,} units x {rate_line.unit_price:,} = {bracket_amount:,}<br/>'
                             remaining_units -= units_in_bracket
                             if remaining_units <= 0:
                                 break
@@ -185,7 +185,7 @@ class ElectricMeterReading(models.Model):
                         if line.meter_id.mgm_percentage:
                             mgm_charge = (line.amount / 100) * line.meter_id.mgm_percentage
                             line.amount += mgm_charge
-                            # line.narration += f'Management Charge ({line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
+                            line.narration += f'Management Charge ({line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
 
     def action_done(self):
         self.write({'state': 'done'})

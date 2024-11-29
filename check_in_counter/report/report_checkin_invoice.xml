@@ -72,20 +72,20 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><br/><br/><br/><br/>1</td>
+                                    <td><br/><br/><br/>1</td>
                                     <td>
-                                        <br/><br/><br/><br/>
+                                        <br/><br/><br/>
                                         <span>Check-In Counter Service Charges for:<br/>
                                         Flight No: As per attached<br/>
                                         <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
-                                        <br/><br/><br/><br/><br/></span>
+                                        <br/><br/><br/><br/></span>
                                     </td>
                                     <td style="text-align: center;">
-                                        <br/><br/><br/><br/>
+                                        <br/><br/><br/>
                                         <span t-esc="len(o.invoice_line_ids)"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <br/><br/><br/><br/>
+                                        <br/><br/><br/>
                                         <span t-field="o.amount_untaxed"/>
                                     </td>
                                 </tr>
@@ -181,7 +181,7 @@
                                             </t>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
-                                            <span t-field="line.price_unit"/>
+                                            <span t-field="line.checkin_counter_line_id.checkin_counter_rate_id.name"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
                                             <span t-field="line.price_subtotal"/>

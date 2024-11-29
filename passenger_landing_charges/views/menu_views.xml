@@ -3,44 +3,44 @@
     <data>
         <!-- Actions -->
         <record id="action_passenger_landing" model="ir.actions.act_window">
-            <field name="name">Passenger Landing</field>
+            <field name="name">Aircraft Landing</field>
             <field name="res_model">passenger.landing</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                    Click to create a new session of Passenger Landing record.
+                    Click to create a new session of Aircraft Landing record.
                 </p>
             </field>
         </record>
 
         <record id="action_passenger_landing_line" model="ir.actions.act_window">
-            <field name="name">Passenger Landing Charges Line</field>
+            <field name="name">Aircraft Landing Charges Line</field>
             <field name="res_model">passenger.landing.line</field>
             <field name="view_mode">tree</field>
         </record>
         <record id="action_passenger_landing_rate" model="ir.actions.act_window">
-            <field name="name">Passenger Landing Rates</field>
+            <field name="name">Aircraft Landing Rates</field>
             <field name="res_model">passenger.landing.rate</field>
             <field name="view_mode">tree,form</field>
         </record>
         <!-- Menus -->
         <menuitem id="menu_passenger_landing_root"
-                  name="Passenger Landing"
+                  name="Aircraft Landing"
                   sequence="10"
                   web_icon="passenger_landing_charges,static/description/icon.png"/>
 
         <menuitem id="menu_passenger_landing"
-                  name="Passenger Landing"
+                  name="Aircraft Landing"
                   parent="passenger_service_charges.menu_passenger_service_root"
                   sequence="10"/>
         <menuitem id="menu_passenger_landing_sub"
-                  name="Passenger Landing"
+                  name="Aircraft Landing"
                   parent="menu_passenger_landing"
                   action="action_passenger_landing"
                   sequence="10"/>
 
         <menuitem id="menu_airline_passenger_landing_line"
-                  name="Passenger Landing Line"
+                  name="Aircraft Landing Line"
                   parent="menu_passenger_landing"
                   action="action_passenger_landing_line"
                   sequence="20"/>

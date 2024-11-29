@@ -75,7 +75,7 @@
                                     <td><br/><br/><br/><br/>1</td>
                                     <td>
                                         <br/><br/><br/><br/>
-                                        Passenger Landing Charges for:<br/>
+                                        Aircraft Landing Charges for:<br/>
                                         Flight No: As per attached<br/>
                                         <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
                                         <br/><br/><br/><br/><br/><br/><br/><br/>
@@ -120,6 +120,7 @@
                         <!-- Signature -->
                         <div class="row mt-5">
                             <div class="col-6">
+                                <p>Issued by:</p><br/><br/><br/>
                                 <p>____________________</p>
                                 <p>Aye Thida</p>
                                 <p>General Manager</p>
@@ -132,7 +133,7 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <div style="text-align: center; margin-bottom: 20px;">
-                            <h3>DETAIL STATEMENT OF Passenger Landing CHARGES</h3>
+                            <h3>DETAIL STATEMENT OF Aircraft Landing CHARGES</h3>
                             <h4>AIRLINES-<span t-field="o.partner_id.name"/></h4>
                         </div>
 

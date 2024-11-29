@@ -10,7 +10,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Passenger Landing',
+            'name': 'Aircraft Landing',
             'view_mode': 'form',
             'res_model': 'passenger.landing',
             'res_id': self.passenger_landing_id.id,

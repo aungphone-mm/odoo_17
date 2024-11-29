@@ -72,22 +72,22 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><br/><br/><br/><br/>1</td>
+                                    <td><br/><br/><br/>1</td>
                                     <td>
-                                        <br/><br/><br/><br/>
+                                        <br/><br/><br/>
                                         Passenger Service Charges(Domestic) for:<br/>
                                         Flight No: As per attached<br/>
                                         <span style="display: inline-block; width: 80px;">Pax Price:</span>
                                         <span t-field="o.passenger_service_id.pax_price" t-options='{"widget": "float", "precision": 2}'/><br/>
                                         <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
-                                        <br/><br/><br/><br/><br/>
+                                        <br/><br/><br/>
                                     </td>
                                     <td style="text-align: center;">
-                                        <br/><br/><br/><br/>
+                                        <br/><br/><br/>
                                         <span t-esc="len(o.invoice_line_ids)"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <br/><br/><br/><br/>
+                                        <br/><br/><br/>
                                         <span t-field="o.amount_total"/>
                                     </td>
                                 </tr>

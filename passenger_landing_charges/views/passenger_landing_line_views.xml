@@ -4,7 +4,7 @@
             <field name="name">passenger.landing.line.tree</field>
             <field name="model">passenger.landing.line</field>
             <field name="arch" type="xml">
-                <tree string="Passenger Landing Line">
+                <tree string="Aircraft Landing Line">
                     <header>
 <!--                        <button name="action_register_payment" string="Pay" type="object" class="oe_highlight"/>-->
                     </header>
@@ -26,7 +26,7 @@
                 <button name="action_view_passenger_landing" type="object"
                         class="oe_stat_button" icon="fa-desktop"
                          invisible="not passenger_landing_id">
-                    <span class="o_stat_text">Passenger Landing</span>
+                    <span class="o_stat_text">Aircraft Landing</span>
                 </button>
             </div>
             <field name="partner_id" position="after">

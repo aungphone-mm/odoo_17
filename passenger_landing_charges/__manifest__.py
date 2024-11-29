@@ -1,9 +1,9 @@
 {
-    'name': 'Passenger Landing Charges',
+    'name': 'Aircraft Landing Charges',
     'version': '17.0.1.0',
     'category': 'Utilities',
     'license': 'AGPL-3',
-    'summary': """Manage the Passenger Landing process for landing operations efficiently""",
+    'summary': """Manage the Aircraft Landing process for landing operations efficiently""",
     'depends': ['mail', 'account', 'base','yacl_airline','web'],
     'author': 'Mingalar Sky Co., Ltd.',
     'website': 'https://www.mingalarsky.com',
