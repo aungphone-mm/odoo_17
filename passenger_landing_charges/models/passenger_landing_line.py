@@ -37,7 +37,7 @@ class PassengerLandingLine(models.Model):
             if record.passenger_landing_rate_id and record.flight_registration_no and record.flightno_id:
                 rate_line = record.passenger_landing_rate_id.passenger_landing_rate_line_ids.filtered(
                     lambda r: (r.registration_no == record.flight_registration_no and
-                               r.flight_no == record.flightno_id.name)
+                               r.flight_id.name == record.flightno_id.name)
                 )
                 if rate_line:
                     amount = rate_line[0].rate
