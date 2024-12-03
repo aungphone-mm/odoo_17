@@ -71,7 +71,7 @@ class PassengerLanding(models.Model):
             'passenger_landing_id': self.id,
             'currency_id': self.passenger_landing_rate_id.currency_id.id,
             'form_type': 'PassengerLanding',
-            'for_date': self.for_date,
+            # 'for_date': self.for_date,
             'journal_id': self.passenger_landing_rate_id.journal_id.id,
         }
 
@@ -94,8 +94,8 @@ class PassengerLanding(models.Model):
             current_date = datetime.now().strftime('%Y/%m')
             sequence = self.env['ir.sequence'].next_by_code('passenger.landing.bill.seq') or '00001'
             if vals['type'] == 'domestic':
-                vals['name'] = f'DPL/{current_date}/{sequence}'
+                vals['name'] = f'DAL/{current_date}/{sequence}'
             else:
-                vals['name'] = f'IPL/{current_date}/{sequence}'
+                vals['name'] = f'IAL/{current_date}/{sequence}'
         return super(PassengerLanding, self).create(vals)
 

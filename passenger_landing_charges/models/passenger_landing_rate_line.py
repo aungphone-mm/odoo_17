@@ -4,14 +4,8 @@ class PassengerLandingRateLine(models.Model):
     _name = 'passenger.landing.rate.line'
     _description = 'Passenger Landing Rate Line'
 
-    from_unit = fields.Integer(string='From', required=True)
-    to_unit = fields.Integer(string='To')
-    unit_price = fields.Float(string='Unit Price', required=True)
-    currency_id = fields.Many2one(
-        'res.currency',
-        string='Currency',
-        related='rate_id.currency_id',
-        store=True,
-        readonly=True
-    )
-    rate_id = fields.Many2one(comodel_name='passenger.landing.rate', string='Rate', required=True)
+    passenger_landing_rate_id = fields.Many2one('passenger.landing.rate', string='Passenger Landing Rate')
+    rate = fields.Float(string='Rate', required=True)
+    rate_id = fields.Many2one('passenger.landing.rate', string='Passenger Landing Rate', required=True)
+    flight_id = fields.Many2one('flights', string='Flight', required=True)
+    registration_no = fields.Char(related='flight_id.register_no', string='Registration No', store=True, readonly=True)

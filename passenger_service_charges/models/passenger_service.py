@@ -75,7 +75,7 @@ class PassengerService(models.Model):
             'passenger_service_id': self.id,
             'currency_id': self.currency_id.id,
             'form_type': 'passengerservice',
-            'for_date': self.for_date,
+            # 'for_date': self.for_date,
             'journal_id': self.journal_id.id,
         }
 

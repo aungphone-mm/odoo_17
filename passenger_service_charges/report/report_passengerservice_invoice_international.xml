@@ -75,8 +75,8 @@
                                         <span style="display: inline-block; width: 80px;">Pax Price:</span>
                                         <span t-field="o.passenger_service_id.pax_price" t-options='{"widget": "float", "precision": 2}'/><br/>
 
-                                        <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
-                                        <br/><br/><br/><br/><br/><br/><br/><br/>
+                                        <span t-field="o.passenger_service_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_service_id.for_date" t-options='{"format": "yy"}'/>
+                                        <br/><br/><br/><br/><br/><br/><br/>
                                     </td>
                                     <td style="text-align: center;">
                                         <br/><br/><br/><br/>
@@ -159,7 +159,7 @@
                                             <t t-esc="line_index + 1"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: center;">
-                                            <span t-field="o.invoice_date" t-options='{"format": "dd.MM.yy"}'/>
+                                            <span t-field="line.start_time" t-options='{"format": "dd.MM.yy"}'/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: center;">
                                             <span t-field="line.flightno_id.name"/>

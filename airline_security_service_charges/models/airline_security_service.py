@@ -71,7 +71,7 @@ class AirlineSecurityService(models.Model):
             'airline_security_service_id': self.id,
             'currency_id': self.security_rate_id.currency_id.id,
             'form_type': 'security',
-            'for_date': self.for_date,
+            # 'for_date': self.for_date,
             'journal_id': self.security_rate_id.journal_id.id,
         }
 

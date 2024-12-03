@@ -64,7 +64,7 @@ class ElectricMeterReading(models.Model):
     name = fields.Char(string='Name', required=True, readonly=True, copy=False, index=True, default='New')
     description = fields.Text(string='Description', tracking=True)
     reading_date = fields.Date(string='Reading Date', required=True, default=fields.Date.today, tracking=True)
-    for_date = fields.Date(string='Invoice For',default=fields.Date.today, tracking=True)
+    for_date = fields.Date(string='Invoice For',default=fields.Date.today)
     reading_line_ids = fields.One2many(comodel_name='electric.meter.reading.line', inverse_name='reading_id',
                                        string='Reading Line', required=False)
     state = fields.Selection(
@@ -238,7 +238,7 @@ class ElectricMeterReading(models.Model):
                         'reading_line_id': line.id,
                         'invoice_line_ids': [],
                         'form_type': 'electric',
-                        'for_date': self.for_date,
+                        # 'for_date': self.for_date,
                     })
                     # Store invoice reference in both dictionaries
                     meter_invoices[meter_number] = invoice
@@ -350,7 +350,7 @@ class AccountMove(models.Model):
     reading_line_id = fields.Many2one('electric.meter.reading.line', string='Electric Meter Reading Line',
                                       required=False)
     form_type = fields.Char('Form Type')
-    for_date = fields.Date(string='Invoice For', tracking=True)
+    for_date = fields.Date(string='Invoice For')
 
     # In the AccountMove class
     def action_print_electric_meter_invoice(self):

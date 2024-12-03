@@ -73,7 +73,7 @@ class PassengerBoardingBridgeCharges(models.Model):
             'passenger_boarding_bridge_charges_id': self.id,
             'currency_id': self.bridge_rate_id.currency_id.id,
             'form_type': 'bridge',
-            'for_date': self.for_date,
+            # 'for_date': self.for_date,
             'journal_id': self.bridge_rate_id.journal_id.id,
         }
 

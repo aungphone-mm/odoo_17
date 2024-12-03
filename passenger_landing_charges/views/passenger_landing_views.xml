@@ -10,8 +10,8 @@
                 <field name="type"/>
                 <field name="airline_id"/>
                 <field name="airline_user_id"/>
-                <field name="start_time" />
-                <field name="end_time" />
+<!--                <field name="start_time" />-->
+<!--                <field name="end_time" />-->
                 <field name="passenger_landing_rate_id"/>
                 <field name="currency_id"/>
             </tree>
@@ -61,9 +61,9 @@
                             <tree editable="bottom">
                                 <field name="flightno_id"/>
                                 <field name="flight_registration_no"/>
-                                <field name="start_time" />
-                                <field name="end_time" />
-                                <field name="total_minutes"/>
+<!--                                <field name="start_time" />-->
+<!--                                <field name="end_time" />-->
+<!--                                <field name="total_minutes"/>-->
                                 <field name="passenger_landing_rate_id" />
                                 <field name="amount" />
                             </tree>

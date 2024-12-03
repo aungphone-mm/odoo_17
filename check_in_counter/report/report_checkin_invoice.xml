@@ -77,7 +77,7 @@
                                         <br/><br/><br/>
                                         <span>Check-In Counter Service Charges for:<br/>
                                         Flight No: As per attached<br/>
-                                        <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>
+                                        <span t-field="o.checkin_counter_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.checkin_counter_id.for_date" t-options='{"format": "yy"}'/>
                                         <br/><br/><br/><br/></span>
                                     </td>
                                     <td style="text-align: center;">
@@ -159,7 +159,7 @@
                                     <tr>
                                         <td style="border: 1px solid black; text-align: center;"><t t-esc="line_index + 1"/></td>
                                         <td style="border: 1px solid black;">
-                                            <span t-field="o.invoice_date" t-options='{"format": "dd.MM.yy"}'/>
+                                            <span t-field="line.checkin_counter_line_id.end_time" t-options='{"format": "dd.MM.yy"}'/>
                                         </td>
                                         <td style="border: 1px solid black;">
                                             <span t-field="line.name"/>
