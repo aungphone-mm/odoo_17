@@ -16,20 +16,20 @@
             <t t-foreach="docs" t-as="o">
                 <!-- First Page - Invoice -->
                 <t t-call="web.external_layout">
-                     <style>
-                            .security-table th {
-                                background-color: #e9ecef;
-                            }
-                        </style>
+                    <style>
+                        .security-table th {
+                            background-color: #e9ecef;
+                        }
+                    </style>
                     <div class="row mb-4">
-                            <div class="col-12 text-center">
-                                <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
-                            </div>
-                        </div>s
+                        <div class="col-12 text-center">
+                            <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
+                        </div>
+                    </div>
                     <div class="page">
                         <!-- Invoice Info Section -->
                         <div class="row mb-4">
-                                 <div class="col-6">
+                            <div class="col-6">
                                 <div t-field="o.partner_id.name"/>
                                 <div t-field="o.partner_id.street"/>
                                 <div t-field="o.partner_id.street2"/>
@@ -43,7 +43,7 @@
                                         <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
                                     </div>
                                 </t>
-                                     <div t-if="o.passenger_landing_id.airline_user_id.name">
+                                <div t-if="o.passenger_landing_id.airline_user_id.name">
                                     Attention: <t t-esc="o.passenger_landing_id.airline_user_id.name"/>
                                 </div>
                             </div>
@@ -72,20 +72,19 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><br/><br/><br/><br/>1</td>
-                                    <td>
-                                        <br/><br/><br/><br/>
+                                    <td><br/><br/><br/>1</td>
+                                    <td><br/><br/><br/>
                                         Aircraft Landing Charges for:<br/>
                                         Flight No: As per attached<br/>
                                         <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "yy"}'/>
-                                        <br/><br/><br/><br/><br/><br/><br/><br/>
+                                        <br/><br/><br/>
                                     </td>
                                     <td style="text-align: center;">
-                                        <br/><br/><br/><br/>
+                                        <br/><br/><br/>
                                         <span t-esc="len(o.invoice_line_ids)"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <br/><br/><br/><br/>
+                                        <br/><br/><br/>
                                         <span t-field="o.amount_total"/>
                                     </td>
                                 </tr>
@@ -100,7 +99,7 @@
                             </tbody>
                         </table>
 
-<!--                        &lt;!&ndash; Payment Information &ndash;&gt;-->
+                        <!-- Payment Information -->
                         <div class="row mt-4">
                             <div class="col-12">
                                 <strong>NOTE:</strong>
@@ -145,8 +144,6 @@
                                     <th style="border: 1px solid black;">Flight No</th>
                                     <th style="border: 1px solid black;">Aircraft Type</th>
                                     <th style="border: 1px solid black;">Reg. No.</th>
-
-                                    <th style="border: 1px solid black;">Total Service/hr</th>
                                     <th style="border: 1px solid black;">Rate</th>
                                     <th style="border: 1px solid black;">Amount</th>
                                     <th style="border: 1px solid black;">Remark</th>
@@ -157,7 +154,7 @@
                                     <tr>
                                         <td style="border: 1px solid black; text-align: center;"><t t-esc="line_index + 1"/></td>
                                         <td style="border: 1px solid black;">
-                                            <span t-field="line.passenger_landing_line_id.end_time" t-options='{"format": "dd.MM.yy"}'/>
+                                            <span t-field="line.passenger_landing_line_id.start_time" t-options='{"format": "dd.MM.yy"}'/>
                                         </td>
                                         <td style="border: 1px solid black;">
                                             <span t-field="line.name"/>
@@ -168,19 +165,8 @@
                                         <td style="border: 1px solid black;">
                                             <span t-field="line.passenger_landing_line_id.flight_registration_no"/>
                                         </td>
-
-                                        <td style="border: 1px solid black; text-align: center;">
-                                            <t t-if="line.passenger_landing_line_id">
-                                                <t t-set="hours" t-value="int(line.passenger_landing_line_id.total_minutes // 60)"/>
-                                                <t t-set="minutes" t-value="int(line.passenger_landing_line_id.total_minutes % 60)"/>
-                                                <span t-esc="'%02d:%02d' % (hours, minutes)"/>
-                                            </t>
-                                            <t t-else="">
-                                                00:00
-                                            </t>
-                                        </td>
                                         <td style="border: 1px solid black; text-align: right;">
-                                            <span t-field="line.price_unit"/>
+                                            <span t-field="line.passenger_landing_line_id.passenger_landing_rate_id"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
                                             <span t-field="line.price_subtotal"/>
@@ -193,7 +179,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="7" style="text-align: right; border: 1px solid black;">
+                                    <td colspan="6" style="text-align: right; border: 1px solid black;">
                                         <strong>Total</strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">

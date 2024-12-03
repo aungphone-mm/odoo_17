@@ -68,6 +68,7 @@
                             <field name="passenger_landing_rate_line_ids">
                                 <tree editable="bottom">
                                     <field name="flight_id"/>
+                                    <field name="flight_aircraft" />
                                     <field name="registration_no"/>
                                     <field name="rate"/>
                                 </tree>

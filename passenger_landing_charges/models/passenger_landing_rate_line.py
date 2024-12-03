@@ -8,4 +8,5 @@ class PassengerLandingRateLine(models.Model):
     rate = fields.Float(string='Rate', required=True)
     rate_id = fields.Many2one('passenger.landing.rate', string='Passenger Landing Rate', required=True)
     flight_id = fields.Many2one('flights', string='Flight', required=True)
+    flight_aircraft = fields.Char(string='Aircraft Type', related='flight_id.aircraft_type', store=True)
     registration_no = fields.Char(related='flight_id.register_no', string='Registration No', store=True, readonly=True)

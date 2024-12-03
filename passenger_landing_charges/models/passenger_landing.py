@@ -18,10 +18,10 @@ class PassengerLanding(models.Model):
     start_time = fields.Datetime(string='Start Date & Time', tracking=True)
     end_time = fields.Datetime(string='End Date & Time', tracking=True)
     passenger_landing_line_ids = fields.One2many('passenger.landing.line', 'passenger_landing_id',
-                                                      string='Passenger Landing Details')
+                                                      string='Aircraft Landing Details')
     currency_id = fields.Many2one('res.currency', string='Currency', related ='passenger_landing_rate_id.currency_id', store=True, readonly=True)
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
-    passenger_landing_rate_id = fields.Many2one('passenger.landing.rate', string='Passenger Landing Rate')
+    passenger_landing_rate_id = fields.Many2one('passenger.landing.rate', string='Aircraft Landing Rate')
     for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
     state = fields.Selection([
         ('draft', 'Draft'),
