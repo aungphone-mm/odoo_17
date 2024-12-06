@@ -41,6 +41,9 @@
             <tree>
                 <field name="name"/>
                 <field name="currency_id"/>
+                <field name="airline_id"/>
+                <field name="passenger_landing_rate_line_ids"/>
+
             </tree>
         </field>
     </record>
@@ -77,6 +80,50 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                <field name="message_follower_ids"/>
+                <field name="activity_ids"/>
+                <field name="message_ids"/>
+            </div>
+            </form>
+        </field>
+    </record>
+    <record id="view_passenger_landing_rate_line_tree" model="ir.ui.view">
+        <field name="name">passenger.landing.rate.line.tree</field>
+        <field name="model">passenger.landing.rate.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="aircraft_type"/>
+                <field name="rate_id"/>
+                <field name="unit_price"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- PassengerLanding Rate Form View -->
+    <record id="view_passenger_landing_rate_line_form" model="ir.ui.view">
+        <field name="name">passenger.landing.rate.line.form</field>
+        <field name="model">passenger.landing.rate.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="aircraft_type"/>
+                        </group>
+                        <group>
+                            <field name="rate_id"/>
+                            <field name="unit_price"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                <field name="message_follower_ids"/>
+                <field name="activity_ids"/>
+                <field name="message_ids"/>
+            </div>
             </form>
         </field>
     </record>

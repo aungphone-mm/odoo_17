@@ -23,6 +23,11 @@
             <field name="res_model">passenger.landing.rate</field>
             <field name="view_mode">tree,form</field>
         </record>
+        <record id="action_passenger_landing_rate_line" model="ir.actions.act_window">
+            <field name="name">Aircraft Landing Rate Line</field>
+            <field name="res_model">passenger.landing.rate.line</field>
+            <field name="view_mode">tree,form</field>
+        </record>
         <!-- Menus -->
         <menuitem id="menu_passenger_landing_root"
                   name="Aircraft Landing"
@@ -55,5 +60,7 @@
 <!--                  parent="menu_airline_passenger_landing_configuration" sequence="30"/>-->
         <menuitem id="menu_passenger_landing_rate" name="Landing Rates" action="action_passenger_landing_rate"
                   parent="menu_passenger_landing" sequence="30"/>
+        <menuitem id="menu_passenger_landing_rate_line" name="Landing Rate lines" action="action_passenger_landing_rate_line"
+                  parent="menu_passenger_landing" sequence="31"/>
     </data>
 </odoo>

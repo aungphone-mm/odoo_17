@@ -3,6 +3,7 @@ from odoo import fields, models, api, _
 class PassengerLandingRateLine(models.Model):
     _name = 'passenger.landing.rate.line'
     _description = 'Passenger Landing Rate Line'
+    _inherit = ['mail.activity.mixin', 'mail.thread']
 
     name = fields.Char(string='Registration No', required=True)
     passenger_landing_rate_id = fields.Many2one('passenger.landing.rate', string='Passenger Landing Rate')
