@@ -8,7 +8,7 @@ class CheckinCounterLine(models.Model):
 
     checkin_counter_id = fields.Many2one('checkin.counter', string='Check in Counter', tracking=True)
     flightno_id = fields.Many2one('flights',string='Flight No.')
-    flight_registration_no = fields.Char(string='Registration No.', related='flightno_id.register_no', store=True)
+    flight_registration_no = fields.Char(string='Registration No.', related='flightno_id.name', store=True)
     flight_aircraft = fields.Char(string='Aircraft Type', related='flightno_id.aircraft_type', store=True)
     start_time = fields.Datetime(string='Start Date & Time', tracking=True)
     end_time = fields.Datetime(string='End Date & Time', tracking=True)
@@ -92,7 +92,7 @@ class CheckinCounterLine(models.Model):
         if 'flightno_id' in vals:
             flight = self.env['flights'].browse(vals['flightno_id'])
             changes.append(f"Flight Number: → {flight.name}")
-            changes.append(f"Flight Registration No: → {flight.register_no or 'N/A'}")
+            changes.append(f"Flight Registration No: → {flight.name or 'N/A'}")
 
         if 'start_time' in vals:
             new_value = vals.get('start_time', 'N/A')

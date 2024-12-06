@@ -81,7 +81,7 @@ class PassengerLanding(models.Model):
         for line in self.passenger_landing_line_ids:
             lines.append({
                 'product_id': line.passenger_landing_rate_id.product_id.id,
-                'name': f"{line.flightno_id.name}",
+                'name': f"{line.flight_registration_no.name}",
                 'quantity': 1,
                 'price_unit': line.amount,  # You need to set the appropriate price
                 'passenger_landing_line_id': line.id,

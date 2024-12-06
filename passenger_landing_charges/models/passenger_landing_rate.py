@@ -13,3 +13,4 @@ class PassengerLandingRate(models.Model):
                                     required=False)
     currency_id = fields.Many2one('res.currency', string='Currency', required=True)
     active = fields.Boolean(string='Active', default=True)
+    airline_id = fields.Many2one('airline',string='Airline')

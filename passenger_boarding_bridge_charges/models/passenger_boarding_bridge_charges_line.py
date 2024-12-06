@@ -8,7 +8,7 @@ class PassengerBoardingBridgeChargesLine(models.Model):
 
     passenger_boarding_bridge_charges_id = fields.Many2one('passenger.boarding.bridge.charges', string='Passenger Boarding Bridge Charges', tracking=True, )
     flightno_id = fields.Many2one('flights',string='Flight No.')
-    flight_registration_no = fields.Char(string='Registration No.', related='flightno_id.register_no', store=True)
+    flight_registration_no = fields.Char(string='Registration No.', related='flightno_id.name', store=True)
     flight_aircraft = fields.Char(string='Aircraft Type', related='flightno_id.aircraft_type', store=True)
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, )
     end_time = fields.Datetime(string='End Date & Time', tracking=True, )
@@ -133,7 +133,7 @@ class PassengerBoardingBridgeChargesLine(models.Model):
         if 'flightno_id' in vals:
             flight = self.env['flights'].browse(vals['flightno_id'])
             changes.append(f"Flight Number: → {flight.name}")
-            changes.append(f"Flight Registration No: → {flight.register_no or 'N/A'}")
+            changes.append(f"Flight Registration No: → {flight.name or 'N/A'}")
 
         if 'start_time' in vals:
             new_value = vals.get('start_time', 'N/A')

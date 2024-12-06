@@ -30,7 +30,7 @@
                             <t t-foreach="doc.passenger_landing_id.passenger_landing_line_ids" t-as="line">
                                 <tr style="text-align: center;">
                                     <td style="border: 1px solid black;"><t t-esc="line_index + 1"/></td>
-                                    <td style="border: 1px solid black;"><t t-esc="line.flightno_id.name"/></td>
+                                    <td style="border: 1px solid black;"><t t-esc="line.aircraft_type_display"/></td>
                                     <td style="border: 1px solid black;"><t t-esc="line.flight_registration_no"/></td>
                                     <td style="border: 1px solid black;"><t t-esc="line.passenger_landing_rate_id.name"/></td>
                                     <td style="border: 1px solid black;"><t t-esc="line.amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>

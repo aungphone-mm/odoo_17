@@ -16,7 +16,7 @@
                 <tree editable="top">
                     <field name="name"/>
                     <field name="aircraft_type"/>
-                    <field name="register_no"/>
+<!--                    <field name="name"/>-->
                     <field name="airline_id"/>
                     <field name="seat_capacity"/>
                 </tree>

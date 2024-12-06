@@ -91,7 +91,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="3" style="text-align: left;">
-                                        <span t-esc="o.currency_id.amount_to_text(o.amount_total)+' Only'"/>
+                                        <span t-esc="o.currency_id.amount_to_text(o.amount_untaxed)+' Only'"/>
                                     </td>
                                     <td style="text-align: right;">
                                         <span t-field="o.amount_untaxed"/>
@@ -104,7 +104,7 @@
                         <div class="row mt-4">
                        <div class="col-12">
                            <strong>NOTE: -</strong>
-                           <p style="margin-bottom: 0;">1 Payment has to be made in the currency stated above</p>
+                           <span><p style="margin-bottom: 0;">1 Payment has to be made in the currency stated above</p>
                            <p style="margin-bottom: 0;">2 For CASH payment, please pay at:</p>
                            <p style="margin-left: 20px; margin-bottom: 0;">Finance Department, Yangon Aerodrome Co Ltd Building (Opposite Terminal 2, Yangon International Airport).</p>
                            <p style="margin-bottom: 0;">3 For payment via ACCOUNT TRANSFER (all Local and Overseas bank charges to be borne by the remitter),</p>
@@ -117,7 +117,7 @@
                                <p style="margin-left: 25px; margin-bottom: 0;">USD Account No. 6010010000000150996, (Swift Code- ICBKMMMY)</p>
                                <p style="margin-bottom: 0;">(c) Bank of China (Hong Kong) Limited Yangon Branch -</p>
                                <p style="margin-left: 25px; margin-bottom: 0;">USD Account No. 053-122-2-000706-9, (Swift Code- BKCHMMY)</p>
-                           </div>
+                           </div></span>
                        </div>
                         </div>
                         <!-- Signature -->
