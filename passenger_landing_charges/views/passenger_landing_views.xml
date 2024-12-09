@@ -65,6 +65,7 @@
                                 <field name="flight_aircraft" column_invisible="1"/>
                                 <field name="aircraft_type_display"/>
                                 <field name="start_time"/>
+                                <field name="passenger_landing_rate_id"/>
                                 <field name="amount"/>
                             </tree>
                         </field>
@@ -101,6 +102,21 @@
 <!--                        <filter string="Rate" name="group_by_rate" domain="[]" context="{'group_by': 'service_rate_id'}"/>-->
 <!--                    </group>-->
                 </search>
+            </field>
+        </record>
+        	<record id="view_move_form_inherit_landing" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.landing</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <field name="form_type" invisible="1"/>
+                    <button name="action_print_landing_invoice"
+                            string="Print Landing Invoice"
+                            type="object"
+                            invisible="not form_type == 'landing'"
+                            class="oe_highlight"/>
+                </xpath>
             </field>
         </record>
 

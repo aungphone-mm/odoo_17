@@ -7,16 +7,16 @@ class PassengerServiceLine(models.Model):
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
     passenger_service_id = fields.Many2one('passenger.service', string='Passenger Service', tracking=True)
-    flightno_id = fields.Many2one('flights',string='Flight No.')
-    flight_registration_no = fields.Char(string='Registration No.', related='flightno_id.name', store=True)
-    flight_aircraft = fields.Char(string='Aircraft Type', related='flightno_id.aircraft_type', store=True)
-    start_time = fields.Datetime(string='Start Date & Time', tracking=True)
+    flightno_id = fields.Char(string='Flight No.')
+    flight_registration_no = fields.Char(string='Registration No.')
+    flight_aircraft = fields.Char(string='Aircraft Type')
+    start_time = fields.Datetime(string='Start Date & Time', default=fields.Datetime.now, tracking=True)
     # end_time = fields.Datetime(string='End Date & Time', tracking=True)
     # total_minutes = fields.Integer(string='Total Minutes', compute='_compute_total_minutes', store=True)
-    # passenger_service_rate_id = fields.Many2one('passenger.service.rate', string='Rate',
-    #                                    compute='_compute_passenger_service_rate',
-    #                                    inverse='_inverse_passenger_service_rate',
-    #                                    store=True, tracking=True)
+    passenger_service_rate_id = fields.Many2one('passenger.service.rate', string='Rate',
+                                       compute='_compute_passenger_service_rate',
+                                       inverse='_inverse_passenger_service_rate',
+                                       store=True, tracking=True)
     # amount = fields.Float(string="Amount", compute='_compute_amount', store=True)
     total_pax = fields.Integer(string='Total Pax', tracking=True)
     inf = fields.Integer(string='INF', tracking=True)
@@ -40,16 +40,23 @@ class PassengerServiceLine(models.Model):
             ])
             record.invoice_pax = record.total_pax - deductions
 
-    # @api.depends('passenger_service_id.passenger_service_rate_id')
-    # def _compute_passenger_service_rate(self):
-    #     for line in self:
-    #         line.passenger_service_rate_id = line.passenger_service_id.passenger_service_rate_id
-    #
-    # def _inverse_passenger_service_rate(self):
-    #     for line in self:
-    #         if line.passenger_service_rate_id != line.passenger_service_id.passenger_service_rate_id:
-    #             # You can add any necessary logic here when the rate changes
-    #             pass
+    @api.depends('passenger_service_id.passenger_service_rate_id')
+    def _compute_passenger_service_rate(self):
+        for line in self:
+            line.passenger_service_rate_id = line.passenger_service_id.passenger_service_rate_id
+
+    def _inverse_passenger_service_rate(self):
+        for line in self:
+            if line.passenger_service_rate_id != line.passenger_service_id.passenger_service_rate_id:
+                # You can add any necessary logic here when the rate changes
+                pass
+
+    @api.constrains('flightno_id')
+    def _passenger_service_service(self):
+        for record in self:
+            if not record.flightno_id:
+                raise ValidationError(_("Flight No. must be set for each PassengerService line."))
+
     # #aungphone
     # @api.depends('start_time', 'end_time')
     # def _compute_total_minutes(self):
@@ -92,12 +99,6 @@ class PassengerServiceLine(models.Model):
     #                     'message': f"Using maximum rate {self.amount} for {self.total_minutes} minutes"
     #                 }
     #             }
-
-    @api.constrains('flightno_id')
-    def _passenger_service_service(self):
-        for record in self:
-            if not record.flightno_id:
-                raise ValidationError(_("Flight No. must be set for each PassengerService line."))
 
     # @api.model
     # def create(self, vals):

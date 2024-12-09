@@ -7,11 +7,11 @@ class CheckinCounterLine(models.Model):
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
     checkin_counter_id = fields.Many2one('checkin.counter', string='Check in Counter', tracking=True)
-    flightno_id = fields.Many2one('flights',string='Flight No.')
-    flight_registration_no = fields.Char(string='Registration No.', related='flightno_id.name', store=True)
-    flight_aircraft = fields.Char(string='Aircraft Type', related='flightno_id.aircraft_type', store=True)
-    start_time = fields.Datetime(string='Start Date & Time', tracking=True)
-    end_time = fields.Datetime(string='End Date & Time', tracking=True)
+    flightno_id = fields.Char(string='Flight No.')
+    flight_registration_no = fields.Char(string='Registration No.', store=True)
+    flight_aircraft = fields.Char(string='Aircraft Type',store=True)
+    start_time = fields.Datetime(string='Start Date & Time', tracking=True, default=fields.Datetime.now)
+    end_time = fields.Datetime(string='End Date & Time', tracking=True, default=fields.Datetime.now)
     total_minutes = fields.Integer(string='Total Minutes', compute='_compute_total_minutes', store=True)
     checkin_counter_rate_id = fields.Many2one('checkin.counter.rate', string='Rate',
                                        compute='_compute_checkin_counter_rate',
@@ -90,9 +90,11 @@ class CheckinCounterLine(models.Model):
         changes = []
 
         if 'flightno_id' in vals:
-            flight = self.env['flights'].browse(vals['flightno_id'])
-            changes.append(f"Flight Number: → {flight.name}")
-            changes.append(f"Flight Registration No: → {flight.name or 'N/A'}")
+            # flight = self.env['flights'].browse(vals['flightno_id'])
+            new_value = vals.get('flightno_id', 'N/A')
+            new_value1 = vals.get('flight_registration_no', 'N/A')
+            changes.append(f"Flight Number: → {new_value}")
+            changes.append(f"Flight Registration No: → {new_value1 or 'N/A'}")
 
         if 'start_time' in vals:
             new_value = vals.get('start_time', 'N/A')

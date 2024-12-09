@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="action_security_service_report1" model="ir.actions.report">
+    <record id="action_passenger_domestic_report" model="ir.actions.report">
         <field name="name">Passenger Service Domestic Invoice With Breakdown</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-html</field>
@@ -26,11 +26,7 @@
                             <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
                         </div>
                     </div>
-                    <div class="row mb-4">
-                            <div class="col-12 text-center">
-                                <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
-                            </div>
-                        </div>
+
                     <div class="page">
                         <!-- Invoice Info Section -->
                         <div class="row mb-4">
@@ -83,7 +79,7 @@
                                         Passenger Service Charges(Domestic) for:<br/>
                                         Flight No: As per attached<br/>
                                         <span style="display: inline-block; width: 80px;">Pax Price:</span>
-                                        <span t-field="o.passenger_service_id.pax_price" t-options='{"widget": "float", "precision": 2}'/><br/>
+                                        <span t-field="o.passenger_service_id.passenger_service_rate_id.pax_price" t-options='{"widget": "float", "precision": 2}'/><br/>
                                         <span t-field="o.passenger_service_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_service_id.for_date" t-options='{"format": "yy"}'/>
                                         <br/><br/><br/>
                                     </td>
@@ -174,7 +170,7 @@
                                             <span t-field="line.start_time" t-options='{"format": "dd.MM.yy"}'/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: center;">
-                                            <span t-field="line.flightno_id.name"/>
+                                            <span t-field="line.flightno_id"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
                                             <span t-field="line.total_pax"/>

@@ -7,34 +7,33 @@ class PassengerBoardingBridgeChargesLine(models.Model):
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
     passenger_boarding_bridge_charges_id = fields.Many2one('passenger.boarding.bridge.charges', string='Passenger Boarding Bridge Charges', tracking=True, )
-    flightno_id = fields.Many2one('flights',string='Flight No.')
-    flight_registration_no = fields.Char(string='Registration No.', related='flightno_id.name', store=True)
-    flight_aircraft = fields.Char(string='Aircraft Type', related='flightno_id.aircraft_type', store=True)
-    start_time = fields.Datetime(string='Start Date & Time', tracking=True, )
-    end_time = fields.Datetime(string='End Date & Time', tracking=True, )
+    flightno_id = fields.Char(string='Flight No.')
+    flight_registration_no = fields.Char(string='Registration No.')
+    flight_aircraft = fields.Char(string='Aircraft Type')
+    start_time = fields.Datetime(string='Start Date & Time', default=fields.Datetime.now, tracking=True, )
+    end_time = fields.Datetime(string='End Date & Time', tracking=True, default=fields.Datetime.now )
     total_minutes = fields.Integer(string='Total Minutes', compute='_compute_total_minutes', store=True)
     bridge_rate_id = fields.Many2one('passenger.boarding.bridge.charges.rate', string='Rate',
                                        compute='_compute_bridge_rate',
                                        inverse='_inverse_bridge_rate',
                                        store=True, tracking=True)
     amount = fields.Float(string="Amount", compute='_compute_amount', store=True)
-    seat_capacity = fields.Integer(related='flightno_id.seat_capacity', store=True,
-                                   string='Seat Capacity')
+    seat_capacity = fields.Integer(string='Seat Capacity')
 
     @api.constrains('flightno_id')
     def _check_airline(self):
         for record in self:
             if not record.flightno_id:
                 raise ValidationError(_("Flight No. must be set for each bridge service line."))
-    @api.onchange('flightno_id')
+    @api.onchange('flight_aircraft')
     def _onchange_flight(self):
         if self.flightno_id:
-            if not self.flightno_id.seat_capacity or self.flightno_id.seat_capacity <= 0:
+            if not self.seat_capacity or self.seat_capacity <= 0:
                 return {
                     'warning': {
                         'title': 'Error',
                         'message': _(
-                            "Please define seat capacity for flight %s before proceeding.") % self.flightno_id.name
+                            "Please define seat capacity for flight %s before proceeding.") % self.flightno_id
                     }
                 }
 
@@ -47,7 +46,7 @@ class PassengerBoardingBridgeChargesLine(models.Model):
                 return {
                     'warning': {
                         'title': 'Missing Bridge Rate',
-                        'message': f"{self.flightno_id.name} is {self.seat_capacity} seats. No bridge rate found for aircraft with {self.seat_capacity} seats"
+                        'message': f"{self.flightno_id} is {self.seat_capacity} seats. No bridge rate found for aircraft with {self.seat_capacity} seats"
                     }
                 }
     @api.depends('flightno_id')
@@ -66,10 +65,10 @@ class PassengerBoardingBridgeChargesLine(models.Model):
             else:
                 line.bridge_rate_id = False
 
-    # @api.depends('passenger_boarding_bridge_charges_id.bridge_rate_id')
-    # def _compute_bridge_rate(self):
-    #     for line in self:
-    #         line.bridge_rate_id = line.passenger_boarding_bridge_charges_id.bridge_rate_id
+    @api.depends('passenger_boarding_bridge_charges_id.bridge_rate_id')
+    def _compute_bridge_rate(self):
+        for line in self:
+            line.bridge_rate_id = line.passenger_boarding_bridge_charges_id.bridge_rate_id
 
     def _inverse_bridge_rate(self):
         for line in self:
@@ -130,10 +129,10 @@ class PassengerBoardingBridgeChargesLine(models.Model):
         template_id = self.env.ref('passenger_boarding_bridge_charges.airline_passenger_bridge_line_template')
         changes = []
 
-        if 'flightno_id' in vals:
-            flight = self.env['flights'].browse(vals['flightno_id'])
-            changes.append(f"Flight Number: → {flight.name}")
-            changes.append(f"Flight Registration No: → {flight.name or 'N/A'}")
+        # if 'flightno_id' in vals:
+        #     flight = self.env['flights'].browse(vals['flightno_id'])
+        #     changes.append(f"Flight Number: → {flight.name}")
+        #     changes.append(f"Flight Registration No: → {flight.name or 'N/A'}")
 
         if 'start_time' in vals:
             new_value = vals.get('start_time', 'N/A')

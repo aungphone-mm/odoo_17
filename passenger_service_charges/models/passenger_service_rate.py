@@ -12,4 +12,5 @@ class PassengerServiceRate(models.Model):
     passenger_service_rate_line_ids = fields.One2many(comodel_name='passenger.service.rate.line', inverse_name='rate_id', string='Rate Line',
                                     required=False)
     currency_id = fields.Many2one('res.currency', string='Currency', required=True)
+    pax_price = fields.Integer(string='Pax Price', tracking=True, required=True)
     active = fields.Boolean(string='Active', default=True)

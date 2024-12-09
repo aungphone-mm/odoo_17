@@ -12,26 +12,37 @@ class PassengerService(models.Model):
     type = fields.Selection([
         ('domestic', 'Domestic'),
         ('international', 'International')
-    ], default='domestic', string='Type', tracking=True)
+    ], default='international', string='Type', tracking=True)
     airline_id = fields.Many2one('airline',string='Airline')
     airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
-    start_time = fields.Datetime(string='Start Date & Time', tracking=True)
-    end_time = fields.Datetime(string='End Date & Time', tracking=True)
+    start_time = fields.Datetime(string='Start Date & Time', default=fields.Datetime.now, tracking=True)
+    end_time = fields.Datetime(string='End Date & Time', default=fields.Datetime.now, tracking=True)
     passenger_service_line_ids = fields.One2many('passenger.service.line', 'passenger_service_id',
                                                       string='Passenger Service Details')
-    currency_id = fields.Many2one('res.currency', string='Currency', store=True,tracking=True, required=True)
+    currency_id = fields.Many2one('res.currency', string='Currency', related='passenger_service_rate_id.currency_id',store=True,tracking=True)
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
-    # passenger_service_rate_id = fields.Many2one('passenger.service.rate', string='Passenger Service Rate')
+    passenger_service_rate_id = fields.Many2one('passenger.service.rate', string='Passenger Service Rate')
     for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
-    product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
-    journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', domain=[('type', '=', 'sale')],
-                                 required=True)
-    pax_price = fields.Integer(string='Pax Price',tracking=True, required=True)
+    # product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
+    # journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', domain=[('type', '=', 'sale')],
+    #                              required=True)
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
         ('invoiced', 'Invoiced')
     ], string='Status', default='draft', tracking=True)
+
+    @api.constrains('total_pax', 'inf', 'transit', 'ntl', 'inad', 'depor', 'tax_free')
+    def _check_integer_fields(self):
+        for record in self:
+            fields_to_check = ['total_pax', 'inf', 'transit', 'ntl', 'inad', 'depor', 'tax_free']
+            for field in fields_to_check:
+                value = getattr(record, field)
+                if value and not isinstance(value, int):
+                    raise ValidationError(_(f"The field {field} must be a valid integer number."))
+                if value and value < 0:
+                    raise ValidationError(_(f"The field {field} cannot be negative."))
 
     def action_view_invoice(self):
         self.ensure_one()
@@ -73,10 +84,10 @@ class PassengerService(models.Model):
             'invoice_date': fields.Date.today(),
             'invoice_line_ids': [(0, 0, line) for line in self._prepare_invoice_line_vals()],
             'passenger_service_id': self.id,
-            'currency_id': self.currency_id.id,
-            'form_type': 'passengerservice',
-            # 'for_date': self.for_date,
-            'journal_id': self.journal_id.id,
+            'currency_id': self.passenger_service_rate_id.currency_id.id,
+            'form_type': 'PassengerService',
+            'for_date': self.for_date,
+            'journal_id': self.passenger_service_rate_id.journal_id.id,
         }
 
     def _prepare_invoice_line_vals(self):
@@ -84,10 +95,10 @@ class PassengerService(models.Model):
         lines = []
         for line in self.passenger_service_line_ids:
             lines.append({
-                'product_id': self.product_id.id,
-                'name': f"{line.flightno_id.name}",
-                'quantity': line.invoice_pax,
-                'price_unit':self.pax_price,  # You need to set the appropriate price
+                'product_id': line.passenger_service_rate_id.product_id.id,
+                'name': f"{line.flightno_id}",
+                'quantity': 1,
+                'price_unit': line.passenger_service_rate_id.pax_price,  # You need to set the appropriate price
                 'passenger_service_line_id': line.id,
             })
         return lines

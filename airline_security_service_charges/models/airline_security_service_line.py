@@ -7,10 +7,10 @@ class AirlineSecurityServiceLine(models.Model):
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
     airline_security_service_id = fields.Many2one('airline.security.service', string='Airlines security service', tracking=True)
-    flightno_id = fields.Many2one('flights',string='Flight No.')
-    flight_registration_no = fields.Char(string='Registration No.', related='flightno_id.name', store=True)
-    start_time = fields.Datetime(string='Start Date & Time', tracking=True)
-    end_time = fields.Datetime(string='End Date & Time', tracking=True)
+    flightno_id = fields.Char(string='Flight No.')
+    flight_registration_no = fields.Char(string='Registration No.', store=True)
+    start_time = fields.Datetime(string='Start Date & Time', tracking=True, default=fields.Datetime.now)
+    end_time = fields.Datetime(string='End Date & Time', tracking=True, default=fields.Datetime.now)
     total_minutes = fields.Integer(string='Total Minutes', compute='_compute_total_minutes', store=True)
     subtract_minutes = fields.Integer(string='Subtract Minutes', default=0, tracking=True)
     security_rate_id = fields.Many2one('airline.security.rate', string='Rate',
@@ -93,9 +93,8 @@ class AirlineSecurityServiceLine(models.Model):
         changes = []
 
         if 'flightno_id' in vals:
-            flight = self.env['flights'].browse(vals['flightno_id'])
-            changes.append(f"Flight Number: → {flight.name}")
-            changes.append(f"Flight Registration No: → {flight.name or 'N/A'}")
+            new_value = vals.get('flightno_id', 'N/A')
+            changes.append(f"Flight Number:  → {new_value}")
 
         if 'start_time' in vals:
             new_value = vals.get('start_time', 'N/A')

@@ -107,5 +107,19 @@
                 </search>
             </field>
         </record>
-
+        <record id="view_move_form_inherit_security" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.security</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <field name="form_type" invisible="1"/>
+                    <button name="action_print_security_invoice"
+                            string="Print Security Invoice"
+                            type="object"
+                            invisible="not form_type == 'security'"
+                            class="oe_highlight"/>
+                </xpath>
+            </field>
+        </record>
 </odoo>

@@ -5,6 +5,8 @@ class AccountMove(models.Model):
 
     passenger_boarding_bridge_charges_id = fields.Many2one('passenger.boarding.bridge.charges', string='Boarding Bridge Service', readonly=True)
     form_type = fields.Char('Form Type')
+    def action_print_bridge_invoice(self):
+        return self.env.ref('passenger_boarding_bridge_charges.action_boarding_report').report_action(self)
 
     def action_view_bridge_service(self):
         self.ensure_one()

@@ -12,14 +12,14 @@ class CheckinCounter(models.Model):
     type = fields.Selection([
         ('domestic', 'Domestic'),
         ('international', 'International')
-    ], default='domestic', string='Type', tracking=True)
+    ], default='international', string='Type', tracking=True)
     airline_id = fields.Many2one('airline',string='Airline')
     airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
     currency_id = fields.Many2one('res.currency', string='Currency', related='checkin_counter_rate_id.currency_id', store=True,
                                   readonly=True)
 
-    start_time = fields.Datetime(string='Start Date & Time', tracking=True)
-    end_time = fields.Datetime(string='End Date & Time', tracking=True)
+    start_time = fields.Datetime(string='Start Date & Time', default=fields.Datetime.now, tracking=True)
+    end_time = fields.Datetime(string='End Date & Time', default=fields.Datetime.now, tracking=True)
     checkin_counter_line_ids = fields.One2many('checkin.counter.line', 'checkin_counter_id',
                                                       string='Checkin Details')
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
@@ -83,7 +83,7 @@ class CheckinCounter(models.Model):
         for line in self.checkin_counter_line_ids:
             lines.append({
                 'product_id': line.checkin_counter_rate_id.product_id.id,
-                'name': f"{line.flightno_id.name}",
+                'name': f"{line.flightno_id}",
                 'quantity': 1,
                 'price_unit': line.amount,  # You need to set the appropriate price
                 'checkin_counter_line_id': line.id,

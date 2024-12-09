@@ -15,13 +15,13 @@ class AirlinePassengerBill(models.Model):
     type = fields.Selection([
         ('domestic', 'Domestic'),
         ('international', 'International')
-    ], default='domestic', string='Type', tracking=True)
+    ], default='international', string='Type', tracking=True)
 
     user_id = fields.Many2one('res.users', string='Receptionist', default=lambda self: self.env.uid, required=True,tracking=True)
     date = fields.Date('Date', default=fields.Date.context_today, required=True,
                        tracking=True)
-    start_time = fields.Float(string='Start Time', required=True, tracking=True)
-    end_time = fields.Float(string='End Time', required=True, tracking=True)
+    start_time = fields.Float(string='Start Time', required=True, tracking=True, default=fields.Datetime.now)
+    end_time = fields.Float(string='End Time', required=True, tracking=True, default=fields.Datetime.now)
     airline_passenger_bill_line_ids = fields.One2many('airline.passenger.bill.line', 'airline_passenger_bill_id',
                                                       string='Passenger Details')
     passenger_rate_id = fields.Many2one('passenger.rate', string='Passenger Rate', required=True,
@@ -207,4 +207,4 @@ class PassengerRate(models.Model):
     type = fields.Selection([
         ('domestic', 'Domestic'),
         ('international', 'International')
-    ], default='domestic', string='Domestic/International', tracking=True)
+    ], default='international', string='Domestic/International', tracking=True)

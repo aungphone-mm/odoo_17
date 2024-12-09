@@ -12,11 +12,11 @@ class AirlineSecurityService(models.Model):
     type = fields.Selection([
         ('domestic', 'Domestic'),
         ('international', 'International')
-    ], default='domestic', string='Type', tracking=True)
+    ], default='international', string='Type', tracking=True)
     airline_id = fields.Many2one('airline',string='Airline')
     airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
-    start_time = fields.Datetime(string='Start Date & Time', tracking=True)
-    end_time = fields.Datetime(string='End Date & Time', tracking=True)
+    start_time = fields.Datetime(string='Start Date & Time', tracking=True, default=fields.Datetime.now)
+    end_time = fields.Datetime(string='End Date & Time', tracking=True, default=fields.Datetime.now)
     airline_security_service_line_ids = fields.One2many('airline.security.service.line', 'airline_security_service_id',
                                                       string='Security Details')
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
@@ -81,7 +81,7 @@ class AirlineSecurityService(models.Model):
         for line in self.airline_security_service_line_ids:
             lines.append({
                 'product_id': line.security_rate_id.product_id.id,
-                'name': f"{line.flightno_id.name}",
+                'name': f"{line.flightno_id}",
                 'quantity': 1,
                 'price_unit': line.amount,  # You need to set the appropriate price
                 'airline_security_service_line_id': line.id,

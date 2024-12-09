@@ -12,7 +12,7 @@
                 <field name="airline_user_id"/>
                 <field name="start_time" />
 <!--                <field name="end_time" />-->
-<!--                <field name="passenger_service_rate_id"/>-->
+                <field name="passenger_service_rate_id"/>
                 <field name="currency_id"/>
             </tree>
         </field>
@@ -44,11 +44,12 @@
                         <field name="airline_user_id" options="{'no_create': True}"/>
                     </group>
                     <group>
-                        <field name="pax_price"/>
+                        <field name="passenger_service_rate_id" />
+<!--                        <field name="pax_price"/>-->
                         <field name="start_time"/>
                         <field name="for_date" />
-                        <field name="journal_id" />
-                        <field name="product_id" />
+<!--                        <field name="journal_id" />-->
+<!--                        <field name="product_id" />-->
                     </group>
                     <group>
                     <group>
@@ -106,6 +107,26 @@
 <!--                        <filter string="Rate" name="group_by_rate" domain="[]" context="{'group_by': 'service_rate_id'}"/>-->
 <!--                    </group>-->
                 </search>
+            </field>
+        </record>
+        	<record id="view_move_form_inherit_passenger" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.passenger</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <field name="form_type" invisible="1"/>
+                    <button name="action_print_passenger_domestic_invoice"
+                            string="Print Passenger Domestic Invoice"
+                            type="object"
+                            invisible="not form_type == 'PassengerService'"
+                            class="oe_highlight"/>
+                    <button name="action_print_passenger_international_invoice"
+                            string="Print Passenger International Invoice"
+                            type="object"
+                            invisible="not form_type == 'PassengerService'"
+                            class="oe_highlight"/>
+                </xpath>
             </field>
         </record>
 

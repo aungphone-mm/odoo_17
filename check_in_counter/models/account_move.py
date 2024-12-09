@@ -6,6 +6,9 @@ class AccountMove(models.Model):
     checkin_counter_id = fields.Many2one('checkin.counter', string='Checkin Counter', readonly=True)
     form_type = fields.Char('Form Type')
 
+    def action_print_checkin_invoice(self):
+        return self.env.ref('check_in_counter.action_checkin_report').report_action(self)
+
     def action_view_checkin_counter(self):
         self.ensure_one()
         return {

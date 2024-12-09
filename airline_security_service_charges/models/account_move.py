@@ -6,6 +6,9 @@ class AccountMove(models.Model):
     airline_security_service_id = fields.Many2one('airline.security.service', string='Security Service', readonly=True)
     form_type = fields.Char('Form Type')
 
+    def action_print_security_invoice(self):
+        return self.env.ref('airline_security_service_charges.action_security_service_report').report_action(self)
+
     def action_view_security_service(self):
         self.ensure_one()
         return {

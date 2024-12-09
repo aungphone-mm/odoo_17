@@ -50,7 +50,7 @@
 <!--                  parent="menu_passenger_service_root"-->
 <!--                  sequence="11"/>-->
 
-<!--        <menuitem id="menu_passenger_service_rate" name="Passenger Service Rates" action="action_passenger_service_rate"-->
-<!--                  parent="menu_passenger_service" sequence="30"/>-->
+        <menuitem id="menu_passenger_service_rate" name="Passenger Service Rates" action="action_passenger_service_rate"
+                  parent="menu_passenger_service" sequence="30"/>
     </data>
 </odoo>

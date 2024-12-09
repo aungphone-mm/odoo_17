@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="action_security_service_report" model="ir.actions.report">
+    <record id="action_boarding_report" model="ir.actions.report">
         <field name="name">Boarding Bridge Invoice With Breakdown</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-html</field>
@@ -220,7 +220,7 @@
                                 </tr>
                             </tfoot>
                         </table>
-                        <table class="table table-sm mt-4" style="width: 100%; border-collapse: collapse;">
+                        <table class="table table-sm mt-4" style="width: 50%; border-collapse: collapse;">
                         <thead>
                             <tr style="background-color: #e9ecef;">
                                 <th style="border: 1px solid black;">Rate Amount</th>

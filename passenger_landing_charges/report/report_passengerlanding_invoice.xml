@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="action_security_service_report" model="ir.actions.report">
+    <record id="action_landing_report" model="ir.actions.report">
         <field name="name">Aircraft Landing Invoice With Breakdown</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-html</field>
@@ -168,28 +168,35 @@
                                     <th style="border: 1px solid black;">Flight No</th>
                                     <th style="border: 1px solid black;">Aircraft Type</th>
                                     <th style="border: 1px solid black;">Reg. No.</th>
+                                    <th style="border: 1px solid black;">Time</th>
                                     <th style="border: 1px solid black;">Amount</th>
                                     <th style="border: 1px solid black;">Remark</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <t t-foreach="o.invoice_line_ids" t-as="line">
+                                <t t-foreach="o.get_grouped_landing_lines()" t-as="group">
                                     <tr>
-                                        <td style="border: 1px solid black; text-align: center;"><t t-esc="line_index + 1"/></td>
-                                        <td style="border: 1px solid black;">
-                                            <span t-field="line.passenger_landing_line_id.start_time" t-options='{"format": "dd.MM.yy"}'/>
+                                        <td style="border: 1px solid black; text-align: center;">
+                                            <t t-esc="group_index + 1"/>
                                         </td>
                                         <td style="border: 1px solid black;">
-                                            <span t-field="line.passenger_landing_line_id.flight_no"/>
+                                            <t t-esc="group['date']"/>
                                         </td>
                                         <td style="border: 1px solid black;">
-                                            <span t-field="line.passenger_landing_line_id.aircraft_type_display"/>
+                                            <t t-esc="group['flight_no']"/>
                                         </td>
                                         <td style="border: 1px solid black;">
-                                            <span t-field="line.passenger_landing_line_id.flight_registration_no.name"/>
+                                            <t t-esc="group['aircraft_type']"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <t t-esc="group['reg_no']"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                             <t t-esc="group['count']"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
-                                            <span t-field="line.price_subtotal"/>
+                                            <span t-esc="group['amount']"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
                                         <td style="border: 1px solid black;">
                                             <!-- Remarks field -->
@@ -199,7 +206,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="5" style="text-align: right; border: 1px solid black;">
+                                    <td colspan="6" style="text-align: right; border: 1px solid black;">
                                         <strong>Total</strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">

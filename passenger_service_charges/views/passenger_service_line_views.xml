@@ -10,7 +10,7 @@
                     </header>
                     <field name="flightno_id"/>
                     <field name="start_time"/>
-<!--                    <field name="end_time"/>-->
+<!--                    <field name="pax_price"/>-->
 <!--                    <field name="total_minutes" />-->
 <!--                    <field name="amount"/>-->
 
@@ -43,6 +43,7 @@
                 <field name="product_id"/>
                 <field name="currency_id"/>
                 <field name="active"/>
+                <field name="pax_price"/>
             </tree>
         </field>
     </record>
@@ -58,6 +59,7 @@
                         <group>
                             <field name="name"/>
                             <field name="product_id"/>
+                            <field name="pax_price"/>
                         </group>
                         <group>
                             <field name="journal_id"/>
@@ -65,20 +67,20 @@
                             <field name="active"/>
                         </group>
                     </group>
-                    <notebook>
-                        <page string="Rate Lines">
-                            <field name="passenger_service_rate_line_ids">
-                                <tree editable="bottom">
-                                    <field name="rate_id" readonly="True"/>
-                                    <field name="from_unit"/>
-                                    <field name="to_unit"/>
-                                    <field name="currency_id"/>
-                                    <field name="unit_price"/>
+<!--                    <notebook>-->
+<!--                        <page string="Rate Lines">-->
+<!--                            <field name="passenger_service_rate_line_ids">-->
+<!--                                <tree editable="bottom">-->
+<!--                                    <field name="rate_id" readonly="True"/>-->
+<!--                                    <field name="from_unit"/>-->
+<!--                                    <field name="to_unit"/>-->
+<!--                                    <field name="currency_id"/>-->
+<!--                                    <field name="unit_price"/>-->
 
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                        </page>-->
+<!--                    </notebook>-->
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
