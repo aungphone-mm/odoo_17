@@ -119,73 +119,37 @@ class ElectricMeterReading(models.Model):
 
     def action_confirm(self):
         self.write({'state': 'confirmed'})
-        # First group readings by meter number
-        meter_readings = {}
         for line in self.reading_line_ids:
-            meter_number = line.meter_id.meter_number
-            if meter_number not in meter_readings:
-                meter_readings[meter_number] = []
-            meter_readings[meter_number].append(line)
-        # Process each meter's readings
-        for meter_number, lines in meter_readings.items():
-            if len(lines) > 1:
-                # Multiple readings for same meter - combine them
-                total_units = sum(line.total_unit for line in lines)
-                if total_units <= 0:
-                    continue
-                base_line = lines[0]  # Use first line as base for calculations
-                if base_line.partner_id and base_line.partner_id.business_source_id:
-                    rate = base_line.partner_id.business_source_id.rate_id
-                    remaining_units = total_units
+            # line.narration = f'<b>Meter No : {line.meter_id.name}</b><br/>'
+            if line.total_unit > 0:
+                if line.partner_id and line.partner_id.business_source_id:
+                    rate = line.partner_id.business_source_id.rate_id
+                    remaining_units = line.total_unit
                     total_amount = 0
-                    narration = f'<b>Meter No : {base_line.meter_id.name}</b><br/>'
-                    # Calculate combined amount
+
                     for rate_line in rate.rate_line_ids:
-                        units_in_bracket = min(remaining_units,
-                                               rate_line.to_unit - rate_line.from_unit + 1)
+                        # Calculate units in the current bracket
+                        units_in_bracket = min(remaining_units, rate_line.to_unit - rate_line.from_unit)
+
+                        # Calculate amount for the current bracket
                         bracket_amount = units_in_bracket * rate_line.unit_price
                         total_amount += bracket_amount
-                        narration += f'{rate_line.from_unit:,} - {rate_line.to_unit:,}: {units_in_bracket:,} units x {rate_line.unit_price:,} = {bracket_amount:,}<br/>'
+
+                        # Subtract units that have been accounted for
                         remaining_units -= units_in_bracket
+
+                        # line.narration += f'{rate_line.from_unit:,} - {rate_line.to_unit:,}: {units_in_bracket:,} units x {rate_line.unit_price:,} = {bracket_amount:,}<br/>'
+
+                        # Break if there are no remaining units
                         if remaining_units <= 0:
                             break
-                    # Apply management fee if any
-                    if base_line.meter_id.mgm_percentage:
-                        mgm_charge = (total_amount / 100) * base_line.meter_id.mgm_percentage
-                        total_amount += mgm_charge
-                        narration += f'Management Charge ({base_line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
-                    # Distribute total amount proportionally among lines
-                    for line in lines:
-                        if total_units > 0:
-                            line_proportion = line.total_unit / total_units
-                            line.amount = total_amount * line_proportion
-                            line.narration = narration
-            else:
-                # Single reading - process normally
-                line = lines[0]
-                line.narration = f'<b>Meter No : {line.meter_id.name}</b><br/>'
-                if line.total_unit > 0:
-                    if line.partner_id and line.partner_id.business_source_id:
-                        rate = line.partner_id.business_source_id.rate_id
-                        remaining_units = line.total_unit
-                        total_amount = 0
-                        # Calculate charges for each rate bracket
-                        for rate_line in rate.rate_line_ids:
-                            units_in_bracket = min(remaining_units,
-                                                   rate_line.to_unit - rate_line.from_unit + 1)
-                            bracket_amount = units_in_bracket * rate_line.unit_price
-                            total_amount += bracket_amount
-                            line.narration += f'{rate_line.from_unit:,} - {rate_line.to_unit:,}: {units_in_bracket:,} units x {rate_line.unit_price:,} = {bracket_amount:,}<br/>'
-                            remaining_units -= units_in_bracket
-                            if remaining_units <= 0:
-                                break
-                        # Set the total amount
-                        line.amount = total_amount
-                        # Apply management fee if configured
-                        if line.meter_id.mgm_percentage:
-                            mgm_charge = (line.amount / 100) * line.meter_id.mgm_percentage
-                            line.amount += mgm_charge
-                            line.narration += f'Management Charge ({line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
+                            #aung
+
+                    line.amount = total_amount
+                    if line.meter_id.mgm_percentage:
+                        mgm_charge = (line.amount / 100) * line.meter_id.mgm_percentage
+                        line.amount += mgm_charge
+                        # line.narration += f'Management Charge ({line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
 
     def action_done(self):
         self.write({'state': 'done'})
@@ -289,7 +253,7 @@ class ElectricMeterReading(models.Model):
     def _onchange_reading_line_ids(self):
         for line in self.reading_line_ids:
             if line.current_reading_unit is not False and line.latest_reading_unit is not False:
-                if line.current_reading_unit > line.latest_reading_unit:
+                if line.current_reading_unit >= line.latest_reading_unit:
                     line.total_unit = line.current_reading_unit - line.latest_reading_unit
                 else:
                     line.total_unit = 0

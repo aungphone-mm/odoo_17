@@ -212,7 +212,7 @@
                                                 <t t-set="remain_unit" t-value="total_unit"/>
                                                 <t t-foreach="o.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">
                                                     <t t-if="remain_unit > 0">
-                                                        <t t-set="units_in_bracket" t-value="min(remain_unit, rate_line.to_unit - rate_line.from_unit + 1)"/>
+                                                        <t t-set="units_in_bracket" t-value="min(remain_unit, rate_line.to_unit - rate_line.from_unit)"/>
                                                         <span t-esc="'{:,.0f}'.format(units_in_bracket)"/>
                                                         <br t-if="not rate_line_last"/>
                                                         <t t-set="remain_unit" t-value="remain_unit - units_in_bracket"/>
@@ -239,7 +239,7 @@
                                                 <t t-set="subtotal_amount" t-value="0"/>
                                                 <t t-foreach="o.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">
                                                     <t t-if="remain_unit > 0">
-                                                        <t t-set="units_in_bracket" t-value="min(remain_unit, rate_line.to_unit - rate_line.from_unit)+1"/>
+                                                        <t t-set="units_in_bracket" t-value="min(remain_unit, rate_line.to_unit - rate_line.from_unit)"/>
                                                         <t t-set="bracket_amount" t-value="units_in_bracket * rate_line.unit_price"/>
                                                         <span t-esc="'{:,.0f}'.format(bracket_amount)"/>
                                                         <br/>
