@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="inherited_account_view_list" model="ir.ui.view">
+            <field name="name">account.account.view.list.inherited</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_list"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='code']" position="before">
+                    <field name="main_code"/>
+                    <field name="sub_code"/>
+                </xpath>
+                <xpath expr="//field[@name='account_type']" position="before">
+                    <field name="group_code"/>
+                    <field name="old_code"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
