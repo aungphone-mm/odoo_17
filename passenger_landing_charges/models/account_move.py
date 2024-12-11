@@ -24,15 +24,15 @@ class AccountMove(models.Model):
         grouped_lines = {}
         for line in self.invoice_line_ids:
             date_key = line.passenger_landing_line_id.start_time.strftime('%d.%m.%y')
-            flight_key = line.passenger_landing_line_id.flight_no
-            group_key = f"{date_key}-{flight_key}"
+            reg_key = line.passenger_landing_line_id.flight_registration_no.name
+            group_key = f"{date_key}-{reg_key}"
 
             if group_key not in grouped_lines:
                 grouped_lines[group_key] = {
                     'date': date_key,
-                    'flight_no': flight_key,
+                    'flight_no': line.passenger_landing_line_id.flight_no,
                     'aircraft_type': line.passenger_landing_line_id.aircraft_type_display,
-                    'reg_no': line.passenger_landing_line_id.flight_registration_no.name,
+                    'reg_no': reg_key,
                     'count': 1,
                     'amount': line.price_subtotal,
                 }
@@ -40,7 +40,7 @@ class AccountMove(models.Model):
                 grouped_lines[group_key]['count'] += 1
                 grouped_lines[group_key]['amount'] += line.price_subtotal
 
-        return sorted(grouped_lines.values(), key=lambda x: (x['date'], x['flight_no']))
+        return sorted(grouped_lines.values(), key=lambda x: (x['date'], x['reg_no']))
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'

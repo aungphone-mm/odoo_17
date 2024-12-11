@@ -28,6 +28,12 @@ class PassengerLanding(models.Model):
         ('confirmed', 'Confirmed'),
         ('invoiced', 'Invoiced')
     ], string='Status', default='draft', tracking=True)
+    total_lines = fields.Integer(compute='_compute_total_lines', string='Total Lines', store=True)
+
+    @api.depends('passenger_landing_line_ids')
+    def _compute_total_lines(self):
+        for record in self:
+            record.total_lines = len(record.passenger_landing_line_ids)
 
     def action_view_invoice(self):
         self.ensure_one()

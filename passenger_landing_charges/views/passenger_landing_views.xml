@@ -59,16 +59,21 @@
                     <page string="Aircraft Landing Details">
                         <field name="passenger_landing_line_ids">
                             <tree editable="bottom">
+                                <field name="sequence" string="No." readonly="1"/>
                                 <field name="passenger_landing_id" column_invisible="1"/>
                                 <field name="flight_no"/>
-                                <field name="flight_registration_no"/>
                                 <field name="flight_aircraft" column_invisible="1"/>
                                 <field name="aircraft_type_display"/>
+                                <field name="flight_registration_no"/>
                                 <field name="start_time"/>
                                 <field name="passenger_landing_rate_id"/>
                                 <field name="amount"/>
                             </tree>
                         </field>
+                        <!-- Add total count display -->
+                        <group class="oe_subtotal_footer">
+                            <field name="total_lines" string="Total Lines"/>
+                        </group>
                     </page>
                 </notebook>
             </sheet>

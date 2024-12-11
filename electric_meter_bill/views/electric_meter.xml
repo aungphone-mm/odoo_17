@@ -101,6 +101,20 @@
             <field name="model">electric.meter.reading</field>
             <field name="arch" type="xml">
                 <form string="electric_meter_reading_form">
+                    <style>
+                .o_form_view {
+                    display: flex !important;
+                    flex-flow: column !important;
+                }
+                .o_form_sheet_bg {
+                    flex: 0 0 auto !important;
+                }
+                .oe_chatter {
+                    width: 100% !important;
+                    min-width: auto !important;
+                    padding-left: 16px !important;
+                }
+            </style>
                     <header>
                         <button name="action_confirm" type="object" string="Confirm" invisible="state in ['cancelled', 'confirmed', 'done']"/>
                         <button name="action_done" type="object" string="Mark as Done" invisible="state in ['cancelled', 'draft']"/>

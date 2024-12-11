@@ -120,36 +120,65 @@ class ElectricMeterReading(models.Model):
     def action_confirm(self):
         self.write({'state': 'confirmed'})
         for line in self.reading_line_ids:
-            # line.narration = f'<b>Meter No : {line.meter_id.name}</b><br/>'
-            if line.total_unit > 0:
-                if line.partner_id and line.partner_id.business_source_id:
-                    rate = line.partner_id.business_source_id.rate_id
-                    remaining_units = line.total_unit
-                    total_amount = 0
+            if line.total_unit > 0 and line.partner_id and line.partner_id.business_source_id:
+                rate = line.partner_id.business_source_id.rate_id
+                total_units = line.total_unit
+                remaining_units = total_units
+                total_amount = 0
 
-                    for rate_line in rate.rate_line_ids:
-                        # Calculate units in the current bracket
-                        units_in_bracket = min(remaining_units, rate_line.to_unit - rate_line.from_unit)
+                # Sort rate lines by from_unit to ensure correct order
+                rate_lines = rate.rate_line_ids.sorted(key=lambda r: r.from_unit)
 
-                        # Calculate amount for the current bracket
-                        bracket_amount = units_in_bracket * rate_line.unit_price
-                        total_amount += bracket_amount
+                for rate_line in rate_lines:
+                    bracket_size = rate_line.to_unit - rate_line.from_unit
+                    units_in_bracket = min(remaining_units, bracket_size)
 
-                        # Subtract units that have been accounted for
-                        remaining_units -= units_in_bracket
+                    if units_in_bracket <= 0:
+                        break
 
-                        # line.narration += f'{rate_line.from_unit:,} - {rate_line.to_unit:,}: {units_in_bracket:,} units x {rate_line.unit_price:,} = {bracket_amount:,}<br/>'
+                    bracket_amount = float(units_in_bracket * rate_line.unit_price)
+                    total_amount += bracket_amount
+                    remaining_units -= units_in_bracket
 
-                        # Break if there are no remaining units
-                        if remaining_units <= 0:
-                            break
-                            #aung
+                # Apply MGM percentage if exists
+                if line.meter_id.mgm_percentage:
+                    mgm_amount = float((total_amount * line.meter_id.mgm_percentage) / 100)
+                    total_amount += mgm_amount
 
-                    line.amount = total_amount
-                    if line.meter_id.mgm_percentage:
-                        mgm_charge = (line.amount / 100) * line.meter_id.mgm_percentage
-                        line.amount += mgm_charge
-                        # line.narration += f'Management Charge ({line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
+                line.amount = total_amount
+    # def action_confirm(self):
+    #     self.write({'state': 'confirmed'})
+    #     for line in self.reading_line_ids:
+    #         # line.narration = f'<b>Meter No : {line.meter_id.name}</b><br/>'
+    #         if line.total_unit > 0:
+    #             if line.partner_id and line.partner_id.business_source_id:
+    #                 rate = line.partner_id.business_source_id.rate_id
+    #                 remaining_units = line.total_unit
+    #                 total_amount = 0
+    #
+    #                 for rate_line in rate.rate_line_ids:
+    #                     # Calculate units in the current bracket
+    #                     units_in_bracket = min(remaining_units, rate_line.to_unit - rate_line.from_unit)
+    #
+    #                     # Calculate amount for the current bracket
+    #                     bracket_amount = units_in_bracket * rate_line.unit_price
+    #                     total_amount += bracket_amount
+    #
+    #                     # Subtract units that have been accounted for
+    #                     remaining_units -= units_in_bracket
+    #
+    #                     # line.narration += f'{rate_line.from_unit:,} - {rate_line.to_unit:,}: {units_in_bracket:,} units x {rate_line.unit_price:,} = {bracket_amount:,}<br/>'
+    #
+    #                     # Break if there are no remaining units
+    #                     if remaining_units <= 0:
+    #                         break
+    #                         #aung
+    #
+    #                 line.amount = total_amount
+    #                 if line.meter_id.mgm_percentage:
+    #                     mgm_charge = (line.amount / 100) * line.meter_id.mgm_percentage
+    #                     line.amount += mgm_charge
+    #                     # line.narration += f'Management Charge ({line.meter_id.mgm_percentage}%): {mgm_charge:,}<br/>'
 
     def action_done(self):
         self.write({'state': 'done'})

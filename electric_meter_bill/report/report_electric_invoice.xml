@@ -30,22 +30,20 @@
                             <!-- Invoice Info Section -->
                             <div class="row mb-4">
                                 <div class="col-6">
-                                <div t-field="o.partner_id.name"/>
-                                <div t-field="o.partner_id.street"/>
-                                <div t-field="o.partner_id.street2"/>
-                                <div t-field="o.partner_id.city"/>
-                                <t t-if="o.partner_id.state_id">
-                                    <div>
-                                        <t t-esc="o.partner_id.state_id.name"/>
-                                        <t t-if="o.partner_id.zip">, <t t-esc="o.partner_id.zip"/></t>
-                                        <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
-<!--                                        <div t-if="o.partner_id.country_id" t-field="o.partner_id.country_id.name"/>-->
+                                        <div t-field="o.partner_id.name"/>
+                                        <div t-field="o.partner_id.street"/>
+                                        <div t-field="o.partner_id.street2"/>
+                                        <div>
+                                            <t t-if="o.partner_id.city" t-esc="o.partner_id.city"/>
+                                            <t t-if="o.partner_id.state_id">, <t t-esc="o.partner_id.state_id.name"/></t>
+                                            <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
+                                        </div>
+                                        <div t-if="o.reading_line_id.partner_id.contact_name">
+                                            Attention: <t t-esc="o.partner_id.contact_name"/><br/>
+                                            Position: <t t-esc="o.partner_id.contact_job_position"/>
+                                        </div>
                                     </div>
-                                </t>
-                                    <div t-if="o.reading_line_id.partner_id.contact_name">
-                                    Attention: <t t-esc="o.partner_id.contact_name"/><br/>
-                                        Position: <t t-esc="o.partner_id.contact_job_position"/>
-                                </div>
+
                             </div>
                                 <div class="col-6 d-flex justify-content-end">
                                     <div>
@@ -127,14 +125,14 @@
                             </table>
 
                             <!-- Total Section -->
-                            <div class="row">
-                                <div class="col-6">
-                                    <div t-if="o.narration" class="mt-4">
-                                        <strong>Notes:</strong>
-                                        <p t-field="o.narration"/>
-                                    </div>
-                                </div>
-                            </div>
+<!--                            <div class="row">-->
+<!--                                <div class="col-6">-->
+<!--                                    <div t-if="o.narration" class="mt-4">-->
+<!--                                        <strong>Notes:</strong>-->
+<!--                                        <p t-field="o.narration"/>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
 
                             <!-- Payment Information -->
                             <div class="row mt-4">
@@ -153,7 +151,7 @@
 <!--                                     <p>General Manager</p>-->
 <!--                                </div>-->
 <!--                            </div>-->
-                        </div>
+
                     </t>
                     <!-- Second Page -->
                 <t t-if="o.invoice_line_ids.filtered(lambda l: l.reading_line_id)">
@@ -180,9 +178,9 @@
                                 </thead>
                                 <tbody>
                                     <!-- Initialize the totals -->
-                                    <t t-set="total_units" t-value="0.0"/>
-                                    <t t-set="total_amount" t-value="0.0"/>
-                                    <t t-set="total_mgm_charge" t-value="0.0"/>
+                                    <t t-set="total_units" t-value="0"/>
+                                    <t t-set="total_amount" t-value="0"/>
+                                    <t t-set="total_mgm_charge" t-value="0"/>
 
                                     <t t-set="index" t-value="0"/>
                                     <t t-foreach="o.invoice_line_ids.filtered(lambda l: l.reading_line_id)" t-as="line">
@@ -207,7 +205,7 @@
                                             <td style="border: 1px solid black; text-align: right;">
                                                 <span t-field="line.reading_line_id.current_reading_unit"/>
                                             </td>
-                                            <td style="border: 1px solid black;">
+                                            <td style="border: 1px solid black; text-align: right">
                                                 <t t-set="total_unit" t-value="line.reading_line_id.total_unit"/>
                                                 <t t-set="remain_unit" t-value="total_unit"/>
                                                 <t t-foreach="o.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">
@@ -226,9 +224,9 @@
 <!--                                                    <br t-if="not rate_line_last"/>-->
 <!--                                                </t>-->
 <!--                                            </td>-->
-                                            <td style="border: 1px solid black;">
+                                            <td style="border: 1px solid black;text-align: right">
                                                 <t t-foreach="o.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">
-                                                    <span t-esc="rate_line.unit_price"/>
+                                                    <span t-esc="'{:,.0f}'.format(rate_line.unit_price)"/>
                                                     <br t-if="not rate_line_last"/>
                                                 </t>
                                             </td>
@@ -262,30 +260,32 @@
 
                                         <!-- Accumulate the totals -->
                                         <t t-set="total_units" t-value="total_units + line.reading_line_id.total_unit"/>
-                                        <t t-set="total_amount" t-value="total_amount + line.price_subtotal"/>
+                                        <t t-set="total_amount" t-value="total_amount + line.reading_line_id.amount"/>  <!-- Changed to use amount directly -->
                                         <t t-set="index" t-value="index + 1"/>
                                     </t>
                                 </tbody>
                                 <tfoot>
-                                    <tr style="background-color: #a8c9e2; color: black; text-align: center;">
-                                        <td colspan="6" style="text-align: right; border: 1px solid black;">
-                                            <strong>Total (Units)</strong>
-                                        </td>
+    <tr style="background-color: #a8c9e2; color: black; text-align: center;">
+        <td colspan="6" style="text-align: right; border: 1px solid black;">
+            <strong>Total (Units)</strong>
+        </td>
 
-                                        <td style="text-align: right; border: 1px solid black;">
-                                            <strong><t t-esc="'{:,.0f}'.format(total_units)"/></strong>
-                                        </td>
+        <td style="text-align: right; border: 1px solid black;">
+            <strong><t t-esc="'{:,.0f}'.format(total_units)"/></strong>
+        </td>
 
-                                        <td style="text-align: right; border: 1px solid black;">
-                                        </td>
+        <td style="text-align: right; border: 1px solid black;">
+        </td>
 
-                                        <td style="text-align: right; border: 1px solid black;">
-                                            <strong>
-                                                <t t-esc="'{:,.0f}'.format(total_amount)"/>
-                                            </strong>
-                                        </td>
-                                    </tr>
-                                </tfoot>
+        <td style="text-align: right; border: 1px solid black;">
+            <strong>
+                <!-- Change to directly sum the individual line totals -->
+                <t t-set="final_total" t-value="sum([line.reading_line_id.amount for line in o.invoice_line_ids.filtered(lambda l: l.reading_line_id)])"/>
+                <t t-esc="'{:,.0f}'.format(final_total)"/>
+            </strong>
+        </td>
+    </tr>
+</tfoot>
                             </table>
                             <!-- Add this after the main table -->
                         <div class="mt-4">
@@ -293,7 +293,7 @@
                             <div class="ml-4">
                                 <t t-foreach="o.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">
                                     <div>
-                                        <span t-esc="rate_line.unit_price"/>
+                                        <span t-esc="'{:,.0f}'.format(rate_line.unit_price)"/>
                                         (<span t-esc="'{:,.0f}'.format(rate_line.from_unit)"/>-<span t-esc="'{:,.0f}'.format(rate_line.to_unit)"/>)
                                     </div>
                                 </t>

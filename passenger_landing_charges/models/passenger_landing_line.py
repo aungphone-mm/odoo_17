@@ -4,6 +4,7 @@ class PassengerLandingLine(models.Model):
     _name = 'passenger.landing.line'
     _description = 'Passenger Landing Line'
     _inherit = ['mail.activity.mixin', 'mail.thread']
+    _order = 'sequence, id'
 
     passenger_landing_id = fields.Many2one('passenger.landing', string='Aircraft Landing',
                                          tracking=True, index=True)
@@ -22,6 +23,15 @@ class PassengerLandingLine(models.Model):
     aircraft_type_display = fields.Char(related='flight_aircraft.aircraft_type', string='Aircraft Type')
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, default=fields.Datetime.now)
     amount = fields.Float(string="Amount", compute='_compute_amount', store=True)
+    sequence = fields.Integer(string='Sequence')
+
+    @api.model
+    def create(self, vals):
+        # Auto-increment sequence for new lines
+        if vals.get('passenger_landing_id'):
+            landing = self.env['passenger.landing'].browse(vals['passenger_landing_id'])
+            vals['sequence'] = len(landing.passenger_landing_line_ids) + 1
+        return super().create(vals)
 
     @api.depends('passenger_landing_id.passenger_landing_rate_id')
     def _compute_landing_rate(self):

@@ -36,13 +36,13 @@
                                 <div t-if="o.partner_id.city">
                                     <t t-esc="o.partner_id.city"/>
                                 </div>
-                                <t t-if="o.partner_id.state_id">
+
                                     <div>
                                         <t t-esc="o.partner_id.state_id.name"/>
                                         <t t-if="o.partner_id.zip">, <t t-esc="o.partner_id.zip"/></t>
                                         <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
                                     </div>
-                                </t>
+
                                 <div t-if="o.passenger_landing_id.airline_user_id.name">
                                     Attention: <t t-esc="o.passenger_landing_id.airline_user_id.name"/>
                                 </div>
@@ -163,13 +163,14 @@
                         <table class="table table-sm" style="width: 100%; border-collapse: collapse;">
                             <thead>
                                 <tr style="background-color: #e9ecef;">
-                                    <th style="border: 1px solid black;">Sr.No</th>
+                                    <th style="border: 1px solid black;">No</th>
                                     <th style="border: 1px solid black;">Date</th>
-                                    <th style="border: 1px solid black;">Flight No</th>
-                                    <th style="border: 1px solid black;">Aircraft Type</th>
-                                    <th style="border: 1px solid black;">Reg. No.</th>
-                                    <th style="border: 1px solid black;">Time</th>
-                                    <th style="border: 1px solid black;">Amount</th>
+                                    <th style="border: 1px solid black;">CALL SIGN</th>
+                                    <th style="border: 1px solid black;">A/C TYPE</th>
+                                    <th style="border: 1px solid black;">Registration</th>
+                                    <th style="border: 1px solid black;">Ldg</th>
+                                    <th style="border: 1px solid black;">Rate</th>
+                                    <th style="border: 1px solid black;">Total Amount</th>
                                     <th style="border: 1px solid black;">Remark</th>
                                 </tr>
                             </thead>
@@ -195,9 +196,14 @@
                                              <t t-esc="group['count']"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
+                                            <span t-esc="group['amount'] / group['count']"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
                                             <span t-esc="group['amount']"
                                                   t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
+
                                         <td style="border: 1px solid black;">
                                             <!-- Remarks field -->
                                         </td>
@@ -206,7 +212,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="6" style="text-align: right; border: 1px solid black;">
+                                    <td colspan="7" style="text-align: right; border: 1px solid black;">
                                         <strong>Total</strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
@@ -215,6 +221,7 @@
                                         </strong>
                                     </td>
                                     <td style="border: 1px solid black;"></td>
+
                                 </tr>
                             </tfoot>
                         </table>
