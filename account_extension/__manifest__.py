@@ -10,11 +10,12 @@ Add Date, Reference and Name in Journal Item in Views.
     """,
     'author': 'Mingalar Sky Co., Ltd.',
     'website': 'https://www.mingalarsky.com',
-    'depends': ['base', 'account'],
+    'depends': ['base', 'account', 'account_asset'],
     'data': [
         'security/ir.model.access.csv',
         'view/account_account_views.xml',
         'view/account_cashbook_views.xml',
+        'view/account_asset_views.xml',
         'data/ir_sequence_data.xml',
     ],
     'installable': True,

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+
+        <record id="view_account_asset_form_inherit" model="ir.ui.view">
+            <field name="name">account.asset.form.inherit</field>
+            <field name="model">account.asset</field>
+            <field name="inherit_id" ref="account_asset.view_account_asset_form"/>
+            <field name="arch" type="xml">
+                <field name="model_id" position="after">
+                    <field name="asset_category"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_account_asset_category" model="ir.actions.act_window">
+            <field name="name">Asset Categories</field>
+            <field name="res_model">account.asset.category</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_account_asset_category_form" model="ir.ui.view">
+            <field name="name">account.asset.category.form</field>
+            <field name="model">account.asset.category</field>
+            <field name="arch" type="xml">
+                <form string="Asset Category">
+                    <sheet>
+                            <group>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="company_id"/>
+                                </group>
+                                <group></group>
+                            </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- List View -->
+        <record id="view_account_asset_category_tree" model="ir.ui.view">
+            <field name="name">account.asset.category.tree</field>
+            <field name="model">account.asset.category</field>
+            <field name="arch" type="xml">
+                <tree string="Asset Categories">
+                    <field name="name"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Menu -->
+        <menuitem id="menu_account_asset_category" name="Asset Categories"
+                  parent="account.account_management_menu" action="action_account_asset_category" sequence="2"/>
+    </data>
+</odoo>

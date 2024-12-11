@@ -1,6 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_account_category,Access Account Category,model_account_category,base.group_user,1,1,1,1
-access_account_group_category,Access Account Group Category	,model_account_group_category,base.group_user,1,1,1,1
-access_old_account,Access Old Account,model_old_account,base.group_user,1,1,1,1
 access_account_cashbook,access_account_cashbook,model_account_cashbook,base.group_user,1,1,1,1
 access_account_cashbook_line,access_account_cashbook_line,model_account_cashbook_line,base.group_user,1,1,1,1
+access_account_asset_category,access_account_asset_category,model_account_asset_category,base.group_user,1,1,1,1
