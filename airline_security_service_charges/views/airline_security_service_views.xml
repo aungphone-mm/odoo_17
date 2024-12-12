@@ -70,6 +70,7 @@
                                 <field name="total_minutes"/>
                                 <field name="security_rate_id" />
                                 <field name="amount" />
+
                             </tree>
                         </field>
                     </page>

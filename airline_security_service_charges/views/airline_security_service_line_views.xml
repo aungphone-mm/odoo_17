@@ -74,7 +74,7 @@
                                     <field name="to_unit"/>
                                     <field name="currency_id"/>
                                     <field name="unit_price"/>
-
+                                    <field name="time" />
                                 </tree>
                             </field>
                         </page>

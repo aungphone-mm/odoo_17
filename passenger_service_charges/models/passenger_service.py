@@ -23,6 +23,7 @@ class PassengerService(models.Model):
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
     passenger_service_rate_id = fields.Many2one('passenger.service.rate', string='Passenger Service Rate')
     for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
+    inv_desc = fields.Html(string='Invoice Description')
     # product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
     # journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', domain=[('type', '=', 'sale')],
     #                              required=True)
@@ -97,7 +98,7 @@ class PassengerService(models.Model):
             lines.append({
                 'product_id': line.passenger_service_rate_id.product_id.id,
                 'name': f"{line.flightno_id}",
-                'quantity': 1,
+                'quantity': line.invoice_pax,
                 'price_unit': line.passenger_service_rate_id.pax_price,  # You need to set the appropriate price
                 'passenger_service_line_id': line.id,
             })

@@ -155,7 +155,7 @@
                 </t>
 
                 <!-- Second Page - Breakdown -->
-                <t t-call="web.basic_layout">
+                <t t-call="web.external_layout">
                     <div class="page">
                         <div style="text-align: center; margin-bottom: 20px;">
                             <h3>DETAIL STATEMENT OF SECURITY SERVICE CHARGES</h3>
@@ -173,6 +173,7 @@
                                     <th style="border: 1px solid black;">AVSEC Qty</th>
                                     <th style="border: 1px solid black;">Total Service/hr</th>
                                     <th style="border: 1px solid black;">Rate($)</th>
+                                    <th style="border: 1px solid black;">Time</th>
                                     <th style="border: 1px solid black;">Amount($)</th>
                                     <th style="border: 1px solid black;">Remark</th>
                                 </tr>
@@ -209,6 +210,12 @@
                                         <td style="border: 1px solid black; text-align: right;">
                                             <span t-field="line.airline_security_service_line_id.security_rate_id"/>
                                         </td>
+                                        <td style="border: 1px solid black; text-align: center;">
+                                            <t t-if="line.airline_security_service_line_id">
+                                                <t t-set="time_value" t-value="line._get_time_from_rate_security()"/>
+                                                <t t-esc="time_value if time_value else '-'"/>
+                                            </t>
+                                        </td>
                                         <td style="border: 1px solid black; text-align: right;">
                                             <span t-field="line.price_subtotal"/>
                                         </td>
@@ -220,7 +227,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="8" style="text-align: right; border: 1px solid black;">
+                                    <td colspan="9" style="text-align: right; border: 1px solid black;">
                                         <strong>Total</strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">

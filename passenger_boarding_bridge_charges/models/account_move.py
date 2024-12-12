@@ -22,15 +22,18 @@ class AccountMove(models.Model):
     def _get_amount_totals_bridge(self):
         amount_totals = {}
         for line in self.invoice_line_ids:
-            amount = line.passenger_boarding_bridge_charges_line_id.amount
-            if amount in amount_totals:
-                amount_totals[amount]['count'] += 1
-                amount_totals[amount]['total'] += line.price_subtotal
-            else:
-                amount_totals[amount] = {
-                    'count': 1,
-                    'total': line.price_subtotal
-                }
+            time = line._get_time_from_rate()
+            if time and line.price_subtotal:
+                rate = line.price_unit / time  # Calculate rate
+
+                if rate in amount_totals:
+                    amount_totals[rate]['count'] += time  # Add the time value instead of incrementing by 1
+                    amount_totals[rate]['total'] += line.price_subtotal
+                else:
+                    amount_totals[rate] = {
+                        'count': time,  # Initialize with time value instead of 1
+                        'total': line.price_subtotal
+                    }
         return amount_totals
 
 class AccountMoveLine(models.Model):

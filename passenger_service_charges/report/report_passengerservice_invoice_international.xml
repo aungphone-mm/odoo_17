@@ -72,20 +72,21 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><br/><br/><br/><br/>1</td>
-                                    <td>
-                                        <br/><br/><br/><br/>
-                                        Passenger Service Charges(Int'l) for:<br/>
-                                        Flight No: As per attached<br/>
-                                        <span style="display: inline-block; width: 80px;">Pax Price:</span>
+                                    <td><br/><br/>1</td>
+                                    <td style="text-align: left;">
+                                        <br/><br/>
+                                        <span>Passenger Service Charges(Domestic) for: Flight No: As per attached</span><br/>
+                                        <span style="display: inline-block; width: 80px;">Pax Price: </span>
                                         <span t-field="o.passenger_service_id.passenger_service_rate_id.pax_price" t-options='{"widget": "float", "precision": 2}'/><br/>
-
-                                        <span t-field="o.passenger_service_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_service_id.for_date" t-options='{"format": "yy"}'/>
-                                        <br/><br/><br/><br/><br/><br/><br/>
+                                        <span t-field="o.passenger_service_id.for_date" t-options='{"format": "MMM"}'/>'
+                                        <span t-field="o.passenger_service_id.for_date" t-options='{"format": "yy"}'/>
+                                        <span t-field="o.passenger_service_id.inv_desc"/>
+                                        <br/><br/>
                                     </td>
                                     <td style="text-align: center;">
                                         <br/><br/><br/><br/>
-                                        <span t-esc="len(o.invoice_line_ids)"/>
+<!--                                        <span t-esc="len(o.invoice_line_ids)"/>-->
+                                         <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('invoice_pax'))"/>
                                     </td>
                                     <td style="text-align: right;">
                                         <br/><br/><br/><br/>

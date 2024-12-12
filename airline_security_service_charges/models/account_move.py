@@ -24,3 +24,14 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     airline_security_service_line_id = fields.Many2one('airline.security.service.line', string='Security Service Line')
+
+    def _get_time_from_rate_security(self):
+        self.ensure_one()
+        if not self.price_unit:
+            return False
+
+        rate_line = self.env['airline.security.rate.line'].search([
+            ('unit_price', '=', self.price_unit)
+        ], limit=1)
+
+        return rate_line.time if rate_line else False

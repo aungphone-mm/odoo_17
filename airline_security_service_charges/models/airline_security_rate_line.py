@@ -15,3 +15,4 @@ class AirlineSecurityRateLine(models.Model):
         readonly=True
     )
     rate_id = fields.Many2one(comodel_name='airline.security.rate', string='Rate', required=True)
+    time = fields.Integer(string='Time', required=True)

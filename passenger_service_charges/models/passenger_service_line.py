@@ -19,6 +19,7 @@ class PassengerServiceLine(models.Model):
                                        store=True, tracking=True)
     # amount = fields.Float(string="Amount", compute='_compute_amount', store=True)
     total_pax = fields.Integer(string='Total Pax', tracking=True)
+    osc = fields.Integer(string='O.S.C', tracking=True)
     inf = fields.Integer(string='INF', tracking=True)
     transit = fields.Integer(string='Transit', tracking=True)
     ntl = fields.Integer(string='NTL', tracking=True)

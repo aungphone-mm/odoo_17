@@ -66,6 +66,7 @@
                                 <field name="aircraft_type_display"/>
                                 <field name="flight_registration_no"/>
                                 <field name="start_time"/>
+                                <field name="route"/>
                                 <field name="passenger_landing_rate_id"/>
                                 <field name="amount"/>
                             </tree>

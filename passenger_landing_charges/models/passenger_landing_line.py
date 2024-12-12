@@ -24,6 +24,7 @@ class PassengerLandingLine(models.Model):
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, default=fields.Datetime.now)
     amount = fields.Float(string="Amount", compute='_compute_amount', store=True)
     sequence = fields.Integer(string='Sequence')
+    route = fields.Char(string='Route')
 
     @api.model
     def create(self, vals):

@@ -73,22 +73,25 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><br/><br/><br/>1</td>
-                                    <td>
-                                        <br/><br/><br/>
-                                        Passenger Service Charges(Domestic) for:<br/>
-                                        Flight No: As per attached<br/>
-                                        <span style="display: inline-block; width: 80px;">Pax Price:</span>
+                                    <td><br/><br/>1</td>
+                                    <td style="text-align: left;">
+                                        <br/><br/>
+                                        <span>Passenger Service Charges(Domestic) for: Flight No: As per attached</span><br/>
+                                        <span style="display: inline-block; width: 80px;">Pax Price: </span>
                                         <span t-field="o.passenger_service_id.passenger_service_rate_id.pax_price" t-options='{"widget": "float", "precision": 2}'/><br/>
-                                        <span t-field="o.passenger_service_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_service_id.for_date" t-options='{"format": "yy"}'/>
-                                        <br/><br/><br/>
+                                        <span t-field="o.passenger_service_id.for_date" t-options='{"format": "MMM"}'/>'
+                                        <span t-field="o.passenger_service_id.for_date" t-options='{"format": "yy"}'/>
+                                        <span t-field="o.passenger_service_id.inv_desc"/>
+                                        <br/><br/>
                                     </td>
                                     <td style="text-align: center;">
-                                        <br/><br/><br/>
-                                        <span t-esc="len(o.invoice_line_ids)"/>
+                                        <br/><br/>
+<!--                                        <span t-esc="len(o.invoice_line_ids)"/>-->
+                                        <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('invoice_pax'))"/>
+
                                     </td>
                                     <td style="text-align: right;">
-                                        <br/><br/><br/>
+                                        <br/><br/>
                                         <span t-field="o.amount_total"/>
                                     </td>
                                 </tr>
@@ -150,12 +153,13 @@
                                     <th style="border: 1px solid black;">Date</th>
                                     <th style="border: 1px solid black;">Flight No.</th>
                                     <th style="border: 1px solid black;">Total Pax</th>
+                                    <th style="border: 1px solid black;">O.S.C</th>
+                                    <th style="border: 1px solid black;">Tax Free</th>
                                     <th style="border: 1px solid black;">INF</th>
                                     <th style="border: 1px solid black;">Transit</th>
-                                    <th style="border: 1px solid black;">NTL</th>
-                                    <th style="border: 1px solid black;">INAD</th>
-                                    <th style="border: 1px solid black;">Depor</th>
-                                    <th style="border: 1px solid black;">Tax Free</th>
+<!--                                    <th style="border: 1px solid black;">NTL</th>-->
+<!--                                    <th style="border: 1px solid black;">INAD</th>-->
+<!--                                    <th style="border: 1px solid black;">Depor</th>-->
                                     <th style="border: 1px solid black;">Invoice Pax</th>
                                     <th style="border: 1px solid black;">Remark</th>
                                 </tr>
@@ -176,22 +180,16 @@
                                             <span t-field="line.total_pax"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
+                                            <span t-field="line.osc"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <span t-field="line.tax_free"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
                                             <span t-field="line.inf"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
                                             <span t-field="line.transit"/>
-                                        </td>
-                                        <td style="border: 1px solid black; text-align: right;">
-                                            <span t-field="line.ntl"/>
-                                        </td>
-                                        <td style="border: 1px solid black; text-align: right;">
-                                            <span t-field="line.inad"/>
-                                        </td>
-                                        <td style="border: 1px solid black; text-align: right;">
-                                            <span t-field="line.depor"/>
-                                        </td>
-                                        <td style="border: 1px solid black; text-align: right;">
-                                            <span t-field="line.tax_free"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
                                             <span t-field="line.invoice_pax"/>
@@ -214,6 +212,16 @@
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
                                         <strong>
+                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('osc'))"/>
+                                        </strong>
+                                    </td>
+                                    <td style="text-align: right; border: 1px solid black;">
+                                        <strong>
+                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('tax_free'))"/>
+                                        </strong>
+                                    </td>
+                                    <td style="text-align: right; border: 1px solid black;">
+                                        <strong>
                                             <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('inf'))"/>
                                         </strong>
                                     </td>
@@ -224,29 +232,19 @@
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
                                         <strong>
-                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('ntl'))"/>
-                                        </strong>
-                                    </td>
-                                    <td style="text-align: right; border: 1px solid black;">
-                                        <strong>
-                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('inad'))"/>
-                                        </strong>
-                                    </td>
-                                    <td style="text-align: right; border: 1px solid black;">
-                                        <strong>
-                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('depor'))"/>
-                                        </strong>
-                                    </td>
-                                    <td style="text-align: right; border: 1px solid black;">
-                                        <strong>
-                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('tax_free'))"/>
-                                        </strong>
-                                    </td>
-                                    <td style="text-align: right; border: 1px solid black;">
-                                        <strong>
                                             <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('invoice_pax'))"/>
                                         </strong>
                                     </td>
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>-->
+<!--                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('tax_free'))"/>-->
+<!--                                        </strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>-->
+<!--                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('invoice_pax'))"/>-->
+<!--                                        </strong>-->
+<!--                                    </td>-->
                                     <td style="border: 1px solid black;"></td>
                                 </tr>
                             </tfoot>

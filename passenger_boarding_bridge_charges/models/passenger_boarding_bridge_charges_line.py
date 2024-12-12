@@ -18,7 +18,7 @@ class PassengerBoardingBridgeChargesLine(models.Model):
                                        inverse='_inverse_bridge_rate',
                                        store=True, tracking=True)
     amount = fields.Float(string="Amount", compute='_compute_amount', store=True)
-    seat_capacity = fields.Integer(string='Seat Capacity')
+    seat_capacity = fields.Integer(string='Seat Capacity',related='bridge_rate_id.seat_capacity')
 
     @api.constrains('flightno_id')
     def _check_airline(self):
