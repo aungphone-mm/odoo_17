@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_invoice_summary_report" model="ir.actions.report">
+        <field name="name">Invoice Summary Report</field>
+        <field name="model">report.selection.wizard</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">yacl_airline.report_invoice_summary</field>
+        <field name="report_file">yacl_airline.report_invoice_summary</field>
+        <field name="binding_model_id" ref="model_report_selection_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_invoice_summary">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center mb-4">Invoice Summary Report</h2>
+
+                    <!-- Report Header -->
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <strong>Airline:</strong> <span t-esc="airline.name"/><br/>
+                            <strong>Module:</strong> <span t-esc="get_module_name(module)"/><br/>
+                        </div>
+                        <div class="col-6">
+                            <strong>Period:</strong>
+                            <span t-esc="start_date" t-options='{"widget": "date"}'/> to
+                            <span t-esc="end_date" t-options='{"widget": "date"}'/><br/>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Summary Table -->
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Invoice Date</th>
+                                <th>Invoice Number</th>
+                                <th>Description</th>
+                                <th class="text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="get_invoice_data()" t-as="invoice">
+                                <tr>
+                                    <td><span t-esc="invoice.invoice_date" t-options='{"widget": "date"}'/></td>
+                                    <td><span t-esc="invoice.name"/></td>
+                                    <td><span t-esc="invoice.invoice_line_ids[0].name"/></td>
+                                    <td class="text-right">
+                                        <span t-esc="invoice.amount_total"
+                                              t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+    <tr>
+        <td colspan="3" class="text-right"><strong>Total</strong></td>
+        <td class="text-right">
+            <strong>
+                <!-- Modified to use invoice currency instead of company currency -->
+                <span t-esc="get_total_amount()"
+                      t-options='{"widget": "monetary", "display_currency": env.company.currency_id}'/>
+            </strong>
+        </td>
+    </tr>
+</tfoot>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

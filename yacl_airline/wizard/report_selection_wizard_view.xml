@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_invoice_report_selection_wizard_form" model="ir.ui.view">
+    <field name="name">invoice.report.selection.wizard.form</field>
+    <field name="model">report.selection.wizard</field>
+    <field name="arch" type="xml">
+        <form>
+            <group>
+                <field name="airline_id"/>
+                <field name="module"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+            </group>
+            <footer>
+                <button name="action_generate_report" string="Generate Report" type="object" class="oe_highlight"/>
+                <button string="Cancel" class="btn-secondary" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
+
+    <record id="action_invoice_report_selection_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Invoice Summary Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">report.selection.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+<!--    <menuitem id="menu_invoice_summary_report"-->
+<!--              name="Invoice Summary Report"-->
+<!--              parent="menu_summary_report"-->
+<!--              action="action_invoice_report_selection_wizard"-->
+<!--              sequence="99"/>-->
+</odoo>

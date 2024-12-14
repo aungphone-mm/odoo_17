@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_airline_charges_report" model="ir.actions.report">
+        <field name="name">Airline Charges Report</field>
+        <field name="model">airline.charges.report.wizard</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">yacl_airline.report_airline_charges</field>
+        <field name="report_file">yacl_airline.report_airline_charges</field>
+        <field name="binding_model_id" ref="model_airline_charges_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+    <template id="report_airline_charges">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Airline Charges Summary Report</h2>
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <strong>Date From:</strong> <span t-esc="date_from" t-options="{'widget': 'date'}"/>
+                        </div>
+                        <div class="col-6">
+                            <strong>Date To:</strong> <span t-esc="date_to" t-options="{'widget': 'date'}"/>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Service Type</th>
+                                <th class="text-right">USD Amount</th>
+                                <th class="text-right">MMK Amount</th>
+                                <th class="text-right">Total in USD</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Security Service -->
+                            <tr>
+                                <td>Security Service Charges</td>
+                                <td class="text-right">
+                                    <span t-esc="security_usd" t-options='{"widget": "monetary", "display_currency": env.ref("base.USD")}'/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="security_mmk" t-options='{"widget": "monetary", "display_currency": env.ref("base.MMK")}'/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="security_total_usd" t-options='{"widget": "monetary", "display_currency": env.ref("base.USD")}'/>
+                                </td>
+                            </tr>
+                            <!-- Check-in Counter -->
+                            <tr>
+                                <td>Check-in Counter Charges</td>
+                                <td class="text-right">
+                                    <span t-esc="checkin_usd" t-options='{"widget": "monetary", "display_currency": env.ref("base.USD")}'/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="checkin_mmk" t-options='{"widget": "monetary", "display_currency": env.ref("base.MMK")}'/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="checkin_total_usd" t-options='{"widget": "monetary", "display_currency": env.ref("base.USD")}'/>
+                                </td>
+                            </tr>
+                            <!-- Boarding Bridge -->
+                            <tr>
+                                <td>Passenger Boarding Bridge Charges</td>
+                                <td class="text-right">
+                                    <span t-esc="bridge_usd" t-options='{"widget": "monetary", "display_currency": env.ref("base.USD")}'/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="bridge_mmk" t-options='{"widget": "monetary", "display_currency": env.ref("base.MMK")}'/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="bridge_total_usd" t-options='{"widget": "monetary", "display_currency": env.ref("base.USD")}'/>
+                                </td>
+                            </tr>
+                            <!-- Total -->
+                            <tr class="border-top">
+                                <td><strong>Total</strong></td>
+                                <td class="text-right">
+                                    <strong>
+                                        <span t-esc="total_usd" t-options='{"widget": "monetary", "display_currency": env.ref("base.USD")}'/>
+                                    </strong>
+                                </td>
+                                <td class="text-right">
+                                    <strong>
+                                        <span t-esc="total_mmk" t-options='{"widget": "monetary", "display_currency": env.ref("base.MMK")}'/>
+                                    </strong>
+                                </td>
+                                <td class="text-right">
+                                    <strong>
+                                        <span t-esc="grand_total_usd" t-options='{"widget": "monetary", "display_currency": env.ref("base.USD")}'/>
+                                    </strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

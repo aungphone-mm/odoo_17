@@ -10,8 +10,8 @@ class CheckinCounterLine(models.Model):
     flightno_id = fields.Char(string='Flight No.')
     flight_registration_no = fields.Char(string='Registration No.', store=True)
     flight_aircraft = fields.Char(string='Aircraft Type',store=True)
-    start_time = fields.Datetime(string='Start Date & Time', tracking=True, default=fields.Datetime.now)
-    end_time = fields.Datetime(string='End Date & Time', tracking=True, default=fields.Datetime.now)
+    start_time = fields.Datetime(string='Start Date & Time', tracking=True)
+    end_time = fields.Datetime(string='End Date & Time', tracking=True)
     total_minutes = fields.Integer(string='Total Minutes', compute='_compute_total_minutes', store=True)
     checkin_counter_rate_id = fields.Many2one('checkin.counter.rate', string='Rate',
                                        compute='_compute_checkin_counter_rate',

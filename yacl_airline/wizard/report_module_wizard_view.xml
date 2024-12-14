@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_airline_charges_report_wizard" model="ir.ui.view">
+        <field name="name">airline.charges.report.wizard.form</field>
+        <field name="model">airline.charges.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </group>
+                <footer>
+                    <button name="action_print_report" string="Print Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_airline_charges_report_wizard" model="ir.actions.act_window">
+        <field name="name">Airline Charges Report</field>
+        <field name="res_model">airline.charges.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+<!--    <menuitem id="menu_airline_charges_report"-->
+<!--              name="Airline Charges Report"-->
+<!--              action="action_airline_charges_report_wizard"-->
+<!--              parent="menu_summary_report"-->
+<!--              sequence="20"/>-->
+</odoo>
