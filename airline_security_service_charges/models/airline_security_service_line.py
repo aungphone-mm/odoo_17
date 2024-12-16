@@ -10,7 +10,7 @@ class AirlineSecurityServiceLine(models.Model):
     flightno_id = fields.Char(string='Flight No.')
     flight_registration_no = fields.Char(string='Registration No.', store=True)
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, default=fields.Datetime.now)
-    end_time = fields.Datetime(string='End Date & Time', tracking=True, default=fields.Datetime.now)
+    end_time = fields.Datetime(string='End Date & Time', tracking=True)
     total_minutes = fields.Integer(string='Total Minutes', compute='_compute_total_minutes', store=True)
     subtract_minutes = fields.Integer(string='Subtract Minutes', default=0, tracking=True)
     security_rate_id = fields.Many2one('airline.security.rate', string='Rate',

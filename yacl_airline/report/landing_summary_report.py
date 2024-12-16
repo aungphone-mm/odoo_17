@@ -1,7 +1,4 @@
-# landing_summary_report.py
-
 from odoo import api, models
-
 
 class LandingSummaryReport(models.AbstractModel):
     _name = 'report.yacl_airline.report_landing_summary'

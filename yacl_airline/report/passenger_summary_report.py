@@ -1,6 +1,5 @@
 from odoo import api, models
 
-
 class PassengerSummaryReport(models.AbstractModel):
     _name = 'report.yacl_airline.report_passenger_summary'
     _description = 'Passenger Summary Report'
@@ -10,16 +9,21 @@ class PassengerSummaryReport(models.AbstractModel):
         start_date = data['start_date']
         end_date = data['end_date']
 
-        invoices = self.env['account.move'].search([
-            ('form_type', '=', 'PassengerService'),
-            ('invoice_date', '>=', start_date),
-            ('invoice_date', '<=', end_date),
-            ('state', '=', 'posted'),
+        # invoices = self.env['account.move'].search([
+        #     ('form_type', '=', 'PassengerService'),
+        #     ('invoice_date', '>=', start_date),
+        #     ('invoice_date', '<=', end_date),
+        #     ('state', '=', 'posted'),
+        # ])
+        invoices = self.env['passenger.service'].search([
+            ('state', '=', 'invoiced'),
+            ('start_time', '>=', start_date),
+            ('start_time', '<=', end_date),
         ])
 
         summary = {}
         for invoice in invoices:
-            airline = invoice.partner_id.name
+            airline = invoice.airline_id.name
             if airline not in summary:
                 summary[airline] = {
                     'airline': airline,
@@ -35,7 +39,7 @@ class PassengerSummaryReport(models.AbstractModel):
                     'remark': ''
                 }
 
-            for line in invoice.passenger_service_id.passenger_service_line_ids:
+            for line in invoice.passenger_service_line_ids:
                 summary[airline]['frequency'] += 1
                 summary[airline]['total_pax'] += line.total_pax
                 summary[airline]['inf'] += line.inf

@@ -27,9 +27,9 @@
         <field name="target">new</field>
     </record>
 
-<!--    <menuitem id="menu_landing_summary_report"-->
-<!--              name="Landing Summary Report"-->
-<!--              parent="menu_summary_report"-->
-<!--              action="action_report_landing_selection_wizard"-->
-<!--              sequence="30"/>-->
+    <menuitem id="menu_landing_summary_report"
+              name="Landing Summary Report"
+              parent="menu_summary_report"
+              action="action_report_landing_selection_wizard"
+              sequence="30"/>
 </odoo>

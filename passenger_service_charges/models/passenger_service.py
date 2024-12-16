@@ -16,7 +16,7 @@ class PassengerService(models.Model):
     airline_id = fields.Many2one('airline',string='Airline')
     airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
     start_time = fields.Datetime(string='Start Date & Time', default=fields.Datetime.now, tracking=True)
-    end_time = fields.Datetime(string='End Date & Time', default=fields.Datetime.now, tracking=True)
+    end_time = fields.Datetime(string='End Date & Time', tracking=True)
     passenger_service_line_ids = fields.One2many('passenger.service.line', 'passenger_service_id',
                                                       string='Passenger Service Details')
     currency_id = fields.Many2one('res.currency', string='Currency', related='passenger_service_rate_id.currency_id',store=True,tracking=True)

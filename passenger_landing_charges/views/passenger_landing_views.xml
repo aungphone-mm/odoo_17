@@ -58,8 +58,9 @@
                 <notebook>
                     <page string="Aircraft Landing Details">
                         <field name="passenger_landing_line_ids">
-                            <tree editable="bottom">
+                            <tree editable="bottom" sequence="1">
                                 <field name="sequence" string="No." readonly="1"/>
+<!--                                <field name="sequence" widget="handle"/>-->
                                 <field name="passenger_landing_id" column_invisible="1"/>
                                 <field name="flight_no"/>
                                 <field name="flight_aircraft" column_invisible="1"/>

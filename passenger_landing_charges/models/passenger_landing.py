@@ -16,7 +16,7 @@ class PassengerLanding(models.Model):
     airline_id = fields.Many2one('airline',string='Airline')
     airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
     start_time = fields.Datetime(string='Start Date & Time', default=fields.Datetime.now, tracking=True)
-    end_time = fields.Datetime(string='End Date & Time', default=fields.Datetime.now, tracking=True)
+    end_time = fields.Datetime(string='End Date & Time', tracking=True)
     passenger_landing_line_ids = fields.One2many('passenger.landing.line', 'passenger_landing_id',
                                                       string='Aircraft Landing Details')
     currency_id = fields.Many2one('res.currency', string='Currency', related ='passenger_landing_rate_id.currency_id', store=True, readonly=True)

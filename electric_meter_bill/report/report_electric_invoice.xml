@@ -14,7 +14,19 @@
     <template id="report_electric_meter_invoice">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
-                    <t t-call="web.external_layout">
+                    <t t-call="web.basic_layout">
+                        <div class="header" style="border-bottom: 1px solid #dee2e6; margin-bottom: 20px;">
+                            <div class="row">
+                                <div class="col-3">
+                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 80px;" alt="Company Logo"/>
+                                </div>
+                                <div class="col-9 text-left" style="color: #00205b;">
+                                    <h3 style="color: #ff0000; margin-bottom: 5px;">YANGON AERODROME COMPANY LIMITED</h3>
+                                    <p style="font-size: 12px; margin-bottom: 3px;">Site Office: Terminal-3(Domestic Terminal),Yangon International Airport, Mingaladon Township, Yangon, Myanmar.#11021</p>
+                                    <p style="font-size: 12px; margin-bottom: 3px;">Tel:+95-9670888(Ext.-7345) Fax: +9519670599, Email:yacl@yangon.aero</p>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Add styles here -->
                         <style>
                             .meter-reading-table th {
@@ -23,7 +35,7 @@
                         </style>
                         <div class="row mb-4">
                             <div class="col-12 text-center">
-                                <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
+                                <h2 style="font-weight: bold; font-size: 24px; color: black;">INVOICE</h2>
                             </div>
                         </div>
                         <div class="page">
@@ -40,10 +52,11 @@
                                         </div>
                                         <div t-if="o.reading_line_id.partner_id.contact_name">
                                             Attention: <t t-esc="o.partner_id.contact_name"/><br/>
+                                        </div>
+                                        <div t-if="o.reading_line_id.partner_id.contact_job_position">
                                             Position: <t t-esc="o.partner_id.contact_job_position"/>
                                         </div>
                                     </div>
-
 
                                 <div class="col-6 d-flex justify-content-end">
                                     <div>
@@ -156,27 +169,41 @@
                     </t>
                     <!-- Second Page -->
                 <t t-if="o.invoice_line_ids.filtered(lambda l: l.reading_line_id)">
-                    <t t-call="web.basic_layout">
+                    <t t-call="web.external_layout">
+<!--                        <div class="header" style="border-bottom: 1px solid #dee2e6; margin-bottom: 20px;">-->
+<!--                            <div class="row">-->
+<!--                                <div class="col-3">-->
+<!--                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 80px;" alt="Company Logo"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-9 text-left" style="color: #00205b;">-->
+<!--                                    <h3 style="color: #ff0000; margin-bottom: 5px;">YANGON AERODROME COMPANY LIMITED</h3>-->
+<!--                                    <p style="font-size: 12px; margin-bottom: 3px;">Site Office: Terminal-3(Domestic Terminal),Yangon International Airport, Mingaladon Township, Yangon, Myanmar.#11021</p>-->
+<!--                                    <p style="font-size: 12px; margin-bottom: 3px;">Tel:+95-9670888(Ext.-7345) Fax: +9519670599, Email:yacl@yangon.aero</p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
                         <div class="page" style="font-family: Arial, sans-serif;">
                             <div style="text-align: center; margin-bottom: 20px;">
                                 <h3>Electric Meter Rate Breakdown</h3>
                             </div>
 
                             <!-- Rate breakdown table -->
+                            <div class="table-responsive">
                             <table class="table table-sm" style="width: 100%; border-collapse: collapse;">
                                 <thead>
                                     <tr style="background-color: #b1c694; color: black; text-align: center;">
-                                        <th style="border: 1px solid black;">No</th>
-                                        <th style="border: 1px solid black;">Service Area</th>
-                                        <th style="border: 1px solid black;">Meter No.</th>
-                                        <th style="border: 1px solid black;">Location</th>
-                                        <th style="border: 1px solid black;">Latest Reading</th>
-                                        <th style="border: 1px solid black;">Current Reading</th>
-                                        <th style="border: 1px solid black;">Units</th>
-                                        <th style="border: 1px solid black;">Rate</th>
-                                        <th style="border: 1px solid black;">Total</th>
+                                        <th style="border: 1px solid black; white-space: nowrap;">No</th>
+                                        <th style="border: 1px solid black; white-space: nowrap;">Service Area</th>
+                                        <th style="border: 1px solid black; white-space: nowrap;">Meter No.</th>
+                                        <th style="border: 1px solid black; white-space: nowrap;">Location</th>
+                                        <th style="border: 1px solid black; white-space: nowrap;">Latest Reading</th>
+                                        <th style="border: 1px solid black; white-space: nowrap;">Current Reading</th>
+                                        <th style="border: 1px solid black; white-space: nowrap;">Units</th>
+                                        <th style="border: 1px solid black; white-space: nowrap;">Rate</th>
+                                        <th style="border: 1px solid black; white-space: nowrap;">Total</th>
                                     </tr>
                                 </thead>
+
                                 <tbody>
                                     <!-- Initialize the totals -->
                                     <t t-set="total_units" t-value="0"/>
@@ -265,29 +292,51 @@
                                         <t t-set="index" t-value="index + 1"/>
                                     </t>
                                 </tbody>
-                                <tfoot>
-    <tr style="background-color: #a8c9e2; color: black; text-align: center;">
-        <td colspan="6" style="text-align: right; border: 1px solid black;">
-            <strong>Total (Units)</strong>
-        </td>
+<!--                                <tfoot>-->
+                            <!--    <tr style="background-color: #a8c9e2; color: black; text-align: center;">-->
+                            <!--        <td colspan="6" style="text-align: right; border: 1px solid black;">-->
+                            <!--            <strong>Total (Units)</strong>-->
+                            <!--        </td>-->
 
-        <td style="text-align: right; border: 1px solid black;">
-            <strong><t t-esc="'{:,.0f}'.format(total_units)"/></strong>
-        </td>
+                            <!--        <td style="text-align: right; border: 1px solid black;">-->
+                            <!--            <strong><t t-esc="'{:,.0f}'.format(total_units)"/></strong>-->
+                            <!--        </td>-->
 
-        <td style="text-align: right; border: 1px solid black;">
-        </td>
+                            <!--        <td style="text-align: right; border: 1px solid black;">-->
+                            <!--        </td>-->
 
-        <td style="text-align: right; border: 1px solid black;">
-            <strong>
-                <!-- Change to directly sum the individual line totals -->
-                <t t-set="final_total" t-value="sum([line.reading_line_id.amount for line in o.invoice_line_ids.filtered(lambda l: l.reading_line_id)])"/>
-                <t t-esc="'{:,.0f}'.format(final_total)"/>
-            </strong>
-        </td>
-    </tr>
-</tfoot>
+                            <!--        <td style="text-align: right; border: 1px solid black;">-->
+                            <!--            <strong>-->
+                            <!--                &lt;!&ndash; Change to directly sum the individual line totals &ndash;&gt;-->
+                            <!--                <t t-set="final_total" t-value="sum([line.reading_line_id.amount for line in o.invoice_line_ids.filtered(lambda l: l.reading_line_id)])"/>-->
+                            <!--                <t t-esc="'{:,.0f}'.format(final_total)"/>-->
+                            <!--            </strong>-->
+                            <!--        </td>-->
+                            <!--    </tr>-->
+                            <!--</tfoot>-->
                             </table>
+                            </div>
+                            <!-- Summary Table -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <table class="table table-bordered" style="width: 50%; margin-left: auto;">
+                                        <tr>
+                                            <td style="width: 60%; text-align: right;"><strong>Total Units:</strong></td>
+                                            <td style="width: 40%; text-align: right;">
+                                                <t t-set="total_units" t-value="sum(o.invoice_line_ids.filtered(lambda l: l.reading_line_id).mapped('reading_line_id.total_unit'))"/>
+                                                <strong><t t-esc="'{:,.0f}'.format(total_units)"/></strong>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 60%; text-align: right;"><strong>Total Amount:</strong></td>
+                                            <td style="width: 40%; text-align: right;">
+                                                <t t-set="final_total" t-value="sum([line.reading_line_id.amount for line in o.invoice_line_ids.filtered(lambda l: l.reading_line_id)])"/>
+                                                <strong><t t-esc="'{:,.0f}'.format(final_total)"/></strong>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
                             <!-- Add this after the main table -->
                         <div class="mt-4">
                             <h5>Rate Details:</h5>

@@ -11,7 +11,7 @@ class PassengerBoardingBridgeChargesLine(models.Model):
     flight_registration_no = fields.Char(string='Registration No.')
     flight_aircraft = fields.Char(string='Aircraft Type')
     start_time = fields.Datetime(string='Start Date & Time', default=fields.Datetime.now, tracking=True, )
-    end_time = fields.Datetime(string='End Date & Time', tracking=True, default=fields.Datetime.now )
+    end_time = fields.Datetime(string='End Date & Time', tracking=True)
     total_minutes = fields.Integer(string='Total Minutes', compute='_compute_total_minutes', store=True)
     bridge_rate_id = fields.Many2one('passenger.boarding.bridge.charges.rate', string='Rate',
                                        compute='_compute_bridge_rate',

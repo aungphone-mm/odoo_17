@@ -16,7 +16,7 @@ class AirlineSecurityService(models.Model):
     airline_id = fields.Many2one('airline',string='Airline')
     airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, default=fields.Datetime.now)
-    end_time = fields.Datetime(string='End Date & Time', tracking=True, default=fields.Datetime.now)
+    end_time = fields.Datetime(string='End Date & Time', tracking=True)
     airline_security_service_line_ids = fields.One2many('airline.security.service.line', 'airline_security_service_id',
                                                       string='Security Details')
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)

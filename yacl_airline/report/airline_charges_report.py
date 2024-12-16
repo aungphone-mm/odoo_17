@@ -1,6 +1,5 @@
 from odoo import models, api, fields
 
-
 class AirlineChargesReport(models.AbstractModel):
     _name = 'report.yacl_airline.report_airline_charges'
     _description = 'Airline Charges Report'

@@ -24,9 +24,9 @@
         <field name="target">new</field>
     </record>
 
-<!--    <menuitem id="menu_airline_charges_report"-->
-<!--              name="Airline Charges Report"-->
-<!--              action="action_airline_charges_report_wizard"-->
-<!--              parent="menu_summary_report"-->
-<!--              sequence="20"/>-->
+    <menuitem id="menu_airline_charges_report"
+              name="Airline Charges Report"
+              action="action_airline_charges_report_wizard"
+              parent="menu_summary_report"
+              sequence="20"/>
 </odoo>

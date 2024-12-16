@@ -14,17 +14,17 @@
         'views/yacl_flights_view.xml',
         'views/menu.xml',
         # Invoice wizard and report
-        'wizard/report_selection_wizard_view.xml',
+        'wizard/report_invoice_summary_wizard_view.xml',
         'report/invoice_summary_report.xml',
         # Passenger wizard and report
-        'wizard/report_selection_wizard_passenger_view.xml',
+        'wizard/report_passenger_wizard_view.xml',
         'report/passenger_summary_report.xml',
 
-        'wizard/report_selection_wizard_landing_view.xml',
+        'wizard/report_landing_wizard_view.xml',
         'report/landing_summary_report.xml',
 
-        'wizard/report_module_wizard_view.xml',
-        'report/airline_charges_report_template.xml',
+        'wizard/report_airline_charges_wizard_view.xml',
+        'report/airline_charges_report.xml',
     ],
     'installable': True,
     'application': False,

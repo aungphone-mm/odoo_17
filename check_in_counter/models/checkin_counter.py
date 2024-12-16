@@ -19,7 +19,7 @@ class CheckinCounter(models.Model):
                                   readonly=True)
 
     start_time = fields.Datetime(string='Start Date & Time', default=fields.Datetime.now, tracking=True)
-    end_time = fields.Datetime(string='End Date & Time', default=fields.Datetime.now, tracking=True)
+    end_time = fields.Datetime(string='End Date & Time', tracking=True)
     checkin_counter_line_ids = fields.One2many('checkin.counter.line', 'checkin_counter_id',
                                                       string='Checkin Details')
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)

@@ -21,7 +21,7 @@ class AirlinePassengerBill(models.Model):
     date = fields.Date('Date', default=fields.Date.context_today, required=True,
                        tracking=True)
     start_time = fields.Float(string='Start Time', required=True, tracking=True, default=fields.Datetime.now)
-    end_time = fields.Float(string='End Time', required=True, tracking=True, default=fields.Datetime.now)
+    end_time = fields.Float(string='End Time', required=True, tracking=True)
     airline_passenger_bill_line_ids = fields.One2many('airline.passenger.bill.line', 'airline_passenger_bill_id',
                                                       string='Passenger Details')
     passenger_rate_id = fields.Many2one('passenger.rate', string='Passenger Rate', required=True,
