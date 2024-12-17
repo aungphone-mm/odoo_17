@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_report_journal_entry_invoice" model="ir.actions.report">
+        <field name="name">Journal Entry</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">account_extension.report_journal_entry_invoice</field>
+         <field name="report_file">account_extension.report_journal_entry_invoice</field>
+        <field name="print_report_name">'Journal Entry'</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_journal_entry_invoice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+
+                <!-- First Page - Invoice -->
+                <t t-call="web.external_layout">
+                     <style>
+                            .security-table th {
+                                background-color: #e9ecef;
+                            }
+                        </style>
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <h2 style="font-weight: bold; font-size: 20px;">PAYMENT VOUCHER</h2>
+                            </div>
+                        </div>
+                      <!-- Invoice Info Section -->
+                        <div class="row mb-4">
+                                <div class="col-6">
+                                    <strong>Sr No:</strong>
+                                    <span t-field="o.name"/><br/>
+                                    <strong>Debit:</strong>
+                                    <span t-esc="o.invoice_line_ids.partner_id.name"/><br/>
+                                </div>
+                               <div class="col-6 d-flex justify-content-end">
+                                <div>
+                                    <strong>Date:</strong>
+                                    <span t-field="o.date"/><br/>
+                                    <strong>AC:</strong>
+                                    <t t-foreach="o.invoice_line_ids" t-as="l">
+                                    <t t-if="l.credit == 0">
+                                        <span t-esc="l.account_id.code"/>
+                                    </t>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Invoice Lines -->
+                        <table class="table table-bordered entry-table" style="height:300px; width: 100%; border: 1px solid black;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 600%; border: 1px solid black;  text-align: center;">Particular</th>
+                                    <th  style="width: 100%; border: 1px solid black; text-align: center;">Kyat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.invoice_line_ids" t-as="line">
+                                    <tr>
+                                    <td style="text-align: center;">
+                                         <t t-if="line.credit == 0">
+                                            <span t-esc="line.account_id.name"/>
+                                         </t>
+                                        </td>
+                                     <td style="text-align: center;  border: 1px solid black;">
+                                         <t t-if="line.credit == 0">
+                                         <span t-esc="'{:,.2f}'.format(o.invoice_line_ids[0].debit)"/>
+                                         </t>
+                                     </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                              <tfoot>
+                        <tr>
+                            <t t-foreach="o.invoice_line_ids[:1]" t-as="line">
+                             <td colspan="1" style="text-align: left; vertical-align: middle; border: 0px solid black;">
+                                 <strong>Kyat : </strong>
+                                    <span t-esc="o.currency_id.amount_to_text(sum(o.invoice_line_ids.mapped('debit')))"/>
+                             </td>
+                          <td colspan="2" style="text-align: center; vertical-align: middle; border: 0px solid black;">
+                              <t t-esc="'{:,.2f}'.format(sum(o.invoice_line_ids.mapped('debit')))"/>
+                            </td>
+                            </t>
+                        </tr>
+                    </tfoot>
+                        </table>
+                    <!-- Footer Sign-->
+                    <table style="width:100%; height:200px; border-collapse: collapse;">
+                    <tfoot>
+                    <tr>
+                      <!-- Column 1: Cashier -->
+                    <td style="text-align: center; vertical-align: bottom; padding: 10px;">
+                      <strong>(Cashier)</strong>
+                    </td>
+
+                     <!-- Column 2: Vendor Sign -->
+                  <td style="text-align: center; vertical-align: bottom; bottom padding: 10px;">
+                  <strong>(Debit By)</strong>
+                 </td>
+
+                    <!-- Column 3: Approved By -->
+                    <td colspan="2" style="text-align: center; vertical-align: bottom; padding: 10px;">
+                        <strong>(Approved By)</strong>
+                 </td>
+                 </tr>
+                    </tfoot>
+            </table>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -24,3 +24,5 @@ class AccountMoveLine(models.Model):
                     line.currency_rate = 1.0
             else:
                 line.currency_rate = 1.0
+
+

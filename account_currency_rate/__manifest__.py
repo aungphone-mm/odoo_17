@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
-#
+#    Hello world
 #    Mingalar Sky Company Limited.
 #
 #    Copyright (C) 2024-TODAY Mingalar Sky Company Limited (<https://www.mingalarsky.com>)
