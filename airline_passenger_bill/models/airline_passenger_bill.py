@@ -20,7 +20,7 @@ class AirlinePassengerBill(models.Model):
     user_id = fields.Many2one('res.users', string='Receptionist', default=lambda self: self.env.uid, required=True,tracking=True)
     date = fields.Date('Date', default=fields.Date.context_today, required=True,
                        tracking=True)
-    start_time = fields.Float(string='Start Time', required=True, tracking=True, default=fields.Datetime.now)
+    start_time = fields.Float(string='Start Time', required=True, tracking=True, default=lambda self: (datetime.now().hour + 6 + (datetime.now().minute + 30) / 60) % 24)
     end_time = fields.Float(string='End Time', required=True, tracking=True)
     airline_passenger_bill_line_ids = fields.One2many('airline.passenger.bill.line', 'airline_passenger_bill_id',
                                                       string='Passenger Details')
