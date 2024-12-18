@@ -17,11 +17,11 @@
                     <t t-call="web.basic_layout">
                         <div class="header" style="border-bottom: 1px solid #dee2e6; margin-bottom: 20px;">
                             <div class="row">
-                                <div class="col-3">
-                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 80px;" alt="Company Logo"/>
+                                <div class="col-2">
+                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 120px;" alt="Company Logo"/>
                                 </div>
                                 <div class="col-9 text-left" style="color: #00205b;">
-                                    <h3 style="color: #ff0000; margin-bottom: 5px;">YANGON AERODROME COMPANY LIMITED</h3>
+                                    <h2 style="color: #ff0000; margin-bottom: 3px;">YANGON AERODROME COMPANY LIMITED</h2>
                                     <p style="font-size: 12px; margin-bottom: 3px;">Site Office: Terminal-3(Domestic Terminal),Yangon International Airport, Mingaladon Township, Yangon, Myanmar.#11021</p>
                                     <p style="font-size: 12px; margin-bottom: 3px;">Tel:+95-9670888(Ext.-7345) Fax: +9519670599, Email:yacl@yangon.aero</p>
                                 </div>
@@ -58,7 +58,7 @@
                                         </div>
                                     </div>
 
-                                <div class="col-6 d-flex justify-content-end">
+                                <div class="col-5 d-flex justify-content-end">
                                     <div>
                                         <strong>Invoice No:</strong>
                                         <span t-field="o.name"/><br/>
@@ -118,17 +118,17 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3" style="text-align: left; border-top: 1px solid black;">
-                                            <span t-esc="o.currency_id.amount_to_text(o.amount_total)+' Only'"/>
+                                        <td colspan="3" style="text-align: left; border-top: 1px solid black; font-weight: bold;">
+                                            <strong> <span t-esc="o.currency_id.amount_to_text(o.amount_total)+' Only'"/></strong>
 <!--                                            <span t-esc="'$ ' + '{:,.2f}'.format(o.amount_total)+' Only'"/>-->
                                         </td>
 
                                         <td colspan="3" style="text-align: right; border-top: 1px solid black;">
                                         <t t-if="o.currency_id.name == 'MMK'">
-                                            <span t-esc="'MMK ' + '{:,.2f}'.format(o.amount_total)"/>
+                                            <strong><span t-esc="'MMK ' + '{:,.2f}'.format(o.amount_total)"/></strong>
                                         </t>
                                         <t t-elif="o.currency_id.name == 'USD'">
-                                            <span t-esc="'$ ' + '{:,.2f}'.format(o.amount_total)"/>
+                                            <strong><span t-esc="'$ ' + '{:,.2f}'.format(o.amount_total)"/></strong>
                                         </t>
                                         <t t-else="">
                                             <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
