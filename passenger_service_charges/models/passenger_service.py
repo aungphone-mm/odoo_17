@@ -34,7 +34,7 @@ class PassengerService(models.Model):
         ('invoiced', 'Invoiced')
     ], string='Status', default='draft', tracking=True)
 
-    @api.constrains('total_pax', 'inf', 'transit', 'ntl', 'inad', 'depor', 'tax_free')
+    @api.constrains('total_pax', 'inf', 'transit', 'ntl', 'inad', 'depor', 'tax_free','osc')
     def _check_integer_fields(self):
         for record in self:
             fields_to_check = ['total_pax', 'inf', 'transit', 'ntl', 'inad', 'depor', 'tax_free']

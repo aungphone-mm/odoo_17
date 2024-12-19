@@ -17,17 +17,17 @@
                 <!-- First Page - Invoice -->
                 <t t-call="web.external_layout">
                      <style>
-    .security-table th {
-        background-color: #e9ecef;
-        vertical-align: middle;
-    }
-    .security-table td {
-        padding: 0.75rem;
-    }
-    .mt-2 {
-        margin-top: 0.5rem;
-    }
-</style>
+                        .security-table th {
+                            background-color: #e9ecef;
+                            vertical-align: middle;
+                        }
+                        .security-table td {
+                            padding: 0.75rem;
+                        }
+                        .mt-2 {
+                            margin-top: 0.5rem;
+                        }
+                    </style>
                     <div class="row mb-4">
                         <div class="col-12 text-center">
                             <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
@@ -90,7 +90,7 @@
                                             </div>
                                             <div>
                                                 <span t-field="o.passenger_service_id.for_date" t-options='{"format": "MMM"}'/>'<span t-field="o.passenger_service_id.for_date" t-options='{"format": "yy"}'/>
-                                                <span t-field="o.passenger_service_id.inv_desc"/>
+
                                             </div>
                                         </div>
                                     </td>

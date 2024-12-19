@@ -20,10 +20,10 @@
                                 <div class="col-2">
                                     <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 120px;" alt="Company Logo"/>
                                 </div>
-                                <div class="col-9 text-left" style="color: #00205b;">
-                                    <h2 style="color: #ff0000; margin-bottom: 3px;">YANGON AERODROME COMPANY LIMITED</h2>
+                                <div class="col-10 text-left" style="color: #00205b;">
+                                    <h3 style="color: #ff0000; margin-bottom: 3px;">YANGON AERODROME COMPANY LIMITED</h3>
                                     <p style="font-size: 12px; margin-bottom: 3px;">Site Office: Terminal-3(Domestic Terminal),Yangon International Airport, Mingaladon Township, Yangon, Myanmar.#11021</p>
-                                    <p style="font-size: 12px; margin-bottom: 3px;">Tel:+95-9670888(Ext.-7345) Fax: +9519670599, Email:yacl@yangon.aero</p>
+                                    <p style="font-size: 12px; margin-bottom: 3px;">Tel:+95-9670550(Ext.-146) Fax: +9519670599, Email:yacl@yangon.aero</p>
                                 </div>
                             </div>
                         </div>
@@ -50,15 +50,15 @@
                                             <t t-if="o.partner_id.state_id">, <t t-esc="o.partner_id.state_id.name"/></t>
                                             <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
                                         </div>
-                                        <div t-if="o.reading_line_id.partner_id.contact_name">
+                                        <div t-if="o.partner_id.contact_name">
                                             Attention: <t t-esc="o.partner_id.contact_name"/><br/>
                                         </div>
-                                        <div t-if="o.reading_line_id.partner_id.contact_job_position">
+                                        <div t-if="o.partner_id.contact_job_position">
                                             Position: <t t-esc="o.partner_id.contact_job_position"/>
                                         </div>
                                     </div>
 
-                                <div class="col-5 d-flex justify-content-end">
+                                <div class="col-3 d-flex justify-content-end">
                                     <div>
                                         <strong>Invoice No:</strong>
                                         <span t-field="o.name"/><br/>

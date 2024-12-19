@@ -28,7 +28,7 @@ class PassengerServiceLine(models.Model):
     tax_free = fields.Integer(string='Tax Free', tracking=True)
     invoice_pax = fields.Integer(string='Invoice Pax', compute='_compute_invoice_pax', store=True)
 
-    @api.depends('total_pax', 'inf', 'transit', 'ntl', 'inad', 'depor', 'tax_free')
+    @api.depends('total_pax', 'inf', 'transit', 'ntl', 'inad', 'depor', 'tax_free','osc')
     def _compute_invoice_pax(self):
         for record in self:
             deductions = sum([
@@ -37,7 +37,8 @@ class PassengerServiceLine(models.Model):
                 record.ntl or 0,
                 record.inad or 0,
                 record.depor or 0,
-                record.tax_free or 0
+                record.tax_free or 0,
+                record.osc or 0
             ])
             record.invoice_pax = record.total_pax - deductions
 

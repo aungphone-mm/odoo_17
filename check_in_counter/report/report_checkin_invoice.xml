@@ -72,20 +72,17 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><br/><br/><br/>1</td>
+                                    <td>1</td>
                                     <td>
-                                        <br/><br/><br/>
-                                        <span>Check-In Counter Service Charges for:<br/>
+                                        Check-In Counter Service Charges for: <br/><span t-field="o.checkin_counter_id.inv_desc" style="display: inline-block;"/><br/>
                                         Flight No: As per attached<br/>
                                         <span t-field="o.checkin_counter_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.checkin_counter_id.for_date" t-options='{"format": "yy"}'/>
-                                        <br/><br/><br/><br/></span>
                                     </td>
+
                                     <td style="text-align: center;">
-                                        <br/><br/><br/>
                                         <span t-esc="len(o.invoice_line_ids)"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <br/><br/><br/>
                                         <span t-field="o.amount_untaxed"/>
                                     </td>
                                 </tr>

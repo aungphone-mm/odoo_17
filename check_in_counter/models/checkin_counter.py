@@ -17,7 +17,6 @@ class CheckinCounter(models.Model):
     airline_user_id = fields.Many2one('res.partner', string='Attention:', tracking=True)
     currency_id = fields.Many2one('res.currency', string='Currency', related='checkin_counter_rate_id.currency_id', store=True,
                                   readonly=True)
-
     start_time = fields.Datetime(string='Start Date & Time', default=fields.Datetime.now, tracking=True)
     end_time = fields.Datetime(string='End Date & Time', tracking=True)
     checkin_counter_line_ids = fields.One2many('checkin.counter.line', 'checkin_counter_id',
@@ -25,6 +24,7 @@ class CheckinCounter(models.Model):
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
     checkin_counter_rate_id = fields.Many2one('checkin.counter.rate', string='Checkin Counter Rate')
     for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
+    inv_desc = fields.Html(string='Invoice Description')
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),

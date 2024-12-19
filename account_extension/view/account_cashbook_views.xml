@@ -27,6 +27,9 @@
                                 <field name="journal_id"/>
                                 <field name="main_account_id"/>
                                 <field name="currency_id"/>
+                                <field name="currency_rate"
+                               invisible="not show_currency_rate"/>
+                                <field name="show_currency_rate" invisible="1"/>
                             </group>
                         </group>
                         <notebook>
@@ -62,10 +65,7 @@
                         </notebook>
                         <field name="description" />
                     </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers" options="{'no_create': True}"/>
-                        <field name="message_ids" widget="mail_thread"/>
-                    </div>
+
                 </form>
             </field>
         </record>
