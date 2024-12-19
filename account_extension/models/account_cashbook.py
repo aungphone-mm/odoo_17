@@ -65,6 +65,10 @@ class AccountCashbook(models.Model):
     def action_reset_to_draft(self):
         self.update({'state': 'draft'})
 
+    def action_print_invoice(self):
+        # Cashbook Invoice Print ထုတ်ရန်အတွက် (ဖိုးလပြည့်)
+        return self.env.ref('account_extension.action_report_cashbook_invoice').report_action(self)
+
     def cancel_journal_entries(self):
         for record in self:
             if record.move_id:

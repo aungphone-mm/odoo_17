@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+        <record id="action_report_cashbook_invoice" model="ir.actions.report">
+        <field name="name">Cashbook Invoice</field>
+        <field name="model">account.cashbook</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">account_extension.report_cashbook_invoice</field>
+         <field name="report_file">account_extension.report_cashbook_invoice</field>
+        <field name="print_report_name">'Cashbook Invoice'</field>
+        <field name="binding_model_id" ref="model_account_cashbook"/>
+        <field name="binding_type">report</field>
+    </record>
+     <template id="report_cashbook_invoice">
+         <t t-call="web.html_container">
+               <t t-foreach="docs" t-as="o">
+                   <t t-call="web.external_layout">
+                        <style>
+                            .security-table th {
+                                background-color: #e9ecef;
+                            }
+                        </style>
+                       <div class="row mb-5">
+                            <div class="col-12 text-center">
+                                <h2 style="font-weight: bold; font-size: 20px;">CASHBOOK VOUCHER</h2>
+                            </div>
+                       </div>
+                           <div class="row mb-5"> <!-- First Page Invoice  -->
+                                <div class="col-6">
+                                    <strong>Sr No:</strong>
+                                    <span t-field="o.name"/><br/>
+                                    <strong>Date:</strong>
+                                    <span t-field="o.date"/><br/>
+                                    <strong>Type:</strong>
+                                    <span t-field="o.type"/>
+                                </div>
+                               <div class="col-6 d-flex justify-content-end">
+                                <div>
+                                    <strong>Journal:</strong>
+                                    <span t-field="o.journal_id"/><br/>
+                                     <strong>Main Account Name:</strong>
+                                    <span t-field="o.main_account_id"/><br/>
+                                    <strong>Currency:</strong>
+                                    <span t-field="o.currency_id"/><br/>
+                                </div>
+                            </div>
+                        </div>
+                       <table class="table table-bordered entry-table" style="height:200px; width: 100%;">
+                            <thead>
+                                <tr >
+                                    <th style="width: 100%;   text-align: center;">Particular</th>
+                                    <th style="width: 100%;   text-align: center;">Partner</th>
+                                    <th style="width: 100%;  text-align: center;">Description</th>
+                                    <th style="width: 100%;  text-align: center;">Analytic Distribution</th>
+                                    <th style="width: 100%;  text-align: center;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                               <t t-foreach="o.line_ids" t-as="line">
+                                <tr>
+                                  <td style="text-align: center;">  <!-- Account Name-->
+                                      <span t-esc="line.account_id.name"/>
+                                 </td>
+                                     <td style="text-align: center;">   <!-- partner Name-->
+                                      <span t-esc="line.partner_id.name"/>
+                                 </td>
+                                       <td style="text-align: center;">   <!-- Description-->
+                                      <span t-esc="line.name"/>
+                                 </td>
+                                       <td style="text-align: center;"> <!-- analytic_precision-->
+                                      <span t-field="line.analytic_distribution"/>
+                                 </td>
+                                <td style="text-align: right; margin-right: 40 px">
+                                    <span t-esc="line.amount"/>
+                                </td>
+                                  </tr>
+                                </t>
+                            </tbody>
+                           <tfoot>
+                             <tr>
+                                <t t-foreach="o.line_ids[:1]" t-as="line">
+                                <td>
+                                    <strong>Kyat : </strong>
+                                    <t t-set="line_amount_sum" t-value="sum(line.amount for line in o.line_ids if line.amount)"/>
+                                    <span t-esc="o.currency_id.amount_to_text(line_amount_sum or 0.0)"/>
+                                </td>
+
+                                 <td colspan="6" style="text-align: right; vertical-align: middle;  margin-right: 40 px">
+                                    <t t-set="line_amount_sum" t-value="sum(line.amount for line in o.line_ids)"/>
+                                    <t t-esc="'{:,.2f}'.format(line_amount_sum)"/>
+                                </td>
+                                </t>
+                             </tr>
+                           </tfoot>
+                       </table>
+                          <!-- Footer Sign-->
+                    <table style="width:100%; height:200px; border-collapse: collapse;">
+                    <tfoot>
+                    <tr>
+                      <!-- Column 1: Cashier -->
+                    <td style="text-align: center; vertical-align: bottom; padding: 10px;">
+                      <strong>(Cashier)</strong>
+                    </td>
+
+                     <!-- Column 2: Vendor Sign -->
+                  <td style="text-align: center; vertical-align: bottom; bottom padding: 10px;">
+                  <strong>(Debit By)</strong>
+                 </td>
+                    <!-- Column 3: Approved By -->
+                    <td colspan="2" style="text-align: center; vertical-align: bottom; padding: 10px;">
+                        <strong>(Approved By)</strong>
+                 </td>
+                 </tr>
+                    </tfoot>
+            </table>
+                   </t>
+               </t>
+         </t>
+     </template>
+</odoo>

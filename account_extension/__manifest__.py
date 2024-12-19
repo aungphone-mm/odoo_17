@@ -18,6 +18,7 @@ Add Date, Reference and Name in Journal Item in Views.
         'view/account_asset_views.xml',
         'data/ir_sequence_data.xml',
         'report/journal_entry_invoice.xml',
+        'report/cashbook_invoice.xml',
     ],
     'installable': True,
     'application': False,
