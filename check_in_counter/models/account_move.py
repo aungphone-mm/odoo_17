@@ -30,6 +30,15 @@ class AccountMove(models.Model):
     #             rate_totals[rate_name] = line.price_subtotal
     #     return rate_totals
 
+    def _get_unique_date_flights(self):
+        # Create a set of tuples (date, flight_no) to count unique combinations
+        unique_combinations = set()
+        for line in self.invoice_line_ids:
+            date = line.checkin_counter_line_id.end_time.date()
+            flight_no = line.name
+            unique_combinations.add((date, flight_no))
+        return len(unique_combinations)
+
     def _get_amount_totals(self):
         amount_totals = {}
         for line in self.invoice_line_ids:

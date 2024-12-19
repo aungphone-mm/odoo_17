@@ -196,8 +196,8 @@
                                     </td>
                                     <td style="border: 1px solid black;"></td>
                                     <td colspan="3" style="border: 1px solid black; text-align: center;">
-                                        Total (<t t-esc="len(o.invoice_line_ids)"/>) Counters for (<t t-esc="len(set(o.invoice_line_ids.mapped('name')))"/>) Flights
-                                    </td>
+        Total (<t t-esc="len(o.invoice_line_ids)"/>) Counters for (<t t-esc="o._get_unique_date_flights()"/>) Flights
+    </td>
                                     <td style="text-align: right; border: 1px solid black;"></td>
                                     <td style="text-align: right; border: 1px solid black;"></td>
                                     <td style="text-align: right; border: 1px solid black;">
@@ -253,8 +253,8 @@
                             </t>
                             <tr>
                                 <td style="border: 1px solid black;">
-                                    Total (<t t-esc="len(o.invoice_line_ids)"/>) Counters for (<t t-esc="len(set(o.invoice_line_ids.mapped('name')))"/>) Flights
-                                </td>
+        Total (<t t-esc="len(o.invoice_line_ids)"/>) Counters for (<t t-esc="o._get_unique_date_flights()"/>) Flights
+    </td>
                                 <td style="border: 1px solid black; text-align: center;">
                                     <t t-esc="total_count"/>
                                 </td>

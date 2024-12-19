@@ -23,16 +23,17 @@ class PassengerLandingLine(models.Model):
     aircraft_type_display = fields.Char(related='flight_aircraft.aircraft_type', string='Aircraft Type')
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, default=fields.Datetime.now)
     amount = fields.Float(string="Amount", compute='_compute_amount', store=True)
-    sequence = fields.Integer(string='Sequence')
     route = fields.Char(string='Route')
+    serial_number = fields.Integer(string='S/N', compute='_compute_serial_number', store=True)
+    sequence = fields.Integer(string='Sequence', default=10)
 
-    @api.model
-    def create(self, vals):
-        # Auto-increment sequence for new lines
-        if vals.get('passenger_landing_id'):
-            landing = self.env['passenger.landing'].browse(vals['passenger_landing_id'])
-            vals['sequence'] = len(landing.passenger_landing_line_ids) + 1
-        return super().create(vals)
+    @api.depends('passenger_landing_id.passenger_landing_line_ids', 'passenger_landing_id.passenger_landing_line_ids.sequence')
+    def _compute_serial_number(self):
+        for parent in self.mapped('passenger_landing_id'):
+            sequence = 1
+            for line in parent.passenger_landing_line_ids.sorted('sequence'):
+                line.serial_number = sequence
+                sequence += 1
 
     @api.depends('passenger_landing_id.passenger_landing_rate_id')
     def _compute_landing_rate(self):
