@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_report_checkin_selection_wizard_form" model="ir.ui.view">
+        <field name="name">report.checkin.selection.wizard.form</field>
+        <field name="model">report.checkin.selection.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_report" string="Generate Report" type="object" class="btn-primary"/>
+<!--                    <button name="action_generate_excel_report" string="Export Excel" type="object" class="btn-primary"/>-->
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_report_checkin_selection_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Check-in Counter Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">report.checkin.selection.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_checkin_summary_report"
+              name="Check-in Counter Report"
+              parent="menu_summary_report"
+              action="action_report_checkin_selection_wizard"
+              sequence="40"/>
+
+</odoo>

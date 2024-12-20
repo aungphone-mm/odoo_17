@@ -1,4 +1,7 @@
 from markupsafe import Markup
+import xlsxwriter
+from io import BytesIO
+import base64
 from odoo import fields, models, api
 from odoo.exceptions import UserError, ValidationError
 from datetime import datetime
@@ -72,6 +75,7 @@ class ElectricMeterReading(models.Model):
         required=True, default='draft', tracking=True)
     inv_desc = fields.Html(string='Invoice Description')
     note_desc = fields.Html(string='Note Description')
+    xlsx_file = fields.Binary('Excel File')
 
     @api.model
     def read(self, fields=None, load='_classic_read'):
@@ -286,6 +290,172 @@ class ElectricMeterReading(models.Model):
                     line.total_unit = line.current_reading_unit - line.latest_reading_unit
                 else:
                     line.total_unit = 0
+
+    def _compute_consolidated_readings(self):
+        """Compute consolidated readings grouped by customer"""
+        consolidated = {}
+        for line in self.reading_line_ids:
+            customer = line.partner_id.name
+            if customer not in consolidated:
+                consolidated[customer] = {
+                    'meter_details': [],
+                    'prev_reading': 0,
+                    'curr_reading': 0,
+                    'total_units': 0,
+                    'total_amount': 0,
+                }
+
+            meter_detail = {
+                'meter_no': line.meter_id.name,
+                'location': line.location_id.name or '',
+                'invoice': line.invoice_id.name or '',
+            }
+            consolidated[customer]['meter_details'].append(meter_detail)
+            consolidated[customer]['prev_reading'] += line.latest_reading_unit
+            consolidated[customer]['curr_reading'] += line.current_reading_unit
+            consolidated[customer]['total_units'] += line.total_unit
+            consolidated[customer]['total_amount'] += line.amount
+
+        return consolidated
+
+    def action_print_consolidated_report(self):
+        return self.env.ref('electric_meter_bill.action_report_consolidated_meter_reading').report_action(self)
+
+    def action_export_excel(self):
+        # Create a new Excel file in memory
+        output = BytesIO()
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet('Meter Readings')
+
+        # Add headers
+        headers = ['Meter', 'Customer', 'Previous Reading', 'Current Reading', 'Total Units', 'Amount']
+        header_format = workbook.add_format(
+            {'bold': True, 'align': 'center', 'bg_color': '#1a73e8', 'font_color': 'white'})
+
+        for col, header in enumerate(headers):
+            worksheet.write(0, col, header, header_format)
+
+        # Add data
+        row = 1
+        for line in self.reading_line_ids:
+            worksheet.write(row, 0, line.meter_id.name)
+            worksheet.write(row, 1, line.partner_id.name)
+            worksheet.write(row, 2, line.latest_reading_unit)
+            worksheet.write(row, 3, line.current_reading_unit)
+            worksheet.write(row, 4, line.total_unit)
+            worksheet.write(row, 5, f"{line.amount:,.2f} K")
+            row += 1
+
+        # Adjust column widths
+        worksheet.set_column('A:A', 20)  # Meter
+        worksheet.set_column('B:B', 40)  # Customer
+        worksheet.set_column('C:D', 15)  # Readings
+        worksheet.set_column('E:E', 12)  # Total Units
+        worksheet.set_column('F:F', 15)  # Amount
+
+        workbook.close()
+
+        # Prepare the file for download
+        output.seek(0)
+        xlsx_data = output.read()
+
+        # Set the binary field value
+        self.xlsx_file = base64.b64encode(xlsx_data)
+
+        # Generate filename
+        filename = f'Meter_Readings_{self.name}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/?model={self._name}&id={self.id}&field=xlsx_file&filename={filename}&download=true',
+            'target': 'self',
+        }
+    # def action_export_excel(self):
+    #     output = BytesIO()
+    #     workbook = xlsxwriter.Workbook(output)
+    #     worksheet = workbook.add_worksheet('Meter Readings')
+    #
+    #     # Add styles
+    #     header_format = workbook.add_format({
+    #         'bold': True,
+    #         'align': 'center',
+    #         'bg_color': '#1a73e8',
+    #         'font_color': 'white',
+    #         'border': 1
+    #     })
+    #
+    #     # Add headers
+    #     headers = ['Invoice No.', 'Customer', 'Meter Details', 'Previous Reading',
+    #                'Current Reading', 'Total Units', 'Amount']
+    #
+    #     for col, header in enumerate(headers):
+    #         worksheet.write(0, col, header, header_format)
+    #
+    #     # Group data by invoice number
+    #     invoice_data = {}
+    #     row = 1
+    #
+    #     for line in self.reading_line_ids:
+    #         if line.invoice_id and line.invoice_id.name:
+    #             inv_num = line.invoice_id.name
+    #             if inv_num not in invoice_data:
+    #                 invoice_data[inv_num] = {
+    #                     'rows': [],
+    #                     'total_amount': 0
+    #                 }
+    #
+    #             invoice_data[inv_num]['rows'].append({
+    #                 'customer': line.partner_id.name,
+    #                 'meter_details': f"Meter: {line.meter_id.name}\nLocation: {line.meter_id.location_id.name}",
+    #                 'prev_reading': line.latest_reading_unit,
+    #                 'curr_reading': line.current_reading_unit,
+    #                 'total_units': line.total_unit,
+    #                 'amount': line.amount
+    #             })
+    #             invoice_data[inv_num]['total_amount'] += line.amount
+    #
+    #     # Write data with subtotals
+    #     row = 1
+    #     for inv_num, data in invoice_data.items():
+    #         for entry in data['rows']:
+    #             worksheet.write(row, 0, inv_num)
+    #             worksheet.write(row, 1, entry['customer'])
+    #             worksheet.write(row, 2, entry['meter_details'])
+    #             worksheet.write(row, 3, entry['prev_reading'])
+    #             worksheet.write(row, 4, entry['curr_reading'])
+    #             worksheet.write(row, 5, entry['total_units'])
+    #             worksheet.write(row, 6, entry['amount'])
+    #             row += 1
+    #
+    #         # Add subtotal for invoice
+    #         if len(data['rows']) > 1:
+    #             worksheet.write(row, 5, 'Invoice Total:')
+    #             worksheet.write(row, 6, data['total_amount'])
+    #             row += 1
+    #             row += 1  # Add blank row after subtotal
+    #
+    #     # Adjust column widths
+    #     worksheet.set_column('A:A', 15)  # Invoice No
+    #     worksheet.set_column('B:B', 40)  # Customer
+    #     worksheet.set_column('C:C', 35)  # Meter Details
+    #     worksheet.set_column('D:D', 15)  # Previous Reading
+    #     worksheet.set_column('E:E', 15)  # Current Reading
+    #     worksheet.set_column('F:F', 12)  # Total Units
+    #     worksheet.set_column('G:G', 15)  # Amount
+    #
+    #     workbook.close()
+    #     output.seek(0)
+    #
+    #     # Set binary field and return download action
+    #     self.xlsx_file = base64.b64encode(output.read())
+    #
+    #     filename = f'Meter_Readings_{self.name}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
+    #
+    #     return {
+    #         'type': 'ir.actions.act_url',
+    #         'url': f'/web/content/?model={self._name}&id={self.id}&field=xlsx_file&filename={filename}&download=true',
+    #         'target': 'self',
+    #     }
 
 
 class ElectricMeterReadingLine(models.Model):

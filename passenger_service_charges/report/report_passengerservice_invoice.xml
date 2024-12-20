@@ -44,9 +44,12 @@
                                         <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
                                     </div>
 
-                                     <div t-if="o.passenger_service_id.airline_user_id.name">
-                                    Attention: <t t-esc="o.passenger_service_id.airline_user_id.name"/>
-                                </div>
+                                     <div t-if="o.partner_id.contact_name">
+                                            Attention: <t t-esc="o.partner_id.contact_name"/><br/>
+                                        </div>
+                                        <div t-if="o.partner_id.contact_job_position">
+                                            Position: <t t-esc="o.partner_id.contact_job_position"/>
+                                        </div>
                             </div>
 
                             <div class="col-6 d-flex justify-content-end">

@@ -19,7 +19,7 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <!-- Header Section with blue background -->
-                        <div class="row mb-4" style="background-color: #1a73e8; color: white; padding: 15px;">
+                        <div class="row mb-4" style="background-color: blue; color: white; padding: 15px;">
                             <div class="col-12">
                                 <h2>Electric Meter Reading</h2>
                                 <h3 t-field="doc.name" style="color: white;"/>
@@ -59,6 +59,8 @@
                                 <tr>
                                     <th>Meter</th>
                                     <th>Customer</th>
+                                    <th>Location</th>
+                                    <th>Invoice</th>
                                     <th class="text-right">Previous Reading</th>
                                     <th class="text-right">Current Reading</th>
                                     <th class="text-right">Total Units</th>
@@ -69,6 +71,8 @@
                                 <tr t-foreach="doc.reading_line_ids" t-as="line">
                                     <td><span t-field="line.meter_id.name"/></td>
                                     <td><span t-field="line.partner_id.name"/></td>
+                                    <td><span t-field="line.location_id.name"/></td>
+                                    <td><span t-field="line.invoice_id.name"/></td>
                                     <td class="text-right"><span t-field="line.latest_reading_unit"/></td>
                                     <td class="text-right"><span t-field="line.current_reading_unit"/></td>
                                     <td class="text-right"><span t-field="line.total_unit"/></td>

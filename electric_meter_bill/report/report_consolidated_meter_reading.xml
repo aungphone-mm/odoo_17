@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Report Action -->
+    <record id="action_report_consolidated_meter_reading" model="ir.actions.report">
+        <field name="name">Consolidated Meter Reading Report</field>
+        <field name="model">electric.meter.reading</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">electric_meter_bill.report_consolidated_meter_reading</field>
+        <field name="report_file">electric_meter_bill.report_consolidated_meter_reading</field>
+        <field name="print_report_name">'Consolidated_Meter_Reading_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_electric_meter_reading"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Document Template -->
+    <template id="report_consolidated_meter_reading">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Header -->
+                        <div class="row mb-4" style="background-color: blue; color: white; padding: 15px;">
+                            <div class="col-12">
+                                <h2>Consolidated Electric Meter Reading</h2>
+                                <h3 t-field="doc.name" style="color: white;"/>
+                            </div>
+                        </div>
+
+                        <!-- Reading Information -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px;">
+                                    <strong style="color: #1a73e8;">Reading Information:</strong>
+                                    <div class="mt-2">
+                                        <strong>Reading Date:</strong> <span t-field="doc.reading_date"/>
+                                    </div>
+                                    <div>
+                                        <strong>Invoice For:</strong> <span t-field="doc.for_date"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Consolidated Readings Table -->
+                        <h4 class="mb-3" style="color: #1a73e8;">Consolidated Meter Readings</h4>
+                        <table class="table table-sm" style="border: 1px solid #dee2e6;">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Customer</th>
+                                    <th>Meter Details</th>
+                                    <th class="text-right">Previous Reading</th>
+                                    <th class="text-right">Current Reading</th>
+                                    <th class="text-right">Total Units</th>
+                                    <th class="text-right">Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="row_count" t-value="1"/>
+                                <t t-foreach="doc._compute_consolidated_readings().items()" t-as="customer_data">
+                                    <tr>
+                                        <td><span t-esc="row_count"/></td>
+                                        <td><span t-esc="customer_data[0]"/></td>
+                                        <td>
+                                            <t t-foreach="customer_data[1]['meter_details']" t-as="meter">
+                                                Meter: <span t-esc="meter['meter_no']"/><br/>
+                                                Location: <span t-esc="meter['location']"/><br/>
+                                                Invoice: <span t-esc="meter['invoice']"/><br/>
+                                                <t t-if="not meter_last">
+                                                    <hr style="margin: 5px 0;"/>
+                                                </t>
+                                            </t>
+                                        </td>
+                                        <td class="text-right"><span t-esc="customer_data[1]['prev_reading']"/></td>
+                                        <td class="text-right"><span t-esc="customer_data[1]['curr_reading']"/></td>
+                                        <td class="text-right"><span t-esc="customer_data[1]['total_units']"/></td>
+                                        <td class="text-right" style="color: #1a73e8; font-weight: bold;">
+                                            <span t-esc="'%.2f K' % customer_data[1]['total_amount']"/>
+                                        </td>
+                                    </tr>
+                                    <t t-set="row_count" t-value="row_count + 1"/>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- Footer -->
+                        <div class="mt-5 mb-4 text-center" style="color: #666;">
+                            <small>This is a computer-generated document. No signature is required.</small>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

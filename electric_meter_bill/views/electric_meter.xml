@@ -97,7 +97,7 @@
         </record>
 
         <record id="electric_meter_reading_view_form" model="ir.ui.view">
-            <field name="name">Electric Meter Reading</field>
+            <field name="name">Electric Meter Reading Form</field>
             <field name="model">electric.meter.reading</field>
             <field name="arch" type="xml">
                 <form string="electric_meter_reading_form">
@@ -122,6 +122,12 @@
                         <button name="delete_selected_lines" type="object" class="btn-danger" string="Delete Selected Lines"
                         context="{'line_ids': active_ids}" invisible="state in ['cancelled', 'confirmed', 'done']"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done,canceled"/>
+<!--                        <button name="action_print_consolidated_report"-->
+<!--                        string="Print Consolidated Report"-->
+<!--                        type="object"-->
+<!--                        class="oe_highlight"/>-->
+                        <button name="action_export_excel" string="Export Excel" type="object"
+        class="btn-primary" icon="fa-download"/>
                     </header>
                     <sheet>
                         <group>

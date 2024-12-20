@@ -20,6 +20,7 @@
         'report/report_electric_meter_reading.xml',
         'report/report_electric_invoice.xml',
         'data/ir_sequence_data.xml',
+        'report/report_consolidated_meter_reading.xml',
     ],
     'installable': True,
     'application': False,

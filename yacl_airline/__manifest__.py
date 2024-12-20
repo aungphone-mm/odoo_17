@@ -25,6 +25,9 @@
 
         'wizard/report_airline_charges_wizard_view.xml',
         'report/airline_charges_report.xml',
+
+        'wizard/checkin_report_wizard_view.xml',
+        'report/checkin_report_template.xml',
     ],
     'installable': True,
     'application': False,
