@@ -7,7 +7,7 @@
                 This module allows you to track meter readings, calculate consumption, generate invoices, 
                 and manage payment collections seamlessly. 
                 Ideal for utility companies and property managers to streamline their billing processes.""",
-    'depends': ['sale_subscription','web'],
+    'depends': ['sale_subscription','yacl_airline','web'],
     'author': 'Mingalar Sky Co., Ltd.',
     'website': 'https://www.mingalarsky.com',
     'data': [
