@@ -57,6 +57,3 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     checkin_counter_line_id = fields.Many2one('checkin.counter.line', string='Check in Service Line')
-
-
-

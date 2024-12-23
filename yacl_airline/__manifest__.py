@@ -7,6 +7,11 @@
     'depends': ['mail', 'account', 'base'],
     'author': 'Mingalar Sky Co., Ltd.',
     'website': 'https://www.mingalarsky.com',
+    'depends': [
+            'sale',
+            'web',
+            'sale_subscription',
+        ],
     'data': [
         'security/ir.model.access.csv',
         # Base views
@@ -28,6 +33,8 @@
 
         'wizard/checkin_report_wizard_view.xml',
         'report/checkin_report_template.xml',
+
+        'report/subscription_report.xml',
     ],
     'installable': True,
     'application': False,

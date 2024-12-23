@@ -128,6 +128,8 @@
 <!--                        class="oe_highlight"/>-->
                         <button name="action_export_excel" string="Export Excel" type="object"
         class="btn-primary" icon="fa-download"/>
+                        <button name="action_export_excel_consolidated" string="Export Consolidated Excel" type="object"
+        class="btn-primary" icon="fa-download"/>
                     </header>
                     <sheet>
                         <group>
