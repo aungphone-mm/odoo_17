@@ -27,9 +27,9 @@
         <field name="target">new</field>
     </record>
 
-    <menuitem id="menu_invoice_summary_report"
-              name="Invoice Summary Report"
-              parent="menu_summary_report"
-              action="action_invoice_report_selection_wizard"
-              sequence="99"/>
+<!--    <menuitem id="menu_invoice_summary_report"-->
+<!--              name="Invoice Summary Report"-->
+<!--              parent="menu_summary_report"-->
+<!--              action="action_invoice_report_selection_wizard"-->
+<!--              sequence="99"/>-->
 </odoo>
