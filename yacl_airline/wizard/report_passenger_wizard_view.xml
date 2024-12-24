@@ -27,11 +27,7 @@
         <field name="target">new</field>
     </record>
 
-    <menuitem id="menu_summary_report"
-              name="Report"
-              parent="passenger_service_charges.menu_passenger_service_root"
 
-              sequence="100"/>
     <menuitem id="menu_passenger_summary_report"
               name="Passenger Summary Report"
               parent="menu_summary_report"

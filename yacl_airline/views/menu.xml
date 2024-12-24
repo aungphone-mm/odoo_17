@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
    <odoo>
        <data>
+           <menuitem id="menu_summary_report"
+              name="Report"
+              parent="passenger_service_charges.menu_passenger_service_root"
+              sequence="100"/>
            <!-- Parent menu item for Flight Management -->
            <menuitem id="menu_flight_management"
                      name="Airlines &amp; Flights"
