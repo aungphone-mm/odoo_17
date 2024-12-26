@@ -43,6 +43,7 @@
                                            options="{'business_domain': 'general'}"
                                            groups="analytic.group_analytic_accounting"/>
                                         <field name="currency_id" readonly="1" options="{'no_open': True,}"/>
+                                        <field name="analytic_code"/>
                                         <field name="amount" sum="Total Amount"/>
                                     </tree>
                                 </field>

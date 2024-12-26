@@ -193,8 +193,25 @@ class AccountCashbookLine(models.Model):
         string='Analytic',
         default=lambda self: self.env['decimal.precision'].precision_get("Percentage Analytic"),
     )
+    analytic_code = fields.Char(string='Analytic Code', store=True)
     analytic_distribution = fields.Json(string='Analytic Distribution')
     partner_id = fields.Many2one('res.partner', string='Partner')
+
+
+    @api.onchange('analytic_distribution')
+    def compute_analytic_distribution_account_code(self):
+        for line in self:
+            if line.analytic_distribution:
+                account_ids = []
+                for key in line.analytic_distribution.keys():
+                    if ',' in key:
+                        ids = [int(x) for x in key.split(',')]
+                        account_ids.extend(ids)
+                    else:
+                        account_ids.append(int(key))
+                accounts = self.env['account.analytic.account'].browse(account_ids)
+                line.analytic_code = ', '.join(accounts.mapped('code'))
+                print(line.analytic_code)
 
     @api.constrains('analytic_distribution')
     def _check_analytic_distribution(self):
