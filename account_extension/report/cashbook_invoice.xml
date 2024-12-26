@@ -58,7 +58,7 @@
                                <t t-foreach="o.line_ids" t-as="line">
                                 <tr>
                                     <td style="text-align: center;"> <!-- analytic_precision-->
-                                      <span t-esc="line.analytic_distribution"/>
+                                      <span t-esc="line.analytic_code"/>
                                  </td>
                                   <td style="text-align: center;">  <!-- Account Name-->
                                       <span t-esc="line.account_id.code" />
