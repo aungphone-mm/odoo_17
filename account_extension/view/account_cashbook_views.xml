@@ -11,7 +11,8 @@
                         <button name="action_done" string="Mark as Done" type="object" class="oe_highlight" invisible="state not in ['confirm']"/>
                         <button name="action_cancel" string="Cancel" type="object" class="btn-danger" invisible="state in ['draft', 'cancel']"/>
                         <button name="action_reset_to_draft" string="Reset to Draft" type="object" class="oe-normal" invisible="state not in ['cancel']"/>
-                        <button name="action_print_invoice" string="Print" type="object" class="oe_highlight" invisible="state not in ['confirm','done']"/>
+                        <button name="action_print_invoice" string="Print Cashbook" type="object" class="oe_highlight" invisible="state not in ['confirm','done']"/>
+                       <button name="action_print_Payable_invoice" string="Print Payable" type="object" class="oe_highlight" invisible="state not in ['confirm','done']"/>
                         <button name="action_excel_download" string="Excel Download" type="object" class="oe_highlight"/>
                         <field name="state" widget="statusbar" />
                     </header>
