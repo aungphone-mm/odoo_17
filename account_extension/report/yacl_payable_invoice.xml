@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+      <record id="action_report_payable_invoice" model="ir.actions.report">
+        <field name="name">Payable Invoice</field>
+        <field name="model">account.cashbook</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">account_extension.report_payable_invoice</field>
+         <field name="report_file">account_extension.report_payable_invoice</field>
+        <field name="print_report_name">'Payable Invoice'</field>
+        <field name="binding_model_id" ref="model_account_cashbook"/>
+        <field name="binding_type">report</field>
+      </record>
+     <template id="report_payable_invoice">
+         <t t-call="web.html_container">
+             <t t-foreach="docs" t-as="o">
+                  <t t-call="web.external_layout">
+                        <style>
+                            .security-table th {
+                                background-color: #e9ecef;
+                            }
+                        </style>
+                       <div class="row mb-5">
+                            <div class="col-12 text-center">
+                                <h2 style="font-weight: bold; font-size: 20px;">Payable Invoice</h2>
+                            </div>
+                       </div>
+                        <div class="row mb-5"> <!-- First Page Invoice  -->
+                                <div class="col-6">
+                                    <strong>Invoice No:</strong>
+                                    <span t-field="o.name"/><br/>
+                                    <strong>Credit to:</strong>
+                                    <span t-field="o.partner_id.name"/><br/>
+                                </div>
+                               <div class="col-6 d-flex justify-content-end">
+                                <div>
+                                    <t t-foreach="o.line_ids" t-as="line">
+                                    <strong>Particular:</strong>
+                                     <span t-esc="line.account_id.name" />><br/>
+                                     <strong>Date:</strong>
+                                    <span t-field="o.date"/><br/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                      <table class="table table-bordered entry-table" style="width:100%; height:50px; border: 1px solid black;">
+                           <thead>
+                                <tr >
+                                    <th style="text-align: center;">A/C Code</th>
+                                    <th style="text-align: center;">Debit</th>
+                                    <th style="text-align: center;">Credit</th>
+                                    <th style="text-align: center;">Currency</th>
+                                </tr>
+                            </thead>
+                      <tbody>
+                          <t t-foreach="o.move_line_ids" t-as="mline">
+                              <tr>
+                                  <td style="text-align: center;">
+                                      <span t-esc="mline.account_id.code" />
+                                 </td>
+                                   <td style="text-align: center;">  <!-- Account Name 2-->
+                                       <span t-esc="'{:,}'.format(mline.debit)"/>
+                                   </td>
+                                  <td style="text-align: center;">  <!-- Account Name 2-->
+                                       <span t-esc="'{:,}'.format(mline.credit)"/>
+                                 </td>
+                                    <td style="text-align: center;">  <!-- Account Name 2-->
+                                       <t t-foreach="o.move_id" t-as="move">
+                                            <span t-esc="move.currency_id.name"/>
+                                       </t>
+                                 </td>
+                              </tr>
+                          </t>
+                      </tbody>
+                             <tfoot>
+                             <tr class="border-top">
+                                <td colspan="1" style="text-align: center; vertical-align: middle;">
+                                    <strong>Total : </strong>
+                                </td>
+                                 <td colspan="1" style="text-align: center; vertical-align: middle;">
+                                    <span t-esc="'{:,}'.format(mline.debit)"/>                                </td>
+                                  <td colspan="1" style="text-align: center; vertical-align: middle;">
+                                    <span t-esc="'{:,}'.format(mline.credit)"/>
+                                </td>
+                             </tr>
+                           </tfoot>
+                      </table>
+                      <table class="table table-bordered entry-table" style="width:100%; height:400px; border: 0px solid white;">
+                        <tfoot>
+                            <tr class="border-bottom">
+                                <!-- Column 1: Cashier -->
+                                <td style="text-align: center; vertical-align: bottom;">
+                                    <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong>
+                                    <br/>
+                                    <strong>(Cashier)</strong>
+                                </td>
+
+                                <!-- Column 2: Debit By -->
+                                <td style="text-align: center; vertical-align: bottom;">
+                                    <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong><br/>
+                                    <strong>(Debit By)</strong>
+                                </td>
+
+                                 <!-- Column 2: Debit By -->
+                                <td style="text-align: center; vertical-align: bottom;">
+                                    <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong><br/>
+                                    <strong>(Passed By)</strong>
+                                </td>
+
+                                <!-- Column 3: Approved By -->
+                                <td colspan="2" style="text-align: center; vertical-align: bottom;">
+                                    <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong><br/>
+                                    <strong>(Approved By)</strong>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                  </t>
+             </t>
+         </t>
+     </template>
+</odoo>
