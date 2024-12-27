@@ -12,6 +12,7 @@
                         <button name="action_cancel" string="Cancel" type="object" class="btn-danger" invisible="state in ['draft', 'cancel']"/>
                         <button name="action_reset_to_draft" string="Reset to Draft" type="object" class="oe-normal" invisible="state not in ['cancel']"/>
                         <button name="action_print_invoice" string="Print" type="object" class="oe_highlight" invisible="state not in ['confirm','done']"/>
+                        <button name="action_excel_download" string="Excel Download" type="object" class="oe_highlight"/>
                         <field name="state" widget="statusbar" />
                     </header>
                     <sheet>
@@ -43,7 +44,6 @@
                                            options="{'business_domain': 'general'}"
                                            groups="analytic.group_analytic_accounting"/>
                                         <field name="currency_id" readonly="1" options="{'no_open': True,}"/>
-                                        <field name="analytic_code"/>
                                         <field name="amount" sum="Total Amount"/>
                                     </tree>
                                 </field>

@@ -1,6 +1,8 @@
-from wheel.metadata import _
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError, UserError
+import io
+import xlsxwriter
+import base64
 
 class AccountCashbook(models.Model):
     _name = 'account.cashbook'
@@ -11,7 +13,7 @@ class AccountCashbook(models.Model):
     date = fields.Date(string='Date', required=True)
     type = fields.Selection(string='Type', selection=[('payment', 'Payment'), ('receive', 'Receive'), ],
                             required=True)
-    journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', required=True)
+    journal_id = fields.Many2one(comodel_name='account.journal', string='Journal')
     main_account_id = fields.Many2one(comodel_name='account.account', string='Main Account Name',
                                       domain='[("account_type", "=", "asset_cash")]', related='journal_id.default_account_id', readonly=False)
     currency_id = fields.Many2one(comodel_name='res.currency', string='Currency', required=True)
@@ -42,6 +44,58 @@ class AccountCashbook(models.Model):
         compute='_compute_show_currency_rate',
         store=False,
     )
+
+    def action_excel_download(self):
+        # Create an in-memory output file for the new workbook.
+        output = io.BytesIO()
+
+        # Create a workbook and add a worksheet.
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        worksheet = workbook.add_worksheet()
+
+        # Define the header
+        headers = ['Label', 'Account Name', 'Currency', 'Amount', 'Analytic Code', 'Partner']
+        for col_num, header in enumerate(headers):
+            worksheet.write(0, col_num, header)
+
+        # Write data
+        row = 1
+        for line in self.line_ids:
+            worksheet.write(row, 0, line.name)
+            worksheet.write(row, 1, line.account_id.name)
+            worksheet.write(row, 2, line.currency_id.name)
+            worksheet.write(row, 3, line.amount)
+            worksheet.write(row, 4, line.analytic_code)
+            worksheet.write(row, 5, line.partner_id.name)
+            row += 1
+
+        # Close the workbook
+        workbook.close()
+
+        # Get the Excel file content
+        output.seek(0)
+        file_content = output.read()
+        output.close()
+
+        # Encode the file content to base64
+        file_base64 = base64.b64encode(file_content)
+
+        # Create an attachment
+        attachment = self.env['ir.attachment'].create({
+            'name': 'Cashbook_Lines.xlsx',
+            'type': 'binary',
+            'datas': file_base64,
+            'store_fname': 'Cashbook_Lines.xlsx',
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        })
+
+        # Return the action to download the file
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/%s?download=true' % attachment.id,
+            'target': 'new',
+        }
+
 
     @api.depends('currency_id', 'company_id.currency_id')
     def _compute_show_currency_rate(self):

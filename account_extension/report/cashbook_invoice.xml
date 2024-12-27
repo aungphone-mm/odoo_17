@@ -47,8 +47,8 @@
                        <table class="table table-bordered entry-table" style="width:100%; height:200px; border: 1px solid black;">
                             <thead>
                                 <tr >
-                                    <th style="text-align: center;">Analytic Distribution</th>
-                                    <th style="text-align: center;">Particular</th>
+                                    <th style="text-align: center;">Sub-Account Code</th>
+                                    <th style="text-align: center;">Account Code</th>
                                     <th style="text-align: center;">Partner</th>
                                     <th style="text-align: center;">Description</th>
                                     <th style="text-align: center;">Amount</th>
