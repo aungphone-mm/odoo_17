@@ -32,6 +32,8 @@ class AccountCashbook(models.Model):
         default='draft')
     move_id = fields.Many2one(comodel_name='account.move', string='Journal Entry', readonly=True, copy=False)
     move_line_ids = fields.One2many(related='move_id.line_ids', string='Journal Items', readonly=True)
+    # total_credit = fields.Float(string='Total Credit', compute='_compute_total_credit', store=True)
+    # total_debit = fields.Float(string='Total Debit', compute='_compute_total_debit', store=True)
     partner_id = fields.Many2one('res.partner', string='Partner')
     currency_rate = fields.Float(string='Currency Rate', default=1.0, digits=(12, 6))
     company_id = fields.Many2one(
@@ -44,6 +46,22 @@ class AccountCashbook(models.Model):
         compute='_compute_show_currency_rate',
         store=False,
     )
+
+    # @api.depends('move_line_ids.credit')    # Total Credit
+    # def _compute_total_credit(self):
+    #     for record in self:
+    #         self.env.cr.execute(""" SELECT SUM(credit) FROM account_move_line WHERE move_id = %s """,
+    #                             (record.move_id.id,))
+    #         result = self.env.cr.fetchone()
+    #         record.total_credit = result[0] if result else 0.00
+
+    # @api.depends('move_line_ids.debit')
+    # def _compute_total_debit(self):
+    #     for record in self:
+    #         if record.move_id:
+    #             self.env.cr.execute("""SELECT SUM(debit) FROM account_move_line WHERE move_id = %s""", (record.move_id.id,))
+    #             result = self.env.cr.fetchone()
+    #             record.total_debit = result[0] if result else 0.00
 
     def action_excel_download(self):
         # Create an in-memory output file for the new workbook.
@@ -68,7 +86,6 @@ class AccountCashbook(models.Model):
             worksheet.write(row, 4, line.analytic_code)
             worksheet.write(row, 5, line.partner_id.name)
             row += 1
-
         # Close the workbook
         workbook.close()
 
@@ -88,15 +105,12 @@ class AccountCashbook(models.Model):
             'store_fname': 'Cashbook_Lines.xlsx',
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         })
-
         # Return the action to download the file
         return {
             'type': 'ir.actions.act_url',
             'url': '/web/content/%s?download=true' % attachment.id,
             'target': 'new',
         }
-
-
     @api.depends('currency_id', 'company_id.currency_id')
     def _compute_show_currency_rate(self):
         for record in self:
@@ -157,7 +171,7 @@ class AccountCashbook(models.Model):
         self.update({'state': 'draft'})
 
     def action_print_invoice(self):
-        # Cashbook Invoice Print 
+        # Cashbook Invoice Print
         return self.env.ref('account_extension.action_report_cashbook_invoice').report_action(self)
 
     def action_print_Payable_invoice(self):

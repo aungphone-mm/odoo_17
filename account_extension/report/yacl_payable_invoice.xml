@@ -3,7 +3,7 @@
       <record id="action_report_payable_invoice" model="ir.actions.report">
         <field name="name">Payable Invoice</field>
         <field name="model">account.cashbook</field>
-        <field name="report_type">qweb-html</field>
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">account_extension.report_payable_invoice</field>
          <field name="report_file">account_extension.report_payable_invoice</field>
         <field name="print_report_name">'Payable Invoice'</field>
@@ -74,13 +74,15 @@
                              <tfoot>
                              <tr class="border-top">
                                 <td colspan="1" style="text-align: center; vertical-align: middle;">
-                                    <strong>Total : </strong>
+                                    <strong>Total  </strong>
                                 </td>
                                  <td colspan="1" style="text-align: center; vertical-align: middle;">
-                                    <span t-esc="'{:,}'.format(mline.debit)"/>                                </td>
+                                     <span t-esc="'{:,}'.format(mline.debit)"/>
+                                 </td>
                                   <td colspan="1" style="text-align: center; vertical-align: middle;">
-                                    <span t-esc="'{:,}'.format(mline.credit)"/>
+                                     <span t-esc="'{:,}'.format(mline.debit)"/>
                                 </td>
+                                 <td></td>
                              </tr>
                            </tfoot>
                       </table>
