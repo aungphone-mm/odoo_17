@@ -77,10 +77,10 @@
                                     <strong>Total  </strong>
                                 </td>
                                  <td colspan="1" style="text-align: center; vertical-align: middle;">
-                                     <span t-esc="'{:,}'.format(mline.debit)"/>
+                                     <span t-esc="'{:,}'.format(mline.credit)"/>
                                  </td>
                                   <td colspan="1" style="text-align: center; vertical-align: middle;">
-                                     <span t-esc="'{:,}'.format(mline.debit)"/>
+                                     <span t-esc="'{:,}'.format(mline.credit)"/>
                                 </td>
                                  <td></td>
                              </tr>
