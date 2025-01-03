@@ -1,6 +1,7 @@
 from odoo import fields, models, api
+from odoo.tools.translate import _
 from odoo.exceptions import ValidationError, UserError
-import io
+from io import BytesIO
 import xlsxwriter
 import base64
 
@@ -47,70 +48,128 @@ class AccountCashbook(models.Model):
         store=False,
     )
 
-    # @api.depends('move_line_ids.credit')    # Total Credit
-    # def _compute_total_credit(self):
-    #     for record in self:
-    #         self.env.cr.execute(""" SELECT SUM(credit) FROM account_move_line WHERE move_id = %s """,
-    #                             (record.move_id.id,))
-    #         result = self.env.cr.fetchone()
-    #         record.total_credit = result[0] if result else 0.00
-
-    # @api.depends('move_line_ids.debit')
-    # def _compute_total_debit(self):
-    #     for record in self:
-    #         if record.move_id:
-    #             self.env.cr.execute("""SELECT SUM(debit) FROM account_move_line WHERE move_id = %s""", (record.move_id.id,))
-    #             result = self.env.cr.fetchone()
-    #             record.total_debit = result[0] if result else 0.00
-
     def action_excel_download(self):
-        # Create an in-memory output file for the new workbook.
-        output = io.BytesIO()
+        # Create Excel file
+        output = BytesIO()
+        workbook = xlsxwriter.Workbook(output)
+        sheet = workbook.add_worksheet('Cashbook Lines')
 
-        # Create a workbook and add a worksheet.
-        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
-        worksheet = workbook.add_worksheet()
+        # Add formats
+        header_format = workbook.add_format({
+            'bold': True,
+            'align': 'left',
+            'valign': 'vcenter',
+            'border': 1,
+            'border_color': '#C0C0C0'
+        })
 
-        # Define the header
-        headers = ['Label', 'Account Name', 'Currency', 'Amount', 'Analytic Code', 'Partner']
-        for col_num, header in enumerate(headers):
-            worksheet.write(0, col_num, header)
+        cell_format = workbook.add_format({
+            'align': 'left',
+            'border': 1,
+            'border_color': '#C0C0C0'
+        })
+
+        amount_format = workbook.add_format({
+            'align': 'right',
+            'border': 1,
+            'border_color': '#C0C0C0',
+            'num_format': '#,##0.00" K"'  # Format to show numbers with 2 decimals and K suffix
+        })
+
+        analytic_format = workbook.add_format({
+            'align': 'left',
+            'border': 1,
+            'border_color': '#C0C0C0',
+            # 'bg_color': '#FFB6C1'  # Light pink background for analytic codes
+        })
+
+        # Set column widths
+        sheet.set_column('A:A', 45)  # Account Name
+        sheet.set_column('B:B', 20)  # Partner
+        sheet.set_column('C:C', 20)  # Label
+        sheet.set_column('D:D', 30)  # Analytic Distribution
+        sheet.set_column('E:E', 15)  # Currency
+        sheet.set_column('F:F', 15)  # Amount
+
+        # Write headers
+        headers = [
+            'Account Name',
+            'Partner',
+            'Label',
+            'Analytic Distribution',
+            'Currency',
+            'Amount'
+        ]
+
+        for col, header in enumerate(headers):
+            sheet.write(0, col, header, header_format)
 
         # Write data
-        row = 1
-        for line in self.line_ids:
-            worksheet.write(row, 0, line.name)
-            worksheet.write(row, 1, line.account_id.name)
-            worksheet.write(row, 2, line.currency_id.name)
-            worksheet.write(row, 3, line.amount)
-            worksheet.write(row, 4, line.analytic_code)
-            worksheet.write(row, 5, line.partner_id.name)
-            row += 1
-        # Close the workbook
+        for row, line in enumerate(self.line_ids, 1):
+            # Account Name
+            account_name = f"{line.account_id.code} {line.account_id.name}"
+            sheet.write(row, 0, account_name, cell_format)
+
+            # Partner
+            sheet.write(row, 1, line.partner_id.name if line.partner_id else '', cell_format)
+
+            # Label
+            sheet.write(row, 2, line.name or '', cell_format)
+
+            # Analytic Distribution
+            sheet.write(row, 3, line.analytic_code or '', analytic_format)
+
+            # Currency
+            sheet.write(row, 4, line.currency_id.name, cell_format)
+
+            # Amount - write the amount directly (it's already in K)
+            sheet.write(row, 5, line.amount, amount_format)
+
+            analytic_value = ''
+            if line.analytic_distribution:
+                # Get account info for each entry in the distribution
+                analytic_accounts = []
+                for account_id, percentage in line.analytic_distribution.items():
+                    if ',' in account_id:  # Handle compound keys
+                        account_ids = [int(x) for x in account_id.split(',')]
+                        accounts = self.env['account.analytic.account'].browse(account_ids)
+                        analytic_accounts.extend(accounts)
+                    else:
+                        account = self.env['account.analytic.account'].browse(int(account_id))
+                        analytic_accounts.append(account)
+
+                # Create the display string using code field
+                analytic_value = ' / '.join(account.code for account in analytic_accounts if account.exists())
+
+            # Write to Excel
+            sheet.write(row, 3, analytic_value, analytic_format)
+
+        # Add total row
+        total_row = len(self.line_ids) + 1
+        total_formula = f'=SUM(F2:F{total_row})'
+        sheet.write(total_row, 5, total_formula, amount_format)
+
         workbook.close()
-
-        # Get the Excel file content
         output.seek(0)
-        file_content = output.read()
-        output.close()
 
-        # Encode the file content to base64
-        file_base64 = base64.b64encode(file_content)
+        # Generate attachment
+        xlsx_data = output.getvalue()
+        file_name = f'Cashbook_{self.name}_Lines.xlsx'
 
-        # Create an attachment
         attachment = self.env['ir.attachment'].create({
-            'name': 'Cashbook_Lines.xlsx',
+            'name': file_name,
             'type': 'binary',
-            'datas': file_base64,
-            'store_fname': 'Cashbook_Lines.xlsx',
-            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'datas': base64.b64encode(xlsx_data),
+            'store_fname': file_name,
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         })
-        # Return the action to download the file
+
         return {
             'type': 'ir.actions.act_url',
-            'url': '/web/content/%s?download=true' % attachment.id,
-            'target': 'new',
+            'url': f'/web/content/{attachment.id}?download=true',
+            'target': 'self',
         }
+
     @api.depends('currency_id', 'company_id.currency_id')
     def _compute_show_currency_rate(self):
         for record in self:
@@ -140,17 +199,28 @@ class AccountCashbook(models.Model):
     def create(self, vals):
         if 'date' not in vals:
             raise ValidationError("Date is required.")
+
         cashbook_date = fields.Date.from_string(vals['date'])
-        seq = self.env['ir.sequence'].sudo().search([('code', '=', 'account.cashbook')], limit=1)
+
+        # If type not in vals, get it from context
+        cashbook_type = vals.get('type') or self._context.get('default_type')
+
+        # Choose sequence based on type
+        sequence_code = f'account.cashbook.{cashbook_type}'
+
+        seq = self.env['ir.sequence'].sudo().search([('code', '=', sequence_code)], limit=1)
         if not seq:
+            # Create sequence if it doesn't exist
+            prefix = 'REC/' if cashbook_type == 'receive' else 'PAY/'
             seq = self.env['ir.sequence'].sudo().create({
-                'name': 'Account Cashbook Sequence',
-                'code': 'account.cashbook',
-                'prefix': 'ACC-CBR/%(year)s/%(month)s/',
+                'name': f'Account Cashbook {cashbook_type.title()} Sequence',
+                'code': sequence_code,
+                'prefix': f'{prefix}%(year)s/%(month)s/',
                 'padding': 5,
-                'number_next': 1,  # Explicitly set the starting number
+                'number_next': 1,
                 'number_increment': 1,
             })
+
         name = seq.with_context(ir_sequence_date=cashbook_date).next_by_id()
         vals['name'] = name
         return super(AccountCashbook, self).create(vals)
@@ -222,7 +292,7 @@ class AccountCashbook(models.Model):
                     'credit': converted_amount if not is_payment else 0.0,
                     'analytic_distribution': line.analytic_distribution,
                     'amount_currency': amount_currency,
-                    'currency_id': record.currency_id.id if record.currency_id != record.company_id.currency_id else False,
+                    'currency_id': record.currency_id.id,
                 }))
 
             # Add the main account line at the end
@@ -239,7 +309,7 @@ class AccountCashbook(models.Model):
                 'debit': total_amount if not is_payment else 0.0,
                 'credit': total_amount if is_payment else 0.0,
                 'amount_currency': amount_currency,
-                'currency_id': record.currency_id.id if record.currency_id != record.company_id.currency_id else False,
+                'currency_id': record.currency_id.id,
             }))
 
             move_vals = {
@@ -267,7 +337,20 @@ class AccountCashbookLine(models.Model):
     )
     analytic_code = fields.Char(string='Analytic Code', store=True)
     analytic_distribution = fields.Json(string='Analytic Distribution')
-    partner_id = fields.Many2one('res.partner', string='Partner')
+    partner_id = fields.Many2one('res.partner', string='Partner',
+                                              compute='_compute_partner',
+                                              inverse='_inverse_partner',
+                                              store=True, tracking=True)
+
+    @api.depends('cashbook_id.partner_id')
+    def _compute_partner(self):
+        for line in self:
+            line.partner_id = line.cashbook_id.partner_id
+
+    def _inverse_partner(self):
+        for line in self:
+            if line.partner_id != line.cashbook_id.partner_id:
+                pass
 
 
     @api.onchange('analytic_distribution')
