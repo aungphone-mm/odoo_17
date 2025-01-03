@@ -3,7 +3,7 @@
     <record id="action_landing_report" model="ir.actions.report">
         <field name="name">Aircraft Landing Invoice With Breakdown</field>
         <field name="model">account.move</field>
-        <field name="report_type">qweb-html</field>
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">passenger_landing_charges.report_passenger_landing</field>
         <field name="report_file">passenger_landing_charges.report_passenger_landing</field>
         <field name="print_report_name">(object.name) and ('AircraftLanding-' + object.name) or 'AircraftLanding-Invoice'</field>

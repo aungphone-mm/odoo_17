@@ -3,7 +3,7 @@
     <record id="action_report_electric_meter_invoice" model="ir.actions.report">
         <field name="name">Electric Meter Invoice With Breakdown</field>
         <field name="model">account.move</field>
-        <field name="report_type">qweb-html</field>
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">electric_meter_bill.report_electric_meter_invoice</field>
         <field name="report_file">electric_meter_bill.report_electric_meter_invoice</field>
         <field name="print_report_name">(object.name) and ('Electric-' + object.name) or 'Electric-Invoice'</field>
@@ -205,138 +205,84 @@
                                 </thead>
 
                                 <tbody>
-                                    <!-- Initialize the totals -->
-                                    <t t-set="total_units" t-value="0"/>
-                                    <t t-set="total_amount" t-value="0"/>
-                                    <t t-set="total_mgm_charge" t-value="0"/>
+    <t t-foreach="o._compute_meter_details()" t-as="meter">
+        <tr>
+            <td style="border: 1px solid black; text-align: center;">
+                <t t-esc="meter_index + 1"/>
+            </td>
+            <td style="border: 1px solid black;">
+                <span t-esc="meter['partner_name']"/>
+            </td>
+            <td style="border: 1px solid black;">
+                <span t-esc="meter['meter_number']"/>
+            </td>
+            <td style="border: 1px solid black;">
+                <span t-esc="meter['location']"/>
+            </td>
+            <td style="border: 1px solid black; text-align: right;">
+                <span t-esc="meter['latest_reading']"/>
+            </td>
+            <td style="border: 1px solid black; text-align: right;">
+                <span t-esc="meter['current_reading']"/>
+            </td>
+            <td style="border: 1px solid black; text-align: right;">
+                <span t-esc="'{:,.0f}'.format(meter['total_units'])"/>
+            </td>
+            <td style="border: 1px solid black; text-align: right;">
+                <t t-foreach="meter['rate_details']" t-as="rate">
+                    <span t-esc="'{:,.2f}'.format(rate['rate'])"/>
+                    <br t-if="not rate_last"/>
+                </t>
+            </td>
+            <td style="border: 1px solid black; text-align: right;">
+                <!-- Rate breakdown amounts -->
+                <t t-foreach="meter['rate_details']" t-as="rate">
+                    <span t-esc="'{:,.2f}'.format(rate['amount'])"/><br/>
+                </t>
 
-                                    <t t-set="index" t-value="0"/>
-                                    <t t-foreach="o.invoice_line_ids.filtered(lambda l: l.reading_line_id)" t-as="line">
-                                        <tr>
-                                            <td style="border: 1px solid black; text-align: center;">
-                                                <t t-esc="index + 1"/>
-                                            </td>
+                <!-- MGM charge if applicable -->
+                <t t-if="meter['mgm_percentage']">
+                    <strong>MGM (<t t-esc="meter['mgm_percentage']"/>%):
+                    <t t-esc="'{:,.2f}'.format(meter['mgm_charge'])"/></strong><br/>
+                </t>
 
-                                            <td style="border: 1px solid black;">
-                                                <span t-field="line.reading_line_id.meter_id.partner_id.name"/>
-                                            </td>
+                <!-- Subtotal -->
+                <strong>Subtotal: <t t-esc="'{:,.2f}'.format(meter['subtotal'] + meter['mgm_charge'])"/></strong><br/>
 
-                                            <td style="border: 1px solid black;">
-                                                <span t-field="line.reading_line_id.meter_id.name"/>
-                                            </td>
-                                            <td style="border: 1px solid black;">
-                                                <span t-field="line.reading_line_id.meter_id.location_id"/>
-                                            </td>
-                                            <td style="border: 1px solid black; text-align: right;">
-                                                <span t-field="line.reading_line_id.latest_reading_unit"/>
-                                            </td>
-                                            <td style="border: 1px solid black; text-align: right;">
-                                                <span t-field="line.reading_line_id.current_reading_unit"/>
-                                            </td>
-                                            <td style="border: 1px solid black; text-align: right">
-                                                <t t-set="total_unit" t-value="line.reading_line_id.total_unit"/>
-                                                <t t-set="remain_unit" t-value="total_unit"/>
-                                                <t t-foreach="o.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">
-                                                    <t t-if="remain_unit > 0">
-                                                        <t t-set="units_in_bracket" t-value="min(remain_unit, rate_line.to_unit - rate_line.from_unit)"/>
-                                                        <span t-esc="'{:,.0f}'.format(units_in_bracket)"/>
-                                                        <br t-if="not rate_line_last"/>
-                                                        <t t-set="remain_unit" t-value="remain_unit - units_in_bracket"/>
-                                                    </t>
-                                                </t>
-                                            </td>
-<!--                                            <td style="border: 1px solid black;">-->
-<!--                                                <t t-foreach="o.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">-->
-<!--                                                    <span t-esc="'{:,.0f}'.format(rate_line.unit_price)"/>-->
-<!--                                                    (<span t-esc="'{:,.0f}'.format(rate_line.from_unit)"/>-<span t-esc="'{:,.0f}'.format(rate_line.to_unit)"/>)-->
-<!--                                                    <br t-if="not rate_line_last"/>-->
-<!--                                                </t>-->
-<!--                                            </td>-->
-                                            <td style="border: 1px solid black;text-align: right">
-                                                <t t-foreach="o.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">
-                                                    <span t-esc="'{:,.0f}'.format(rate_line.unit_price)"/>
-                                                    <br t-if="not rate_line_last"/>
-                                                </t>
-                                            </td>
+                <!-- Subtractions -->
+                <t t-foreach="meter['subtractions']" t-as="sub">
+                    <span style="color: red;">Less: <t t-esc="sub['name']"/>:
+                    -<t t-esc="'{:,.2f}'.format(sub['amount'])"/></span><br/>
+                </t>
 
-                                            <td style="border: 1px solid black; text-align: right">
-                                                <t t-set="total_unit" t-value="line.reading_line_id.total_unit"/>
-                                                <t t-set="remain_unit" t-value="total_unit"/>
-                                                <t t-set="subtotal_amount" t-value="0"/>
-                                                <t t-foreach="o.partner_id.business_source_id.rate_id.rate_line_ids" t-as="rate_line">
-                                                    <t t-if="remain_unit > 0">
-                                                        <t t-set="units_in_bracket" t-value="min(remain_unit, rate_line.to_unit - rate_line.from_unit)"/>
-                                                        <t t-set="bracket_amount" t-value="units_in_bracket * rate_line.unit_price"/>
-                                                        <span t-esc="'{:,.0f}'.format(bracket_amount)"/>
-                                                        <br/>
-                                                        <t t-set="remain_unit" t-value="remain_unit - units_in_bracket"/>
-                                                        <t t-set="subtotal_amount" t-value="subtotal_amount + bracket_amount"/>
-                                                    </t>
-                                                </t>
-                                                <t t-if="line.reading_line_id.meter_id.mgm_percentage">
-                                                    <t t-set="mgm_charge" t-value="(subtotal_amount / 100) * line.reading_line_id.meter_id.mgm_percentage"/>
-                                                    <strong>MGM (<t t-esc="line.reading_line_id.meter_id.mgm_percentage"/>%): <t t-esc="'{:,.0f}'.format(mgm_charge)"/></strong>
-                                                    <br/>
-                                                    <t t-set="total_mgm_charge" t-value="total_mgm_charge + mgm_charge"/>
-                                                </t>
-                                                <t t-else="">
-                                                    <t t-set="mgm_charge" t-value="0"/>
-                                                </t>
-                                                <strong>Total: <t t-esc="'{:,.0f}'.format(subtotal_amount + mgm_charge)"/></strong>
-                                            </td>
-                                        </tr>
+                <!-- Final amount -->
+                <strong>Net Total: <t t-esc="'{:,.2f}'.format(meter['final_amount'])"/></strong>
+            </td>
+        </tr>
+    </t>
+</tbody>
+                                </table>  <!-- Close the rate breakdown table -->
+</div>
 
-                                        <!-- Accumulate the totals -->
-                                        <t t-set="total_units" t-value="total_units + line.reading_line_id.total_unit"/>
-                                        <t t-set="total_amount" t-value="total_amount + line.reading_line_id.amount"/>  <!-- Changed to use amount directly -->
-                                        <t t-set="index" t-value="index + 1"/>
-                                    </t>
-                                </tbody>
-<!--                                <tfoot>-->
-                            <!--    <tr style="background-color: #a8c9e2; color: black; text-align: center;">-->
-                            <!--        <td colspan="6" style="text-align: right; border: 1px solid black;">-->
-                            <!--            <strong>Total (Units)</strong>-->
-                            <!--        </td>-->
-
-                            <!--        <td style="text-align: right; border: 1px solid black;">-->
-                            <!--            <strong><t t-esc="'{:,.0f}'.format(total_units)"/></strong>-->
-                            <!--        </td>-->
-
-                            <!--        <td style="text-align: right; border: 1px solid black;">-->
-                            <!--        </td>-->
-
-                            <!--        <td style="text-align: right; border: 1px solid black;">-->
-                            <!--            <strong>-->
-                            <!--                &lt;!&ndash; Change to directly sum the individual line totals &ndash;&gt;-->
-                            <!--                <t t-set="final_total" t-value="sum([line.reading_line_id.amount for line in o.invoice_line_ids.filtered(lambda l: l.reading_line_id)])"/>-->
-                            <!--                <t t-esc="'{:,.0f}'.format(final_total)"/>-->
-                            <!--            </strong>-->
-                            <!--        </td>-->
-                            <!--    </tr>-->
-                            <!--</tfoot>-->
-                            </table>
-                            </div>
-                            <!-- Summary Table -->
-                            <div class="row mt-4">
-                                <div class="col-12">
-                                    <table class="table table-bordered" style="width: 50%; margin-left: auto;">
-                                        <tr>
-                                            <td style="width: 60%; text-align: right;"><strong>Total Units:</strong></td>
-                                            <td style="width: 40%; text-align: right;">
-                                                <t t-set="total_units" t-value="sum(o.invoice_line_ids.filtered(lambda l: l.reading_line_id).mapped('reading_line_id.total_unit'))"/>
-                                                <strong><t t-esc="'{:,.0f}'.format(total_units)"/></strong>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="width: 60%; text-align: right;"><strong>Total Amount:</strong></td>
-                                            <td style="width: 40%; text-align: right;">
-                                                <t t-set="final_total" t-value="sum([line.reading_line_id.amount for line in o.invoice_line_ids.filtered(lambda l: l.reading_line_id)])"/>
-                                                <strong><t t-esc="'{:,.0f}'.format(final_total)"/></strong>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
+<!-- Summary Table -->
+<div class="row mt-4">
+    <div class="col-12">
+        <table class="table table-bordered" style="width: 50%; margin-left: auto;">
+            <tr>
+                <td style="width: 60%; text-align: right;"><strong>Total Units:</strong></td>
+                <td style="width: 40%; text-align: right;">
+                    <strong><t t-esc="'{:,.0f}'.format(o.get_total_units())"/></strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60%; text-align: right;"><strong>Total Amount:</strong></td>
+                <td style="width: 40%; text-align: right;">
+                    <strong><t t-esc="'{:,.2f}'.format(o.get_final_total())"/></strong>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
                             <!-- Add this after the main table -->
                         <div class="mt-4">
                             <h5>Rate Details:</h5>

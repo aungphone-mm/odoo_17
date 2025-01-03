@@ -3,7 +3,7 @@
     <record id="action_security_service_report" model="ir.actions.report">
         <field name="name">Security Service Invoice With Breakdown</field>
         <field name="model">account.move</field>
-        <field name="report_type">qweb-html</field>
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">airline_security_service_charges.report_security_service</field>
         <field name="report_file">airline_security_service_charges.report_security_service</field>
         <field name="print_report_name">(object.name) and ('Security-' + object.name) or 'Security-Invoice'</field>

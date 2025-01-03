@@ -3,7 +3,7 @@
     <record id="action_landing_summary_report" model="ir.actions.report">
         <field name="name">Landing Summary Report</field>
         <field name="model">report.landing.selection.wizard</field>
-        <field name="report_type">qweb-html</field>
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">yacl_airline.report_landing_summary</field>
         <field name="report_file">yacl_airline.report_landing_summary</field>
         <field name="binding_model_id" ref="model_report_landing_selection_wizard"/>

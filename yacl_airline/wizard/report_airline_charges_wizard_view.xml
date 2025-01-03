@@ -10,7 +10,7 @@
                     <field name="date_to"/>
                 </group>
                 <footer>
-                    <button name="action_print_report" string="Print Report" type="object" class="btn-primary"/>
+                    <button name="action_print_report" string="Generate Report" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

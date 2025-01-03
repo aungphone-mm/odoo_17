@@ -4,8 +4,8 @@ class AirlineChargesReportWizard(models.TransientModel):
     _name = 'airline.charges.report.wizard'
     _description = 'Airline Charges Report Wizard'
 
-    date_from = fields.Date(string='Date From', required=True)
-    date_to = fields.Date(string='Date To', required=True)
+    date_from = fields.Date(string='Start Date', required=True, default=fields.Date.context_today)
+    date_to = fields.Date(string='End Date', required=True, default=fields.Date.context_today)
 
     def action_print_report(self):
         data = {

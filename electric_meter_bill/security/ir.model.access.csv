@@ -6,3 +6,5 @@ access_electric_rate_line,access_electric_rate_line,model_electric_rate_line,bas
 access_business_source,access_business_source,model_business_source,base.group_user,1,1,1,1
 access_electric_meter_reading,access_electric_meter_reading,model_electric_meter_reading,base.group_user,1,1,1,1
 acess_electric_meter_reading_line,acess_electric_meter_reading_line,model_electric_meter_reading_line,base.group_user,1,1,1,1
+access_add_subtraction_wizard_user,add.subtraction.wizard.user,model_add_subtraction_wizard,base.group_user,1,1,1,1
+access_electric_meter_subtraction_line,electric.meter.subtraction.line,model_electric_meter_subtraction_line,base.group_user,1,1,1,1

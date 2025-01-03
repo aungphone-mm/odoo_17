@@ -3,7 +3,7 @@
     <record id="action_invoice_summary_report" model="ir.actions.report">
         <field name="name">Invoice Summary Report</field>
         <field name="model">report.selection.wizard</field>
-        <field name="report_type">qweb-html</field>
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">yacl_airline.report_invoice_summary</field>
         <field name="report_file">yacl_airline.report_invoice_summary</field>
         <field name="binding_model_id" ref="model_report_selection_wizard"/>
@@ -53,17 +53,17 @@
                             </t>
                         </tbody>
                         <tfoot>
-    <tr>
-        <td colspan="3" class="text-right"><strong>Total</strong></td>
-        <td class="text-right">
-            <strong>
-                <!-- Modified to use invoice currency instead of company currency -->
-                <span t-esc="get_total_amount()"
-                      t-options='{"widget": "monetary", "display_currency": env.company.currency_id}'/>
-            </strong>
-        </td>
-    </tr>
-</tfoot>
+                        <tr>
+                            <td colspan="3" class="text-right"><strong>Total</strong></td>
+                            <td class="text-right">
+                                <strong>
+                                    <!-- Modified to use invoice currency instead of company currency -->
+                                    <span t-esc="get_total_amount()"
+                                          t-options='{"widget": "monetary", "display_currency": env.company.currency_id}'/>
+                                </strong>
+                            </td>
+                        </tr>
+                    </tfoot>
                     </table>
                 </div>
             </t>

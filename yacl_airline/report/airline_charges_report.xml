@@ -3,7 +3,7 @@
     <record id="action_airline_charges_report" model="ir.actions.report">
         <field name="name">Airline Charges Report</field>
         <field name="model">airline.charges.report.wizard</field>
-        <field name="report_type">qweb-html</field>
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">yacl_airline.report_airline_charges</field>
         <field name="report_file">yacl_airline.report_airline_charges</field>
         <field name="binding_model_id" ref="model_airline_charges_report_wizard"/>

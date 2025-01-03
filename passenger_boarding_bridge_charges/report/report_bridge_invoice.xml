@@ -3,7 +3,7 @@
     <record id="action_boarding_report" model="ir.actions.report">
         <field name="name">Boarding Bridge Invoice With Breakdown</field>
         <field name="model">account.move</field>
-        <field name="report_type">qweb-html</field>
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">passenger_boarding_bridge_charges.report_bridge_service</field>
         <field name="report_file">passenger_boarding_bridge_charges.report_bridge_service</field>
         <field name="print_report_name">(object.name) and ('Bridge-' + object.name) or 'Bridge-Invoice'</field>

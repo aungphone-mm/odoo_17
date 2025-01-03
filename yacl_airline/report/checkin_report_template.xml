@@ -3,7 +3,7 @@
     <record id="action_checkin_summary_report" model="ir.actions.report">
         <field name="name">Check-in Counter Report</field>
         <field name="model">report.checkin.selection.wizard</field>
-        <field name="report_type">qweb-html</field>
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">yacl_airline.report_checkin_summary</field>
         <field name="report_file">yacl_airline.report_checkin_summary</field>
         <field name="binding_model_id" ref="model_report_checkin_selection_wizard"/>
@@ -38,8 +38,8 @@
                                 <tr>
                                     <td><t t-esc="line_index + 1"/></td>
                                     <td><t t-esc="line['airline']"/></td>
+                                    <td class="text-right"><t t-esc="line['unique_flight_count']"/></td>
                                     <td class="text-right"><t t-esc="line['frequency']"/></td>
-                                    <td class="text-right"><t t-esc="line['total_minutes']"/></td>
                                     <td class="text-right">
                                         <t t-esc="'%.2f'%(line['amount'])"/>
                                     </td>
@@ -49,8 +49,8 @@
                         <tfoot>
                             <tr>
                                 <td colspan="2" class="text-right"><strong>Total</strong></td>
+                                <td class="text-right"><strong t-esc="get_total('unique_flight_count')"/></td>
                                 <td class="text-right"><strong t-esc="get_total('frequency')"/></td>
-                                <td class="text-right"><strong t-esc="get_total('total_minutes')"/></td>
                                 <td class="text-right"><strong t-esc="'%.2f'%(get_total('amount'))"/></td>
                             </tr>
                         </tfoot>

@@ -1,4 +1,3 @@
-from markupsafe import Markup
 import xlsxwriter
 from io import BytesIO
 import base64
@@ -208,22 +207,20 @@ class ElectricMeterReading(models.Model):
                 line.meter_id.write({'latest_reading_unit': line.current_reading_unit})
 
     def _generate_invoice(self):
-        meter_invoices = {}  # Will store {meter_number: invoice} for same meter invoices
-        partner_invoices = {}  # Will store {partner: invoice} for same partner invoices
+        meter_invoices = {}
+        partner_invoices = {}
 
         for line in self.reading_line_ids:
-            if line.amount > 0:
+            if line.final_amount > 0:
                 partner = line.partner_id
                 meter_number = line.meter_id.meter_number
 
-                # First check if there's an existing invoice for this meter number
+                # Get or create invoice
                 if meter_number in meter_invoices:
                     invoice = meter_invoices[meter_number]
-                # Then check if there's an existing invoice for this partner
                 elif partner in partner_invoices:
                     invoice = partner_invoices[partner]
                 else:
-                    # Create a new invoice
                     invoice = self.env['account.move'].create({
                         'partner_id': partner.id,
                         'currency_id': line.currency_id.id,
@@ -235,22 +232,12 @@ class ElectricMeterReading(models.Model):
                         'reading_line_id': line.id,
                         'invoice_line_ids': [],
                         'form_type': 'electric',
-                        # 'for_date': self.for_date,
                     })
-                    # Store invoice reference in both dictionaries
                     meter_invoices[meter_number] = invoice
                     partner_invoices[partner] = invoice
 
-                # Update existing invoice with additional details
-                # if invoice.narration:
-                #     rate_description = partner.business_source_id.rate_id.description or ''
-                #     new_narration = Markup(line.narration or '') + \
-                #                     Markup('<div style="break-after:page"></div>') + \
-                #                     Markup(rate_description)
-                #     invoice.narration = (invoice.narration or '') + new_narration
-
-                # Create invoice lines
-                invoice_line = self.env['account.move.line'].create({
+                # Create main invoice line
+                self.env['account.move.line'].create({
                     'move_id': invoice.id,
                     'product_id': line.meter_id.product_id.id,
                     'quantity': 1,
@@ -259,7 +246,17 @@ class ElectricMeterReading(models.Model):
                     'reading_line_id': line.id,
                 })
 
-                # Set invoice reference on reading line
+                # Create subtraction lines if any exist
+                if line.subtraction_line_ids:
+                    for sub_line in line.subtraction_line_ids:
+                        self.env['account.move.line'].create({
+                            'move_id': invoice.id,
+                            'name': f'Subtraction: {sub_line.name}',
+                            'quantity': 1,
+                            'price_unit': -sub_line.subtraction_amount,  # Negative to show as reduction
+                            'reading_line_id': line.id,
+                        })
+
                 line.invoice_id = invoice.id
 
     def _get_rate_breakdown(self, total_unit, rate):
@@ -322,15 +319,19 @@ class ElectricMeterReading(models.Model):
         return self.env.ref('electric_meter_bill.action_report_consolidated_meter_reading').report_action(self)
 
     def action_export_excel(self):
-        # Create a new Excel file in memory
         output = BytesIO()
         workbook = xlsxwriter.Workbook(output)
         worksheet = workbook.add_worksheet('Meter Readings')
 
-        # Add headers
-        headers = ['Meter', 'Customer', 'Previous Reading', 'Current Reading', 'Total Units', 'Amount']
-        header_format = workbook.add_format(
-            {'bold': True, 'align': 'center', 'bg_color': '#1a73e8', 'font_color': 'white'})
+        # Add headers with subtraction columns
+        headers = ['Meter', 'Customer', 'Previous Reading', 'Current Reading',
+                   'Total Units', 'Amount', 'Subtractions', 'Final Amount']
+        header_format = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'bg_color': '#1a73e8',
+            'font_color': 'white'
+        })
 
         for col, header in enumerate(headers):
             worksheet.write(0, col, header, header_format)
@@ -343,7 +344,15 @@ class ElectricMeterReading(models.Model):
             worksheet.write(row, 2, line.latest_reading_unit)
             worksheet.write(row, 3, line.current_reading_unit)
             worksheet.write(row, 4, line.total_unit)
-            worksheet.write(row, 5, f"{line.amount:,.2f} K")
+            worksheet.write(row, 5, f"{line.amount:,.2f}")
+
+            # Add subtraction details
+            subtraction_details = []
+            for sub in line.subtraction_line_ids:
+                subtraction_details.append(f"{sub.name}: {sub.subtraction_amount:,.2f}")
+            worksheet.write(row, 6, "\n".join(subtraction_details))
+
+            worksheet.write(row, 7, f"{line.final_amount:,.2f}")
             row += 1
 
         # Adjust column widths
@@ -352,17 +361,14 @@ class ElectricMeterReading(models.Model):
         worksheet.set_column('C:D', 15)  # Readings
         worksheet.set_column('E:E', 12)  # Total Units
         worksheet.set_column('F:F', 15)  # Amount
+        worksheet.set_column('G:G', 30)  # Subtractions
+        worksheet.set_column('H:H', 15)  # Final Amount
 
         workbook.close()
-
-        # Prepare the file for download
         output.seek(0)
         xlsx_data = output.read()
-
-        # Set the binary field value
         self.xlsx_file = base64.b64encode(xlsx_data)
 
-        # Generate filename
         filename = f'Meter_Readings_{self.name}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
 
         return {
@@ -457,6 +463,30 @@ class ElectricMeterReading(models.Model):
             'target': 'self',
         }
 
+class ElectricMeterSubtractionLine(models.Model):
+    _name = 'electric.meter.subtraction.line'
+    _description = 'Electric Meter Subtraction Line'
+
+    reading_line_id = fields.Many2one(
+        'electric.meter.reading.line',
+        string='Reading Line',
+        required=True
+    )
+    name = fields.Char(
+        string='Description',
+        required=True,
+        help="Description of the subtraction"
+    )
+    subtraction_amount = fields.Float(
+        string='Amount',
+        required=True,
+        digits=(10, 5)
+    )
+    currency_id = fields.Many2one(
+        'res.currency',
+        related='reading_line_id.currency_id',
+        string='Currency'
+    )
 
 class ElectricMeterReadingLine(models.Model):
     _name = 'electric.meter.reading.line'
@@ -486,6 +516,25 @@ class ElectricMeterReadingLine(models.Model):
     mgm_percentage = fields.Integer("Management Fee")
     location_id = fields.Many2one('location', string='Location', related='meter_id.location_id', store=True,
                                   readonly=True)
+    subtraction_line_ids = fields.One2many(
+        'electric.meter.subtraction.line',
+        'reading_line_id',
+        string='Subtraction Lines'
+    )
+    final_amount = fields.Float(
+        string='Final Amount',
+        compute='_compute_final_amount',
+        store=True,
+        currency_field='currency_id',
+        digits=(10, 5)
+    )
+
+    @api.depends('amount', 'subtraction_line_ids.subtraction_amount')
+    def _compute_final_amount(self):
+        for record in self:
+            total_subtraction = sum(line.subtraction_amount for line in record.subtraction_line_ids)
+            record.final_amount = record.amount - total_subtraction
+
     # currency_id = fields.Many2one('res.currency', string='Currency',
     #                               compute='_compute_currency_id', store=True)
     #
@@ -507,6 +556,45 @@ class ElectricMeterReadingLine(models.Model):
                 record.partner_id = meter.partner_id
                 record.currency_id = meter.partner_id.business_source_id.rate_id.currency_id
 
+
+class AddSubtractionWizard(models.TransientModel):
+    _name = 'add.subtraction.wizard'
+    _description = 'Add Subtraction Wizard'
+
+    reading_line_id = fields.Many2one(
+        'electric.meter.reading.line',
+        string='Reading Line',
+        required=True
+    )
+    name = fields.Char(
+        string='Description',
+        required=True
+    )
+    subtraction_amount = fields.Float(
+        string='Amount to Subtract',
+        required=True,
+        digits=(10, 5)
+    )
+    currency_id = fields.Many2one(
+        'res.currency',
+        string='Currency',
+        related='reading_line_id.currency_id',
+        readonly=True
+    )
+
+    def action_add_subtraction(self):
+        self.ensure_one()
+        if self.subtraction_amount <= 0:
+            raise UserError('Subtraction amount must be positive')
+
+        self.env['electric.meter.subtraction.line'].create({
+            'name': self.name,
+            'reading_line_id': self.reading_line_id.id,
+            'subtraction_amount': self.subtraction_amount
+        })
+
+        return {'type': 'ir.actions.act_window_close'}
+
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
@@ -518,6 +606,95 @@ class AccountMove(models.Model):
     # In the AccountMove class
     def action_print_electric_meter_invoice(self):
         return self.env.ref('electric_meter_bill.action_report_electric_meter_invoice').report_action(self)
+
+    def _compute_meter_details(self):
+        """Compute the meter details including rates and subtractions"""
+        self.ensure_one()
+        result = []
+
+        # Group by meter to avoid duplicates
+        seen_meters = set()
+        for line in self.invoice_line_ids.filtered(lambda l: l.reading_line_id):
+            meter = line.reading_line_id.meter_id
+            if meter.id in seen_meters:
+                continue
+            seen_meters.add(meter.id)
+
+            reading_line = line.reading_line_id
+            rate = reading_line.partner_id.business_source_id.rate_id
+
+            # Calculate base amount with rate brackets
+            total_unit = reading_line.total_unit
+            remain_unit = total_unit
+            subtotal_amount = 0
+
+            rate_details = []
+            for rate_line in rate.rate_line_ids:
+                if remain_unit <= 0:
+                    break
+
+                units_in_bracket = min(remain_unit, rate_line.to_unit - rate_line.from_unit)
+                bracket_amount = units_in_bracket * rate_line.unit_price
+
+                rate_details.append({
+                    'units': units_in_bracket,
+                    'rate': rate_line.unit_price,
+                    'amount': bracket_amount
+                })
+
+                subtotal_amount += bracket_amount
+                remain_unit -= units_in_bracket
+
+            # Calculate MGM charge if applicable
+            mgm_charge = 0
+            if meter.mgm_percentage:
+                mgm_charge = (subtotal_amount * meter.mgm_percentage) / 100
+
+            # Get subtractions
+            subtractions = [{
+                'name': sub.name,
+                'amount': sub.subtraction_amount
+            } for sub in reading_line.subtraction_line_ids]
+
+            # Calculate final amount
+            total_subtractions = sum(sub['amount'] for sub in subtractions)
+            final_amount = subtotal_amount + mgm_charge - total_subtractions
+
+            result.append({
+                'meter_id': meter.id,
+                'meter_number': meter.name,
+                'partner_name': meter.partner_id.name,
+                'location': meter.location_id.name,
+                'latest_reading': reading_line.latest_reading_unit,
+                'current_reading': reading_line.current_reading_unit,
+                'total_units': total_unit,
+                'rate_details': rate_details,
+                'subtotal': subtotal_amount,
+                'mgm_percentage': meter.mgm_percentage,
+                'mgm_charge': mgm_charge,
+                'subtractions': subtractions,
+                'final_amount': final_amount
+            })
+
+        return result
+
+    def get_final_total(self):
+        """Get final total amount after all calculations and deductions"""
+        final_total = 0
+        for line in self.invoice_line_ids.filtered(lambda l: l.reading_line_id):
+            if line.reading_line_id:
+                # Add the main amount
+                if line.price_unit > 0:
+                    final_total += line.price_unit
+                # Subtract any deduction amounts (which are stored as negative values)
+                else:
+                    final_total += line.price_unit  # Adding negative values will subtract them
+        return final_total
+
+    def get_total_units(self):
+        """Get total units across all meters"""
+        return sum(line.reading_line_id.total_unit
+                   for line in self.invoice_line_ids.filtered(lambda l: l.reading_line_id))
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'

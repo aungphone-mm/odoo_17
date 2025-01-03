@@ -235,5 +235,123 @@
                 </search>
             </field>
         </record>
+        <!--start-->
+       <!-- Action definition for subtraction wizard - moved to top -->
+        <record id="action_open_subtraction_wizard" model="ir.actions.act_window">
+            <field name="name">Add Subtraction</field>
+            <field name="res_model">add.subtraction.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Wizard form view -->
+        <record id="view_add_subtraction_wizard_form" model="ir.ui.view">
+            <field name="name">add.subtraction.wizard.form</field>
+            <field name="model">add.subtraction.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Add Subtraction">
+                    <sheet>
+                        <group>
+                            <field name="reading_line_id" invisible="1"/>
+                            <field name="name"/>
+                            <field name="subtraction_amount"/>
+                            <field name="currency_id"/>
+                        </group>
+                        <footer>
+                            <button string="Add" name="action_add_subtraction" type="object" class="btn-primary"/>
+                            <button string="Cancel" class="btn-secondary" special="cancel"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Update the inherited form view - fixed structure -->
+        <record id="electric_meter_reading_view_form_inherit" model="ir.ui.view">
+            <field name="name">electric.meter.reading.form.inherit</field>
+            <field name="model">electric.meter.reading</field>
+            <field name="inherit_id" ref="electric_meter_reading_view_form"/>
+            <field name="arch" type="xml">
+                <!-- Add a new notebook page for subtraction lines -->
+                <xpath expr="//notebook" position="inside">
+                    <page string="Subtraction Details">
+                        <field name="reading_line_ids" mode="tree">
+                            <tree>
+                                <field name="meter_id"/>
+                                <field name="amount"/>
+                                <field name="subtraction_line_ids" widget="many2many_tags"/>
+                                <field name="final_amount"/>
+                                <button name="%(action_open_subtraction_wizard)d"
+                                        string="Add Subtraction"
+                                        type="action"
+                                        icon="fa-minus-circle"
+                                        context="{'default_reading_line_id': id}"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+
+                <!-- Update the existing reading lines tree view -->
+                <xpath expr="//field[@name='reading_line_ids']/tree" position="inside">
+                    <field name="subtraction_line_ids" widget="many2many_tags"/>
+                    <field name="final_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Form view for reading line with subtractions -->
+        <record id="electric_meter_reading_line_view_form" model="ir.ui.view">
+            <field name="name">electric.meter.reading.line.form</field>
+            <field name="model">electric.meter.reading.line</field>
+            <field name="arch" type="xml">
+                <form string="Reading Line">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="meter_id"/>
+                                <field name="latest_reading_unit"/>
+                                <field name="current_reading_unit"/>
+                                <field name="total_unit"/>
+                            </group>
+                            <group>
+                                <field name="amount"/>
+                                <field name="final_amount"/>
+                                <field name="currency_id"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Subtraction Lines">
+                                <field name="subtraction_line_ids">
+                                    <tree editable="bottom">
+                                        <field name="name"/>
+                                        <field name="subtraction_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree view for reading lines -->
+        <record id="view_electric_meter_reading_line_tree" model="ir.ui.view">
+            <field name="name">electric.meter.reading.line.tree</field>
+            <field name="model">electric.meter.reading.line</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom">
+                    <field name="meter_id"/>
+                    <field name="latest_reading_unit"/>
+                    <field name="current_reading_unit"/>
+                    <field name="total_unit"/>
+                    <field name="amount" sum="Total Amount"/>
+                    <field name="subtraction_line_ids" widget="many2many_tags"/>
+                    <field name="final_amount" sum="Final Total"/>
+                    <field name="currency_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
     </data>
+
 </odoo>

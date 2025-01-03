@@ -3,7 +3,7 @@
     <record id="action_passenger_domestic_report" model="ir.actions.report">
         <field name="name">Passenger Service Domestic Invoice With Breakdown</field>
         <field name="model">account.move</field>
-        <field name="report_type">qweb-html</field>
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">passenger_service_charges.report_Passenger_service_domestic</field>
         <field name="report_file">passenger_service_charges.report_Passenger_service_domestic</field>
         <field name="print_report_name">(object.name) and ('PassengerService-' + object.name) or 'PassengerService-Invoice'</field>

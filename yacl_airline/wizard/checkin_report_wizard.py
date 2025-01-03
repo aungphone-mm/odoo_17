@@ -1,10 +1,15 @@
 from odoo import fields, models
+from datetime import timedelta
 
 class ReportCheckinSelectionWizard(models.TransientModel):
     _name = 'report.checkin.selection.wizard'
     _description = 'Check-in Counter Report Selection Wizard'
 
-    start_date = fields.Date(string='Start Date', required=True, default=fields.Date.context_today)
+    start_date = fields.Date(
+        string='Start Date',
+        required=True,
+        default=lambda self: fields.Date.context_today(self) - timedelta(days=14)
+    )
     end_date = fields.Date(string='End Date', required=True, default=fields.Date.context_today)
 
     def action_generate_report(self):
