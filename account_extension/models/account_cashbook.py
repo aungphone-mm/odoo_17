@@ -266,49 +266,42 @@ class AccountCashbook(models.Model):
 
             line_vals = []
 
-            # Convert amounts to company currency if needed
-            def convert_amount(amount):
-                if record.currency_id != record.company_id.currency_id:
-                    return amount * record.currency_rate
-                return amount
-
-            total_amount = sum(convert_amount(line.amount) for line in record.line_ids)
-
             # Add lines for each cashbook line
             for line in record.line_ids:
-                converted_amount = convert_amount(line.amount)
-                is_payment = record.type == 'payment'
+                # Determine the amount based on currency comparison
+                if record.currency_id == record.company_id.currency_id:
+                    amount = line.amount
+                else:
+                    amount = line.amount * record.currency_rate
 
-                # Set the correct signs for amount_currency based on debit/credit
-                amount_currency = 0.0
-                if record.currency_id != record.company_id.currency_id:
-                    amount_currency = line.amount if is_payment else -line.amount
+                # Set debit to cashbook line amount if type is 'payment', otherwise set to zero
+                debit = amount if record.type == 'payment' else 0.0
+                credit = 0.0  # Keep credit as zero
 
                 line_vals.append((0, 0, {
                     'account_id': line.account_id.id,
                     'name': line.name or record.name,
                     'partner_id': line.partner_id.id or record.partner_id.id,
-                    'debit': converted_amount if is_payment else 0.0,
-                    'credit': converted_amount if not is_payment else 0.0,
+                    'debit': debit,
+                    'credit': credit,
                     'analytic_distribution': line.analytic_distribution,
-                    'amount_currency': amount_currency,
                     'currency_id': record.currency_id.id,
                 }))
 
             # Add the main account line at the end
-            is_payment = record.type == 'payment'
-            amount_currency = 0.0
+            total_amount = sum(line.amount for line in record.line_ids)
             if record.currency_id != record.company_id.currency_id:
-                amount_currency = sum(line.amount for line in record.line_ids)
-                amount_currency = -amount_currency if is_payment else amount_currency
+                total_amount *= record.currency_rate
+
+            main_debit = total_amount if record.type == 'receive' else 0.0
+            main_credit = total_amount if record.type == 'payment' else 0.0
 
             line_vals.append((0, 0, {
                 'account_id': record.main_account_id.id,
                 'name': record.description or record.name,
                 'partner_id': record.partner_id.id,
-                'debit': total_amount if not is_payment else 0.0,
-                'credit': total_amount if is_payment else 0.0,
-                'amount_currency': amount_currency,
+                'debit': main_debit,
+                'credit': main_credit,
                 'currency_id': record.currency_id.id,
             }))
 
