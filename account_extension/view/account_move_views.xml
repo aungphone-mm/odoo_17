@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_inherit_custom" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.custom</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <!-- Add print button -->
+            <xpath expr="//header" position="inside">
+                <button name="action_print_custom_invoice"
+                        string="Print Custom Invoice"
+                        type="object"
+                        class="oe_highlight"/>
+            </xpath>
+            <!-- Add custom header and note fields -->
+            <notebook position="inside">
+                <page string="Custom Invoice Details">
+                    <group>
+                        <field name="custom_header" placeholder="Custom Header"/>
+                        <field name="custom_note" placeholder="Custom Note"/>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>

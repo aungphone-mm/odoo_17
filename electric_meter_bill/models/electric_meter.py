@@ -12,7 +12,7 @@ class ElectricMeter(models.Model):
     name = fields.Char(string='Name', required=True)
     meter_number = fields.Char(string='Meter Number', required=True)
     location_id = fields.Many2one('location', string='Location', required=True)
-    latest_reading_unit = fields.Integer(string='Latest Reading Unit')
+    latest_reading_unit = fields.Float(string='Latest Reading Unit', digits=(16,3))
     partner_id = fields.Many2one('res.partner', string="Customer", domain=[('customer_rank', '>', 0), ('is_company', '=', True), ('active', '=', True)])
     product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
     active = fields.Boolean(string='Active', required=False, default=True)
@@ -499,9 +499,12 @@ class ElectricMeterReadingLine(models.Model):
     partner_id = fields.Many2one('res.partner', string="Customer", readonly=True, automatic=True, store=True)
     meter_id = fields.Many2one('electric.meter', string='Electric Meter', required=True)
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=True)
-    latest_reading_unit = fields.Integer(string='Latest Reading Unit', compute='_compute_latest_reading_unit',
-                                         store=True, readonly=False)
-    current_reading_unit = fields.Integer(string='Current Reading Unit', required=True, tracking=True)
+    # latest_reading_unit = fields.Integer(string='Latest Reading Unit', compute='_compute_latest_reading_unit',
+    #                                      store=True, readonly=False)
+    # current_reading_unit = fields.Integer(string='Current Reading Unit', required=True, tracking=True)
+    latest_reading_unit = fields.Float(string='Latest Reading Unit', compute='_compute_latest_reading_unit',
+                                       store=True, readonly=False, digits=(16, 3))  # Changed from Integer to Float
+    current_reading_unit = fields.Float(string='Current Reading Unit', required=True, digits=(16, 3))
     total_unit = fields.Integer(string='Total Unit', required=True, store=True)
     invoice_id = fields.Many2one(comodel_name='account.move', string='Invoice', required=False,
                                  inverse_name="reading_line_id")
