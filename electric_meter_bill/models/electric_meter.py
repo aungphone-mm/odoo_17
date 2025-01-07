@@ -498,17 +498,15 @@ class ElectricMeterReadingLine(models.Model):
     selection_line = fields.Boolean(string='Select', default=False)
     partner_id = fields.Many2one('res.partner', string="Customer", readonly=True, automatic=True, store=True)
     meter_id = fields.Many2one('electric.meter', string='Electric Meter', required=True)
-    currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=True)
-    # latest_reading_unit = fields.Integer(string='Latest Reading Unit', compute='_compute_latest_reading_unit',
-    #                                      store=True, readonly=False)
-    # current_reading_unit = fields.Integer(string='Current Reading Unit', required=True, tracking=True)
+    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
     latest_reading_unit = fields.Float(string='Latest Reading Unit', compute='_compute_latest_reading_unit',
                                        store=True, readonly=False, digits=(16, 3))  # Changed from Integer to Float
     current_reading_unit = fields.Float(string='Current Reading Unit', required=True, digits=(16, 3))
     total_unit = fields.Integer(string='Total Unit', required=True, store=True)
-    invoice_id = fields.Many2one(comodel_name='account.move', string='Invoice', required=False,
-                                 inverse_name="reading_line_id")
-    amount = fields.Float(string='Amount', required=True, default=0.0, currency_field='currency_id',digits=(10, 5))
+    # invoice_id = fields.Many2one(comodel_name='account.move', string='Invoice', required=False,
+    #                              inverse_name="reading_line_id")
+    invoice_id = fields.Many2one('account.move', string='Invoice')
+    amount = fields.Monetary(string='Amount', required=True, default=0.0, currency_field='currency_id',digits=(10, 5))
     # Update amount field definition
     # amount = fields.Monetary(string='Amount', required=True, default=0.0, currency_field='currency_id')
     narration = fields.Text(string='Narration')
@@ -524,7 +522,7 @@ class ElectricMeterReadingLine(models.Model):
         'reading_line_id',
         string='Subtraction Lines'
     )
-    final_amount = fields.Float(
+    final_amount = fields.Monetary(
         string='Final Amount',
         compute='_compute_final_amount',
         store=True,
@@ -538,9 +536,6 @@ class ElectricMeterReadingLine(models.Model):
             total_subtraction = sum(line.subtraction_amount for line in record.subtraction_line_ids)
             record.final_amount = record.amount - total_subtraction
 
-    # currency_id = fields.Many2one('res.currency', string='Currency',
-    #                               compute='_compute_currency_id', store=True)
-    #
     # @api.depends('partner_id', 'partner_id.business_source_id.rate_id.currency_id')
     # def _compute_currency_id(self):
     #     for record in self:

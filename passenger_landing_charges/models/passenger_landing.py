@@ -29,6 +29,7 @@ class PassengerLanding(models.Model):
         ('invoiced', 'Invoiced')
     ], string='Status', default='draft', tracking=True)
     total_lines = fields.Integer(compute='_compute_total_lines', string='Total Lines', store=True)
+    non_schedule = fields.Boolean(string='Non Schedule', default=False, tracking=True)
 
     @api.depends('passenger_landing_line_ids')
     def _compute_total_lines(self):

@@ -43,13 +43,14 @@ class AirlinePassengerBillLine(models.Model):
     # Bar Code Raw Data: Raw data of the bar code.
     raw = fields.Char(string='Raw',)
     invoice_id = fields.Many2one('account.move', string='Invoice', tracking=True)
-    payment_state = fields.Selection([('not_paid', 'Not Paid'),
-                                    ('in_payment', 'In Payment'),
-                                    ('paid', 'Paid'),
-                                    ('partial', 'Partially Paid'),
-                                    ('reversed', 'Reversed'),
-                                    ('invoicing_legacy', 'Invoicing App Legacy'),
-                            ], String='State', related='invoice_id.payment_state')
+    # payment_state = fields.Selection([('not_paid', 'Not Paid'),
+    #                                 ('in_payment', 'In Payment'),
+    #                                 ('paid', 'Paid'),
+    #                                 ('partial', 'Partially Paid'),
+    #                                 ('reversed', 'Reversed'),
+    #                                 ('invoicing_legacy', 'Invoicing App Legacy'),
+    #                         ], String='State', related='invoice_id.payment_state')
+    payment_state = fields.Selection(related='invoice_id.payment_state', string='Payment Status', store=True)
     qr_code = fields.Binary("QR Code", compute='generate_qr_code')
     journal_id = fields.Many2one('account.journal', string='Payment', store=True,)
 

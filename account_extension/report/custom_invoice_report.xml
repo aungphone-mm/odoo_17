@@ -12,29 +12,64 @@
     </record>
 
     <template id="report_invoice_custom">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="o">
-                <t t-call="web.external_layout">
-                    <div class="page">
-                        <!-- Custom Header -->
-                        <div class="row mb-4">
-                            <div class="col-12 text-center">
-                                <h2 style="font-weight: bold; font-size: 24px;"><div t-field="o.custom_header"/></h2>
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <!-- Keep existing header part -->
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <div t-field="o.partner_id.name"/>
+                            <div t-field="o.partner_id.street"/>
+                            <div t-field="o.partner_id.street2"/>
+                            <div t-if="o.partner_id.city">
+                                <t t-esc="o.partner_id.city"/>
+                            </div>
+                            <div>
+                                <t t-esc="o.partner_id.state_id.name"/>
+                                <t t-if="o.partner_id.zip">, <t t-esc="o.partner_id.zip"/></t>
+                                <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
+                            </div>
+                            <div t-if="o.partner_id.contact_name">
+                                Attention: <t t-esc="o.partner_id.contact_name"/><br/>
+                            </div>
+                            <div t-if="o.partner_id.contact_job_position">
+                                Position: <t t-esc="o.partner_id.contact_job_position"/>
                             </div>
                         </div>
+                        <div class="col-6 d-flex justify-content-end">
+                            <div>
+                                <strong>Invoice No:</strong>
+                                <span t-field="o.name"/><br/>
+                                <strong>Date:</strong>
+                                <span t-field="o.invoice_date"/><br/>
+                                <strong>Due Date:</strong>
+                                <span t-field="o.invoice_date_due"/>
+                            </div>
+                        </div>
+                    </div>
 
-                        <!-- Invoice Lines Table -->
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Description</th>
-                                    <th class="text-right">Quantity</th>
-                                    <th class="text-right">Unit Price</th>
-                                    <th class="text-right">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="o.invoice_line_ids" t-as="line">
+                    <!-- Custom Header -->
+                    <div class="row mb-4">
+                        <div class="col-12 text-center">
+                            <h2 style="font-weight: bold; font-size: 24px;"><div t-field="o.custom_header"/></h2>
+                        </div>
+                    </div>
+
+                    <!-- Modified Invoice Lines Table -->
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th class="text-right">Quantity</th>
+                                <th class="text-right">Unit Price</th>
+                                <th class="text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="o.invoice_line_ids" t-as="line">
+                                <!-- Regular invoice lines (Counter Charges) -->
+                                <t t-if="line.price_unit > 0">
                                     <tr>
                                         <td><span t-field="line.name"/></td>
                                         <td class="text-right">
@@ -48,27 +83,39 @@
                                         </td>
                                     </tr>
                                 </t>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="3" class="text-right"><strong>Total</strong></td>
-                                    <td class="text-right">
-                                        <span t-field="o.amount_total"/>
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                            </t>
 
-                        <!-- Custom Note -->
-                        <div class="row mt-4" t-if="o.custom_note">
-                            <div class="col-12">
-                                <strong>Note:</strong>
-                                <div t-field="o.custom_note"/>
-                            </div>
+                            <!-- Notes Section -->
+                            <t t-foreach="o.invoice_line_ids" t-as="line">
+                                <t t-if="line.price_unit == 0">
+                                    <tr>
+                                        <td colspan="4" style="border-right: none;">
+                                            <div style="margin-top: 10px;"><span t-field="line.name"/></div>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-right"><strong>Total</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_total"/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Custom Note -->
+                    <div class="row mt-4" t-if="o.custom_note">
+                        <div class="col-12">
+                            <strong>Note:</strong>
+                            <div t-field="o.custom_note"/>
                         </div>
                     </div>
-                </t>
+                </div>
             </t>
         </t>
-    </template>
+    </t>
+</template>
 </odoo>

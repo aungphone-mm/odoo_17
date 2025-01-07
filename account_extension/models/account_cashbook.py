@@ -333,7 +333,7 @@ class AccountCashbookLine(models.Model):
     partner_id = fields.Many2one('res.partner', string='Partner',
                                               compute='_compute_partner',
                                               inverse='_inverse_partner',
-                                              store=True, tracking=True)
+                                              store=True)
 
     @api.depends('cashbook_id.partner_id')
     def _compute_partner(self):

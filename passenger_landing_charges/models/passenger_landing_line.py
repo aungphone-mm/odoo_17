@@ -26,6 +26,7 @@ class PassengerLandingLine(models.Model):
     route = fields.Char(string='Route')
     serial_number = fields.Integer(string='S/N', compute='_compute_serial_number', store=True)
     sequence = fields.Integer(string='Sequence', default=10)
+    airline_id = fields.Many2one('airline', string='Airline', tracking=True)
 
     @api.depends('passenger_landing_id.passenger_landing_line_ids', 'passenger_landing_id.passenger_landing_line_ids.sequence')
     def _compute_serial_number(self):
