@@ -55,6 +55,14 @@ class AccountCashbook(models.Model):
         sheet = workbook.add_worksheet('Cashbook Lines')
 
         # Add formats
+        title_format = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'valign': 'vcenter',
+            'font_size': 14,
+            'border': 0
+        })
+
         header_format = workbook.add_format({
             'bold': True,
             'align': 'left',
@@ -85,13 +93,21 @@ class AccountCashbook(models.Model):
 
         # Set column widths
         sheet.set_column('A:A', 45)  # Account Name
-        sheet.set_column('B:B', 20)  # Partner
+        sheet.set_column('B:B', 30)  # Partner
         sheet.set_column('C:C', 20)  # Label
-        sheet.set_column('D:D', 30)  # Analytic Distribution
+        sheet.set_column('D:D', 20)  # Analytic Distribution
         sheet.set_column('E:E', 15)  # Currency
         sheet.set_column('F:F', 15)  # Amount
 
-        # Write headers
+        # Write title at the top center
+        if self.type == 'receive':
+            title = 'Cashbook Receive'
+        elif self.type == 'payment':
+            title = 'Cashbook Payment'
+        else:
+            title = 'Cashbook'
+
+        sheet.merge_range('A1:F1', title, title_format)
         headers = [
             'Account Name',
             'Partner',
@@ -102,10 +118,10 @@ class AccountCashbook(models.Model):
         ]
 
         for col, header in enumerate(headers):
-            sheet.write(0, col, header, header_format)
+            sheet.write(1, col, header, header_format)
 
-        # Write data
-        for row, line in enumerate(self.line_ids, 1):
+        # Write data starting from row 2 (row index 2 in code corresponds to Excel row 3)
+        for row, line in enumerate(self.line_ids, 2):
             # Account Name
             account_name = f"{line.account_id.code} {line.account_id.name}"
             sheet.write(row, 0, account_name, cell_format)
@@ -145,8 +161,8 @@ class AccountCashbook(models.Model):
             sheet.write(row, 3, analytic_value, analytic_format)
 
         # Add total row
-        total_row = len(self.line_ids) + 1
-        total_formula = f'=SUM(F2:F{total_row})'
+        total_row = len(self.line_ids) + 2
+        total_formula = f'=SUM(F3:F{total_row})'
         sheet.write(total_row, 5, total_formula, amount_format)
 
         workbook.close()

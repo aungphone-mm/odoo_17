@@ -13,7 +13,7 @@
                         <button name="action_reset_to_draft" string="Reset to Draft" type="object" class="oe-normal" invisible="state not in ['cancel']"/>
                         <button name="action_print_invoice" string="Print Cashbook" type="object" class="oe_highlight" invisible="state not in ['confirm','done']"/>
                        <button name="action_print_Payable_invoice" string="Print Payable" type="object" class="oe_highlight" invisible="state not in ['confirm','done']"/>
-                        <button name="action_excel_download" string="Excel Download" type="object" class="oe_highlight"/>
+                        <button name="action_excel_download" string="Excel Download" type="object" class="btn-info" icon="fa-file-excel-o"/>
                         <field name="state" widget="statusbar" />
                     </header>
                     <sheet>
@@ -59,9 +59,27 @@
                                     <field name="account_id"/>
                                     <field name="partner_id"/>
                                     <field name="name"/>
-                                    <field name="debit"/>
-                                    <field name="credit"/>
+                                    <field name="currency_id" readonly="1" options="{'no_open': True}"/>
+                                    <field name="debit" sum="Total Debit"/>
+                                    <field name="credit" sum="Total Credit"/>
                                 </tree>
+                                 <form>
+                                  <group>
+                                    <field name="account_id"/>
+                                    <field name="partner_id" domain="['|', ('parent_id', '=', False), ('is_company', '=', True)]"/>
+                                    <field name="name"/>
+                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting"/>
+                                    <field name="amount_currency" groups="base.group_multi_currency"/>
+                                    <field name="company_currency_id" invisible="1"/>
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="currency_id" options="{'no_create': True}" groups="base.group_multi_currency"/>
+                                    <field name="debit" sum="Total Debit"/>
+                                    <field name="credit" sum="Total Credit"/>
+                                    <field name="balance" invisible="1"/>
+                                    <field name="tax_ids" string="Taxes Applied" widget="autosave_many2many_tags" options="{'no_create': True}"/>
+                                    <field name="date_maturity" required="0" invisible="context.get('view_no_maturity', False)"/>
+                                  </group>
+                                </form>
                             </field>
                         </page>
                         </notebook>
@@ -75,13 +93,24 @@
             <field name="name">cashbook_receive_view_tree</field>
             <field name="model">account.cashbook</field>
             <field name="arch" type="xml">
-                <tree string="cashbook_receive_tree">
+                <tree string="cashbook_receive_tree"
+                      decoration-info="state == 'draft'"
+                      decoration-primary="state == 'confirm'"
+                      decoration-success="state == 'done'"
+                      decoration-danger="state == 'cancel'">
                     <field name="name"/>
                     <field name="date"/>
                     <field name="partner_id"/>
+                    <field name="journal_id"/>
                     <field name="main_account_id"/>
                     <field name="currency_id"/>
                     <field name="description"/>
+                    <field name="state"
+                           decoration-info="state == 'draft'"
+                           decoration-primary="state == 'confirm'"
+                           decoration-success="state == 'done'"
+                           decoration-danger="state == 'cancel'"
+                           widget="badge"/>
                 </tree>
             </field>
         </record>

@@ -5,24 +5,24 @@ from odoo.exceptions import UserError
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    currency_rate = fields.Float(string="Exchange Rate", compute='_compute_currency_rate', store=True)
+    currency_rate_display = fields.Float(string="Exchange Rate", compute='_compute_currency_rate', store=True)
 
-    @api.depends('currency_id', 'move_id.date')
+    @api.depends('currency_id', 'company_id', 'move_id.date')
     def _compute_currency_rate(self):
         for line in self:
-            # Ensure the line has a currency_id
-            if line.currency_id:
-                # Find the rate from res.currency.rate based on the currency_id and the date
-                rate = self.env['res.currency.rate'].search([
-                    ('currency_id', '=', line.currency_id.id),
-                    ('name', '=', line.move_id.date)], limit=1)
-
-                if rate:
-                    line.currency_rate = rate.rate
-                else:
-                    # If no rate found, you can raise an error or default to 1.0
-                    line.currency_rate = 1.0
+            if line.move_id.company_currency_id != line.move_id.currency_id and line.move_id.currency_rate > 0:
+                line.currency_rate = 1.0/line.move_id.currency_rate
+                line.currency_rate_display = line.move_id.currency_rate
             else:
-                line.currency_rate = 1.0
+                if line.currency_id:
+                    line.currency_rate = self.env['res.currency']._get_conversion_rate(
+                        from_currency=line.company_currency_id,
+                        to_currency=line.currency_id,
+                        company=line.company_id,
+                        date=line._get_rate_date(),
+                    )
+                    line.currency_rate_display = 1.0/line.currency_rate
+                else:
+                    line.currency_rate = 1.0
 
 
