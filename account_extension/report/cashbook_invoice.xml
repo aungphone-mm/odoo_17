@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-        <record id="action_report_cashbook_invoice" model="ir.actions.report">
+    <record id="action_report_cashbook_invoice" model="ir.actions.report">
         <field name="name">Cashbook Invoice</field>
         <field name="model">account.cashbook</field>
-        <field name="report_type">qweb-pdf</field>
+        <field name="report_type">qweb-html</field>
         <field name="report_name">account_extension.report_cashbook_invoice</field>
-         <field name="report_file">account_extension.report_cashbook_invoice</field>
+        <field name="report_file">account_extension.report_cashbook_invoice</field>
         <field name="print_report_name">'Cashbook Invoice'</field>
         <field name="binding_model_id" ref="model_account_cashbook"/>
         <field name="binding_type">report</field>
@@ -79,7 +79,6 @@
                              <tr class="border-top:none;">
                                 <t t-foreach="o.line_ids[:1]" t-as="line">
                                 <td colspan="4" style="text-align: left; vertical-align: middle;">
-                                    <strong>Kyat : </strong>
                                     <t t-set="line_amount_sum" t-value="sum(line.amount for line in o.line_ids if line.amount)"/>
                                     <span t-esc="o.currency_id.amount_to_text(line_amount_sum or 0.0)"/>
                                 </td>
@@ -101,7 +100,7 @@
                                 <td style="text-align: center; vertical-align: bottom;">
                                     <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong>
                                     <br/>
-                                    <strong>(Cashier)</strong>
+                                    <strong>(Cashier By)</strong>
                                 </td>
 
                                 <!-- Column 2: Debit By -->
@@ -111,13 +110,13 @@
                                 </td>
 
                                 <!-- Column 3: Approved By -->
-                                <td colspan="2" style="text-align: center; vertical-align: bottom;">
+                                <td style="text-align: center; vertical-align: bottom;">
                                     <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong><br/>
                                     <strong>(Approved By)</strong>
                                 </td>
-                                  <td colspan="3" style="text-align: center; vertical-align: bottom;">
+                                  <td style="text-align: center; vertical-align: bottom;">
                                     <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong><br/>
-                                    <strong>(Submitted)</strong>
+                                    <strong>(Submitted By)</strong>
                                 </td>
                             </tr>
                         </tfoot>
