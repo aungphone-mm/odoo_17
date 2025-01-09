@@ -24,7 +24,7 @@ class AirlineChargesReport(models.AbstractModel):
         security_services = self.env['airline.security.service'].search([
             ('for_date', '>=', date_from),
             ('for_date', '<=', date_to),
-            ('state', '=', 'invoiced')
+            # ('state', '=', 'invoiced')
         ])
         security_usd = sum(security_services.filtered(
             lambda x: x.security_rate_id.currency_id == usd_currency
@@ -41,7 +41,7 @@ class AirlineChargesReport(models.AbstractModel):
         checkin_services = self.env['checkin.counter'].search([
             ('for_date', '>=', date_from),
             ('for_date', '<=', date_to),
-            ('state', '=', 'invoiced')
+            # ('state', '=', 'invoiced')
         ])
         checkin_usd = sum(checkin_services.filtered(
             lambda x: x.checkin_counter_rate_id.currency_id == usd_currency).mapped('invoice_id.amount_total'))
@@ -55,7 +55,7 @@ class AirlineChargesReport(models.AbstractModel):
         bridge_services = self.env['passenger.boarding.bridge.charges'].search([
             ('for_date', '>=', date_from),
             ('for_date', '<=', date_to),
-            ('state', '=', 'invoiced')
+            # ('state', '=', 'invoiced')
         ])
         bridge_usd = sum(bridge_services.filtered(
             lambda x: x.bridge_rate_id.currency_id == usd_currency).mapped('invoice_id.amount_total'))
@@ -69,7 +69,7 @@ class AirlineChargesReport(models.AbstractModel):
         passenger_services = self.env['passenger.service'].search([
             ('for_date', '>=', date_from),
             ('for_date', '<=', date_to),
-            ('state', '=', 'invoiced')
+            # ('state', '=', 'invoiced')
         ])
         passenger_usd = sum(passenger_services.filtered(
             lambda x: x.passenger_service_rate_id.currency_id == usd_currency

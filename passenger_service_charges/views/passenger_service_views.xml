@@ -41,6 +41,7 @@
                         <field name="airline_id"/>
                         <field name="type"/>
                         <field name="currency_id"/>
+                        <field name="non_schedule"/>
                         <field name="airline_user_id" options="{'no_create': True}"/>
                     </group>
                     <group>
@@ -61,21 +62,41 @@
                 <notebook>
                     <page string="PassengerService Details">
                         <field name="passenger_service_line_ids">
-                            <tree editable="bottom">
+                            <tree editable="bottom" sequence="1">
+                                <field name="serial_number" readonly="1"/>
+                                <field name="sequence" widget="handle"/>
                                 <field name="flightno_id"/>
                                 <field name="flight_registration_no"/>
                                 <field name="start_time" />
-                                <field name="total_pax"/>
-                                <field name="osc"/>
-                                <field name="inf"/>
-                                <field name="transit"/>
-                                <field name="ntl"/>
-                                <field name="inad"/>
-                                <field name="depor"/>
-                                <field name="tax_free"/>
-                                <field name="invoice_pax"/>
+                                <field name="total_pax" sum="Total Pax"/>
+                                <field name="osc" sum="Total OCS"/>
+                                <field name="inf" sum="Total INF"/>
+                                <field name="transit" sum="Total Transit"/>
+                                <field name="ntl" sum="Total NTL"/>
+                                <field name="inad" sum="Total INAD"/>
+                                <field name="depor" sum="Total Depor"/>
+                                <field name="tax_free" sum="Total Tax Free"/>
+                                <field name="invoice_pax" sum="Total Invoice Pax"/>
                             </tree>
+                            <form>
+                                <footer>
+                                    <group class="oe_subtotal_footer" colspan="2">
+                                        <field name="total_pax" sum="Total Pax"/>
+                                        <field name="osc" sum="Total OCS"/>
+                                        <field name="inf" sum="Total INF"/>
+                                        <field name="transit" sum="Total Transit"/>
+                                        <field name="ntl" sum="Total NTL"/>
+                                        <field name="inad" sum="Total INAD"/>
+                                        <field name="depor" sum="Total Depor"/>
+                                        <field name="tax_free" sum="Total Tax Free"/>
+                                        <field name="invoice_pax" sum="Total Invoice Pax"/>
+                                    </group>
+                                </footer>
+                            </form>
                         </field>
+                    <!--    <group class="oe_subtotal_footer">-->
+                    <!--        <field name="total_invoice_pax" widget="statinfo"/>-->
+                    <!--    </group>-->
                     </page>
                 </notebook>
             </sheet>

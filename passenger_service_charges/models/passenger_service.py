@@ -24,10 +24,10 @@ class PassengerService(models.Model):
     passenger_service_rate_id = fields.Many2one('passenger.service.rate', string='Passenger Service Rate')
     for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
     inv_desc = fields.Html(string='Invoice Description')
+    non_schedule = fields.Boolean(string='Non Schedule', default=False, tracking=True)
     # product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
     # journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', domain=[('type', '=', 'sale')],
     #                              required=True)
-
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),

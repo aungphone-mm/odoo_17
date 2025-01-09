@@ -158,7 +158,7 @@
                                         <field name="meter_id" width="300px" />
                                         <field name="latest_reading_unit" width="200px" readonly="True" digits="[16,3]"/>
                                         <field name="current_reading_unit" width="200px" digits="[16,3]"/>
-                                        <field name="total_unit" width="100px"/>
+                                        <field name="total_unit" width="100px" digits="[16,2]"/>
                                         <field name="amount" width="200px" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="True"/>
                                         <field name="currency_id" width="100px" readonly="True" invisiable="1"/>
                                     </tree>
@@ -311,7 +311,7 @@
                                 <field name="meter_id"/>
                                 <field name="latest_reading_unit"/>
                                 <field name="current_reading_unit"/>
-                                <field name="total_unit"/>
+                                <field name="total_unit" digits="[16,2]"/>
                             </group>
                             <group>
                                 <field name="amount"/>
@@ -344,7 +344,7 @@
                     <field name="meter_id"/>
                     <field name="latest_reading_unit"/>
                     <field name="current_reading_unit"/>
-                    <field name="total_unit"/>
+                    <field name="total_unit" digits="[16,2]"/>
                     <field name="amount" sum="Total Amount"/>
                     <field name="subtraction_line_ids" widget="many2many_tags"/>
                     <field name="final_amount" sum="Final Total"/>

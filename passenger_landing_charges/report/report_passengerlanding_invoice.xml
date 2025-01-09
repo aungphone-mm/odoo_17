@@ -75,19 +75,19 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><br/><br/><br/>1</td>
-                                    <td><br/><br/><br/>
+                                    <td><br/>1</td>
+                                    <td><br/>
                                         <span>Aircraft Landing Charges for:<br/>
                                         Flight No: As per attached</span><br/>
                                         <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "yy"}'/>
-                                        <br/><br/><br/>
+                                        <br/>
                                     </td>
                                     <td style="text-align: center;">
-                                        <br/><br/><br/>
+                                        <br/>
                                         <span t-esc="len(o.invoice_line_ids)"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <br/><br/><br/>
+                                        <br/>
                                         <span t-field="o.amount_untaxed"/>
                                     </td>
                                 </tr>
@@ -195,7 +195,7 @@
                                         <td style="border: 1px solid black;">
                                             <t t-esc="group['reg_no']"/>
                                         </td>
-                                        <td style="border: 1px solid black;">
+                                        <td style="border: 1px solid black; text-align: right;">
                                              <t t-esc="group['count']"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">

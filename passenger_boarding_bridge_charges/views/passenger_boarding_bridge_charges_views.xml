@@ -58,7 +58,9 @@
                 <notebook>
                     <page string="Bridge Details">
                         <field name="passenger_boarding_bridge_charges_line_ids">
-                            <tree editable="bottom">
+                            <tree editable="bottom" sequence="1">
+                                <field name="serial_number" readonly="1"/>
+                                <field name="sequence" widget="handle"/>
                                 <field name="flightno_id"/>
                                 <field name="seat_capacity" />
                                 <field name="flight_registration_no"/>

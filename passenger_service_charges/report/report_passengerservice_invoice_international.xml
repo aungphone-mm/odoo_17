@@ -92,7 +92,7 @@
                                                 <span t-field="o.passenger_service_id.passenger_service_rate_id.pax_price" t-options='{"widget": "float", "precision": 2}'/>
                                             </div>
                                             <div>
-                                                <span t-field="o.passenger_service_id.for_date" t-options='{"format": "MMM"}'/>'<span t-field="o.passenger_service_id.for_date" t-options='{"format": "yy"}'/>
+<!--                                                <span t-field="o.passenger_service_id.for_date" t-options='{"format": "MMM"}'/>'<span t-field="o.passenger_service_id.for_date" t-options='{"format": "yy"}'/>-->
 
                                             </div>
                                         </div>

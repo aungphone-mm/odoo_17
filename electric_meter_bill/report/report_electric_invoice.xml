@@ -210,84 +210,84 @@
                                 </thead>
 
                                 <tbody>
-    <t t-foreach="o._compute_meter_details()" t-as="meter">
-        <tr>
-            <td style="border: 1px solid black; text-align: center;">
-                <t t-esc="meter_index + 1"/>
-            </td>
-            <td style="border: 1px solid black;">
-                <span t-esc="meter['partner_name']"/>
-            </td>
-            <td style="border: 1px solid black;">
-                <span t-esc="meter['meter_number']"/>
-            </td>
-            <td style="border: 1px solid black;">
-                <span t-esc="meter['location']"/>
-            </td>
-            <td style="border: 1px solid black; text-align: right;">
-                <span t-esc="meter['latest_reading']"/>
-            </td>
-            <td style="border: 1px solid black; text-align: right;">
-                <span t-esc="meter['current_reading']"/>
-            </td>
-            <td style="border: 1px solid black; text-align: right;">
-                <span t-esc="'{:,.0f}'.format(meter['total_units'])"/>
-            </td>
-            <td style="border: 1px solid black; text-align: right;">
-                <t t-foreach="meter['rate_details']" t-as="rate">
-                    <span t-esc="'{:,.2f}'.format(rate['rate'])"/>
-                    <br t-if="not rate_last"/>
-                </t>
-            </td>
-            <td style="border: 1px solid black; text-align: right;">
-                <!-- Rate breakdown amounts -->
-                <t t-foreach="meter['rate_details']" t-as="rate">
-                    <span t-esc="'{:,.2f}'.format(rate['amount'])"/><br/>
-                </t>
+                                <t t-foreach="o._compute_meter_details()" t-as="meter">
+                                    <tr>
+                                        <td style="border: 1px solid black; text-align: center;">
+                                            <t t-esc="meter_index + 1"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <span t-esc="meter['partner_name']"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <span t-esc="meter['meter_number']"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <span t-esc="meter['location']"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <span t-esc="meter['latest_reading']"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <span t-esc="meter['current_reading']"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <span t-esc="'{:,.2f}'.format(meter['total_units'])"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <t t-foreach="meter['rate_details']" t-as="rate">
+                                                <span t-esc="'{:,.2f}'.format(rate['rate'])"/>
+                                                <br t-if="not rate_last"/>
+                                            </t>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <!-- Rate breakdown amounts -->
+                                            <t t-foreach="meter['rate_details']" t-as="rate">
+                                                <span t-esc="'{:,.2f}'.format(rate['amount'])"/><br/>
+                                            </t>
 
-                <!-- MGM charge if applicable -->
-                <t t-if="meter['mgm_percentage']">
-                    <strong>MGM (<t t-esc="meter['mgm_percentage']"/>%):
-                    <t t-esc="'{:,.2f}'.format(meter['mgm_charge'])"/></strong><br/>
-                </t>
+                                            <!-- MGM charge if applicable -->
+                                            <t t-if="meter['mgm_percentage']">
+                                                <strong>MGM (<t t-esc="meter['mgm_percentage']"/>%):
+                                                <t t-esc="'{:,.2f}'.format(meter['mgm_charge'])"/></strong><br/>
+                                            </t>
 
-                <!-- Subtotal -->
-                <strong>Subtotal: <t t-esc="'{:,.2f}'.format(meter['subtotal'] + meter['mgm_charge'])"/></strong><br/>
+                                            <!-- Subtotal -->
+<!--                                            <strong>Subtotal: <t t-esc="'{:,.2f}'.format(meter['subtotal'] + meter['mgm_charge'])"/></strong><br/>-->
 
-                <!-- Subtractions -->
-                <t t-foreach="meter['subtractions']" t-as="sub">
-                    <span style="color: red;">Less: <t t-esc="sub['name']"/>:
-                    -<t t-esc="'{:,.2f}'.format(sub['amount'])"/></span><br/>
-                </t>
+                                            <!-- Subtractions -->
+                                            <t t-foreach="meter['subtractions']" t-as="sub">
+                                                <span style="color: red;">Less: <t t-esc="sub['name']"/>:
+                                                -<t t-esc="'{:,.2f}'.format(sub['amount'])"/></span><br/>
+                                            </t>
 
-                <!-- Final amount -->
-                <strong>Net Total: <t t-esc="'{:,.2f}'.format(meter['final_amount'])"/></strong>
-            </td>
-        </tr>
-    </t>
-</tbody>
-                                </table>  <!-- Close the rate breakdown table -->
-</div>
+                                            <!-- Final amount -->
+                                            <strong>Net Total: <t t-esc="'{:,.2f}'.format(meter['final_amount'])"/></strong>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                            </table>  <!-- Close the rate breakdown table -->
+                            </div>
 
-<!-- Summary Table -->
-<div class="row mt-4">
-    <div class="col-12">
-        <table class="table table-bordered" style="width: 50%; margin-left: auto;">
-            <tr>
-                <td style="width: 60%; text-align: right;"><strong>Total Units:</strong></td>
-                <td style="width: 40%; text-align: right;">
-                    <strong><t t-esc="'{:,.0f}'.format(o.get_total_units())"/></strong>
-                </td>
-            </tr>
-            <tr>
-                <td style="width: 60%; text-align: right;"><strong>Total Amount:</strong></td>
-                <td style="width: 40%; text-align: right;">
-                    <strong><t t-esc="'{:,.2f}'.format(o.get_final_total())"/></strong>
-                </td>
-            </tr>
-        </table>
-    </div>
-</div>
+                        <!-- Summary Table -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <table class="table table-bordered" style="width: 50%; margin-left: auto;">
+                                    <tr>
+                                        <td style="width: 60%; text-align: right;"><strong>Total Units:</strong></td>
+                                        <td style="width: 40%; text-align: right;">
+                                            <strong><t t-esc="'{:,.0f}'.format(o.get_total_units())"/></strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 60%; text-align: right;"><strong>Total Amount:</strong></td>
+                                        <td style="width: 40%; text-align: right;">
+                                            <strong><t t-esc="'{:,.2f}'.format(o.get_final_total())"/></strong>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
                             <!-- Add this after the main table -->
                         <div class="mt-4">
                             <h5>Rate Details:</h5>

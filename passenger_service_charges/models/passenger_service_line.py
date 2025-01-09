@@ -27,6 +27,17 @@ class PassengerServiceLine(models.Model):
     depor = fields.Integer(string='Depor', tracking=True)
     tax_free = fields.Integer(string='Tax Free', tracking=True)
     invoice_pax = fields.Integer(string='Invoice Pax', compute='_compute_invoice_pax', store=True)
+    serial_number = fields.Integer(string='S/N', compute='_compute_serial_number', store=True)
+    sequence = fields.Integer(string='Sequence', default=10)
+
+    @api.depends('passenger_service_id.passenger_service_line_ids',
+                 'passenger_service_id.passenger_service_line_ids.sequence')
+    def _compute_serial_number(self):
+        for parent in self.mapped('passenger_service_id'):
+            sequence = 1
+            for line in parent.passenger_service_line_ids.sorted('sequence'):
+                line.serial_number = sequence
+                sequence += 1
 
     @api.depends('total_pax', 'inf', 'transit', 'ntl', 'inad', 'depor', 'tax_free','osc')
     def _compute_invoice_pax(self):

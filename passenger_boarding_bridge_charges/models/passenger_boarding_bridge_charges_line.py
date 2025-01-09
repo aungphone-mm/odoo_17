@@ -19,6 +19,17 @@ class PassengerBoardingBridgeChargesLine(models.Model):
                                        store=True, tracking=True)
     amount = fields.Float(string="Amount", compute='_compute_amount', store=True)
     seat_capacity = fields.Integer(string='Seat Capacity',related='bridge_rate_id.seat_capacity')
+    serial_number = fields.Integer(string='S/N', compute='_compute_serial_number', store=True)
+    sequence = fields.Integer(string='Sequence', default=10)
+
+    @api.depends('passenger_boarding_bridge_charges_id.passenger_boarding_bridge_charges_line_ids',
+                 'passenger_boarding_bridge_charges_id.passenger_boarding_bridge_charges_line_ids.sequence')
+    def _compute_serial_number(self):
+        for parent in self.mapped('passenger_boarding_bridge_charges_id'):
+            sequence = 1
+            for line in parent.passenger_boarding_bridge_charges_line_ids.sorted('sequence'):
+                line.serial_number = sequence
+                sequence += 1
 
     @api.constrains('flightno_id')
     def _check_airline(self):
@@ -49,21 +60,21 @@ class PassengerBoardingBridgeChargesLine(models.Model):
                         'message': f"{self.flightno_id} is {self.seat_capacity} seats. No bridge rate found for aircraft with {self.seat_capacity} seats"
                     }
                 }
-    @api.depends('flightno_id')
-    def _compute_bridge_rate(self):
-        for line in self:
-            if line.flightno_id and line.seat_capacity:
-                rate = self.env['passenger.boarding.bridge.charges.rate'].search([
-                    ('seat_capacity', '=', line.seat_capacity),
-                    ('active', '=', True)
-                ], limit=1)
-                if not rate:
-                    line.bridge_rate_id = False
-                    # Instead of raising ValidationError, we'll handle this in onchange
-                else:
-                    line.bridge_rate_id = rate.id
-            else:
-                line.bridge_rate_id = False
+    # @api.depends('flightno_id')
+    # def _compute_bridge_rate(self):
+    #     for line in self:
+    #         if line.flightno_id and line.seat_capacity:
+    #             rate = self.env['passenger.boarding.bridge.charges.rate'].search([
+    #                 ('seat_capacity', '=', line.seat_capacity),
+    #                 ('active', '=', True)
+    #             ], limit=1)
+    #             if not rate:
+    #                 line.bridge_rate_id = False
+    #                 # Instead of raising ValidationError, we'll handle this in onchange
+    #             else:
+    #                 line.bridge_rate_id = rate.id
+    #         else:
+    #             line.bridge_rate_id = False
 
     @api.depends('passenger_boarding_bridge_charges_id.bridge_rate_id')
     def _compute_bridge_rate(self):
@@ -123,7 +134,7 @@ class PassengerBoardingBridgeChargesLine(models.Model):
         passenger_lines = super(PassengerBoardingBridgeChargesLine, self).create(vals)
         for passenger_line in passenger_lines:
             passenger_line._log_bridge_tracking(vals)
-            return passenger_lines
+        return passenger_lines
 
     def _log_bridge_tracking(self, vals):
         template_id = self.env.ref('passenger_boarding_bridge_charges.airline_passenger_bridge_line_template')

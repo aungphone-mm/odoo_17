@@ -16,7 +16,7 @@ class CheckinSummaryReport(models.AbstractModel):
         end_date = data['end_date']
 
         checkins = self.env['checkin.counter'].search([
-            ('state', '=', 'invoiced'),
+            # ('state', '=', 'invoiced'),
             ('start_time', '>=', start_date),
             ('start_time', '<=', end_date),
         ])

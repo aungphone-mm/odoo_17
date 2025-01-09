@@ -502,7 +502,7 @@ class ElectricMeterReadingLine(models.Model):
     latest_reading_unit = fields.Float(string='Latest Reading Unit', compute='_compute_latest_reading_unit',
                                        store=True, readonly=False, digits=(16, 3))  # Changed from Integer to Float
     current_reading_unit = fields.Float(string='Current Reading Unit', required=True, digits=(16, 3))
-    total_unit = fields.Integer(string='Total Unit', required=True, store=True)
+    total_unit = fields.Float(string='Total Unit', required=True, digits=(16, 2))
     # invoice_id = fields.Many2one(comodel_name='account.move', string='Invoice', required=False,
     #                              inverse_name="reading_line_id")
     invoice_id = fields.Many2one('account.move', string='Invoice')
@@ -535,6 +535,15 @@ class ElectricMeterReadingLine(models.Model):
         for record in self:
             total_subtraction = sum(line.subtraction_amount for line in record.subtraction_line_ids)
             record.final_amount = record.amount - total_subtraction
+
+    @api.onchange('reading_line_ids')
+    def _onchange_reading_line_ids(self):
+        for line in self.reading_line_ids:
+            if line.current_reading_unit is not False and line.latest_reading_unit is not False:
+                if line.current_reading_unit >= line.latest_reading_unit:
+                    line.total_unit = float(line.current_reading_unit - line.latest_reading_unit)
+                else:
+                    line.total_unit = 0.0
 
     # @api.depends('partner_id', 'partner_id.business_source_id.rate_id.currency_id')
     # def _compute_currency_id(self):

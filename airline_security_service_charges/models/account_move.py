@@ -26,12 +26,19 @@ class AccountMoveLine(models.Model):
     airline_security_service_line_id = fields.Many2one('airline.security.service.line', string='Security Service Line')
 
     def _get_time_from_rate_security(self):
+        """Get time value based on total service duration in minutes"""
         self.ensure_one()
-        if not self.price_unit:
+        if not self.airline_security_service_line_id:
             return False
-
+        # Get total minutes from the service line
+        total_minutes = self.airline_security_service_line_id.total_minutes
+        # Find matching rate line based on duration range
         rate_line = self.env['airline.security.rate.line'].search([
-            ('unit_price', '=', self.price_unit)
+            ('rate_id', '=', self.airline_security_service_line_id.security_rate_id.id),
+            ('from_unit', '<=', total_minutes),
+            ('to_unit', '>=', total_minutes)
         ], limit=1)
+        if rate_line:
+            return str(rate_line.time)
 
-        return rate_line.time if rate_line else False
+        return False

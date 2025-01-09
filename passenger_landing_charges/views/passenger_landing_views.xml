@@ -58,13 +58,13 @@
                 </group>
                 <notebook>
                     <page string="Aircraft Landing Details">
-                        <field name="passenger_landing_line_ids" context="{'default_non_schedule': non_schedule}">
+                        <field name="passenger_landing_line_ids">
                             <tree editable="bottom" sequence="1">
                                 <field name="serial_number" readonly="1"/>
                                 <field name="sequence" widget="handle"/>
                                 <field name="passenger_landing_id" column_invisible="1"/>
                                 <field name="flight_no"/>
-                                <field name="airline_id" column_invisible="not context.get('default_non_schedule', False)"/>
+<!--                                <field name="airline_id" column_invisible="not context.get('default_non_schedule', False)"/>-->
                                 <field name="flight_aircraft" column_invisible="1"/>
                                 <field name="aircraft_type_display"/>
                                 <field name="flight_registration_no"/>
