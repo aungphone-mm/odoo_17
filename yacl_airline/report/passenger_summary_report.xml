@@ -14,7 +14,11 @@
     <t t-call="web.html_container">
         <t t-call="web.external_layout">
             <div class="page">
-                <h2 class="text-center mb-4">Passenger Departure Flight Monthly</h2>
+                <h2 class="text-center mb-4">
+                        <t t-if="flight_type == 'international'">International</t>
+                        <t t-elif="flight_type == 'domestic'">Domestic</t>
+                        Passenger Departure Flight Monthly
+                    </h2>
 
                 <!-- Date Range Header -->
                 <div class="row mb-4">
