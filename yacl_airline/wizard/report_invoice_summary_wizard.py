@@ -15,6 +15,7 @@ class ReportSelectionWizard(models.TransientModel):
     start_date = fields.Date(string='Start Date', required=True)
     end_date = fields.Date(string='End Date', required=True)
 
+
     def action_generate_report(self):
         data = {
             'airline_id': self.airline_id.id,

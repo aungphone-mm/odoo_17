@@ -71,8 +71,16 @@
                                 <field name="start_time"/>
                                 <field name="route"/>
                                 <field name="passenger_landing_rate_id"/>
-                                <field name="amount"/>
+                                <field name="amount" sum="Total amount"/>
                             </tree>
+                            <form>
+                                <footer>
+                                    <group class="oe_subtotal_footer" colspan="2">
+
+                                        <field name="amount" sum="Total amount"/>
+                                    </group>
+                                </footer>
+                            </form>
                         </field>
                         <!-- Add total count display -->
                         <group class="oe_subtotal_footer">

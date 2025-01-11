@@ -69,8 +69,16 @@
                                 <field name="end_time" />
                                 <field name="total_minutes"/>
                                 <field name="bridge_rate_id" />
-                                <field name="amount" />
+                                <field name="amount" sum="Total amount"/>
                             </tree>
+                            <form>
+                                <footer>
+                                    <group class="oe_subtotal_footer" colspan="2">
+                                        <field name="amount" sum="Total amount"/>
+
+                                    </group>
+                                </footer>
+                            </form>
                         </field>
                     </page>
                 </notebook>

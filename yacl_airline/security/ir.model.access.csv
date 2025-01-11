@@ -2,11 +2,8 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_airline,access.airline,model_airline,base.group_user,1,1,1,1
 access_flight_no,access_flight_no,model_flights,base.group_user,1,1,1,1
 access_report_selection_wizard,access.report.selection.wizard,model_report_selection_wizard,base.group_user,1,1,1,1
-access_invoice_summary_report,access.invoice.summary.report,model_report_yacl_airline_report_invoice_summary,base.group_user,1,1,1,1
-access_invoice_passenger_report,access.invoice.passenger.report,model_report_yacl_airline_report_passenger_summary,base.group_user,1,1,1,1
 access_report_passenger_selection_wizard,access.report.passenger.selection.wizard,model_report_passenger_selection_wizard,base.group_user,1,1,1,1
 access_report_landing_selection_wizard,access.report.landing.selection.wizard,model_report_landing_selection_wizard,base.group_user,1,1,1,1
-access_landing_summary_report,access.landing.summary.report,model_report_yacl_airline_report_landing_summary,base.group_user,1,1,1,1
 access_airline_charges_report_wizard,access.airline.charges.report.wizard,model_airline_charges_report_wizard,base.group_user,1,1,1,1
-access_report_airline_charges,access.report.report_airline_charges,model_report_yacl_airline_report_airline_charges,base.group_user,1,1,1,1
-access_checkin_report_wizard,access.report.checkin_report_wizard,model_report_checkin_selection_wizard,base.group_user,1,1,1,1
+access_report_checkin_selection_wizard,access.report.checkin.selection.wizard,model_report_checkin_selection_wizard,base.group_user,1,1,1,1
+access_boarding_bridge_report_wizard,access.boarding.bridge.report.wizard,model_boarding_bridge_report_wizard,base.group_user,1,1,1,1

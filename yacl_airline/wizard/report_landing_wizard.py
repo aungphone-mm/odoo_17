@@ -1,12 +1,16 @@
 # wizard/report_selection_wizard_landing.py
-
+from datetime import timedelta
 from odoo import fields, models
 
 class ReportLandingSelectionWizard(models.TransientModel):
     _name = 'report.landing.selection.wizard'
     _description = 'Landing Report Selection Wizard'
 
-    start_date = fields.Date(string='Start Date', required=True, default=fields.Date.context_today)
+    start_date = fields.Date(
+        string='Start Date',
+        required=True,
+        default=lambda self: fields.Date.context_today(self) - timedelta(days=30)
+    )
     end_date = fields.Date(string='End Date', required=True, default=fields.Date.context_today)
 
     def action_generate_report(self):

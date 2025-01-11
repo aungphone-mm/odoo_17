@@ -78,10 +78,18 @@
                                 <field name="flight_registration_no"/>
                                 <field name="start_time" />
                                 <field name="end_time" />
-                                <field name="total_minutes"/>
+                                <field name="total_minutes" sum="Total total_minutes"/>
                                 <field name="checkin_counter_rate_id" />
-                                <field name="amount" />
+                                <field name="amount" sum="Total amount"/>
                             </tree>
+                            <form>
+                                <footer>
+                                    <group class="oe_subtotal_footer" colspan="2">
+                                        <field name="total_minutes" sum="Total total_minutes"/>
+                                        <field name="amount" sum="Total amount"/>
+                                    </group>
+                                </footer>
+                            </form>
                         </field>
                     </page>
                 </notebook>

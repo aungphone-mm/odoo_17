@@ -1,11 +1,16 @@
 # wizard/report_selection_wizard.py
+from datetime import timedelta
 from odoo import fields, models
 
 class ReportPassengerSelectionWizard(models.TransientModel):
     _name = 'report.passenger.selection.wizard'
     _description = 'Passenger Report Selection Wizard'
 
-    start_date = fields.Date(string='Start Date', required=True, default=fields.Date.context_today)
+    start_date = fields.Date(
+        string='Start Date',
+        required=True,
+        default=lambda self: fields.Date.context_today(self) - timedelta(days=30)
+    )
     end_date = fields.Date(string='End Date', required=True, default=fields.Date.context_today)
     flight_type = fields.Selection([
         ('all', 'All'),

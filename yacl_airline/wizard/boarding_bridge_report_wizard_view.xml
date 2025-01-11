@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_boarding_bridge_report_wizard" model="ir.ui.view">
+        <field name="name">boarding.bridge.report.wizard.form</field>
+        <field name="model">boarding.bridge.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </group>
+                <footer>
+                    <button name="action_print_report" string="Generate Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_boarding_bridge_report_wizard" model="ir.actions.act_window">
+        <field name="name">Boarding Bridge Report</field>
+        <field name="res_model">boarding.bridge.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <menuitem id="menu_boarding_bridge_report"
+          name="Boarding Bridge Report"
+          action="action_boarding_bridge_report_wizard"
+          parent="menu_summary_report"
+          sequence="2"/>
+</odoo>

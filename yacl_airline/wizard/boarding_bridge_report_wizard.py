@@ -1,9 +1,9 @@
 from datetime import timedelta
 from odoo import fields, models
 
-class AirlineChargesReportWizard(models.TransientModel):
-    _name = 'airline.charges.report.wizard'
-    _description = 'Airline Charges Report Wizard'
+class BoardingBridgeReportWizard(models.TransientModel):
+    _name = 'boarding.bridge.report.wizard'
+    _description = 'Boarding Bridge Report Wizard'
 
     date_from = fields.Date(
         string='Start Date',
@@ -17,4 +17,4 @@ class AirlineChargesReportWizard(models.TransientModel):
             'date_from': self.date_from,
             'date_to': self.date_to,
         }
-        return self.env.ref('yacl_airline.action_airline_charges_report').report_action(self, data=data)
+        return self.env.ref('yacl_airline.action_boarding_bridge_report').report_action(self, data=data)

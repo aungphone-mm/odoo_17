@@ -11,6 +11,7 @@
             'sale',
             'web',
             'sale_subscription',
+
         ],
     'data': [
         'security/ir.model.access.csv',
@@ -34,6 +35,11 @@
         'report/passenger_summary_report.xml',
 
         'report/subscription_report.xml',
+        'wizard/checkin_report_wizard_view.xml',
+        'report/checkin_report_template.xml',
+        'wizard/boarding_bridge_report_wizard_view.xml',
+        'report/boarding_bridge_report.xml',
+        # 'report/checkin_report_xlsx_template.xml',
     ],
     'installable': True,
     'application': False,

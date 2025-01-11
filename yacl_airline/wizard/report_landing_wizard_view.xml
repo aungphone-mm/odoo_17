@@ -31,5 +31,5 @@
               name="Landing Summary Report"
               parent="menu_summary_report"
               action="action_report_landing_selection_wizard"
-              sequence="30"/>
+              sequence="3"/>
 </odoo>

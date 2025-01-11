@@ -1,6 +1,5 @@
 from odoo import api, models
 
-
 class CheckinSummaryReport(models.AbstractModel):
     _name = 'report.yacl_airline.report_checkin_summary'
     _description = 'Check-in Counter Summary Report'

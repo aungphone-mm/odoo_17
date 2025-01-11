@@ -33,5 +33,5 @@
               name="Passenger Summary Report"
               parent="menu_summary_report"
               action="action_passenger_report_selection_wizard"
-              sequence="100"/>
+              sequence="1"/>
 </odoo>

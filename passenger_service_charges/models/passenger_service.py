@@ -34,6 +34,19 @@ class PassengerService(models.Model):
         ('invoiced', 'Invoiced')
     ], string='Status', default='draft', tracking=True)
 
+    message_sent = fields.Boolean('Message Sent', default=False, tracking=True)
+    message_sent_date = fields.Datetime('Message Sent Date', tracking=True)
+    message_sent_by = fields.Many2one('res.users', string='Message Sent By', tracking=True)
+
+    # Add to existing fields list
+    def action_send_message(self):
+        self.write({
+            'message_sent': True,
+            'message_sent_date': fields.Datetime.now(),
+            'message_sent_by': self.env.user.id,
+        })
+        return True
+
     @api.constrains('total_pax', 'inf', 'transit', 'ntl', 'inad', 'depor', 'tax_free','osc')
     def _check_integer_fields(self):
         for record in self:
