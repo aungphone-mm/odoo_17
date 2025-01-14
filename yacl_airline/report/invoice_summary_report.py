@@ -1,6 +1,5 @@
 from odoo import api, models
 
-
 class InvoiceSummaryReport(models.AbstractModel):
     _name = 'report.yacl_airline.report_invoice_summary'
     _description = 'Invoice Summary Report'
@@ -50,7 +49,7 @@ class InvoiceSummaryReport(models.AbstractModel):
 
     def _get_invoice_data(self, data):
         domain = [
-            ('move_type', '=', 'out_invoice'),
+            # ('move_type', '=', 'out_invoice'),
             # ('state', '=', 'posted'),
             ('invoice_date', '>=', data['start_date']),
             ('invoice_date', '<=', data['end_date'])

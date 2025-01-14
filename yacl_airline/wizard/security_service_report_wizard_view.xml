@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_security_service_report_wizard" model="ir.ui.view">
+        <field name="name">security.service.report.wizard.form</field>
+        <field name="model">security.service.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </group>
+                <footer>
+                    <button name="action_print_report" string="Generate Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_security_service_report_wizard" model="ir.actions.act_window">
+        <field name="name">Security Service Report</field>
+        <field name="res_model">security.service.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <menuitem id="menu_security_service_report"
+          name="Security Service Report"
+          action="action_security_service_report_wizard"
+          parent="menu_summary_report"
+          sequence="2"/>
+</odoo>

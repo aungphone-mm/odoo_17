@@ -147,7 +147,7 @@
                             <field name="note_desc"/>
                         </group>
                         <notebook>
-                            <page string="Electric Meter Reading Detail">
+                            <page string="Electric Meter Reading Details">
                                 <field name="reading_line_ids" context="{'default_reading_id': active_id}" widget="section_and_note_one2many" >
                                     <tree string="reading_detail_tree" widget="section_and_note_one2many" create="0"
                                           mode="tree" editable="bottom" select="multi" options="{'selectable': 'multi'}" default_order="partner_id">
