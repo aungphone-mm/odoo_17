@@ -12,14 +12,14 @@
                         <button name="action_cancel" string="Cancel" type="object" class="btn-danger" invisible="state in ['draft', 'cancel']"/>
                         <button name="action_reset_to_draft" string="Reset to Draft" type="object" class="oe-normal" invisible="state not in ['cancel']"/>
                         <button name="action_print_invoice" string="Print Cashbook" type="object" class="oe_highlight" invisible="state not in ['confirm','done']"/>
-                       <button name="action_print_Payable_invoice" string="Print Payable" type="object" class="oe_highlight" invisible="state not in ['confirm','done']"/>
+                       <button name="action_print_payable_invoice" string="Print Payable" type="object" class="oe_highlight" invisible="state not in ['confirm','done']"/>
                         <button name="action_excel_download" string="Excel Download" type="object" class="btn-info" icon="fa-file-excel-o"/>
                         <field name="state" widget="statusbar" />
                     </header>
                     <sheet>
                         <group>
                             <group>
-                                <field name="name"/>
+<!--                                <field name="name"/>-->
                                 <field name="date"/>
                                 <field name="type" readonly="1"/>
                                 <field name="partner_id"/>  <!-- Add partner field -->
@@ -83,9 +83,12 @@
                             </field>
                         </page>
                         </notebook>
-                        <field name="description" />
+                        <field name="description" placeholder="Terms and Conditions"/>
                     </sheet>
-
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" options="{'open_attachments': True}"/>
+                        <field name="message_ids"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -119,6 +122,7 @@
             <field name="name">Cashbook Receive</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.cashbook</field>
+            <field name="domain">[('type', '=', 'receive')]</field>
             <field name="context">{'default_type': 'receive'}</field>
             <field name="view_mode">tree,form</field>
         </record>
@@ -127,6 +131,7 @@
             <field name="name">Cashbook Payment</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.cashbook</field>
+            <field name="domain">[('type', '=', 'payment')]</field>
             <field name="context">{'default_type': 'payment'}</field>
             <field name="view_mode">tree,form</field>
         </record>

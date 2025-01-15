@@ -5,19 +5,21 @@ from io import BytesIO
 import xlsxwriter
 import base64
 
+
 class AccountCashbook(models.Model):
     _name = 'account.cashbook'
     _description = 'Cashbook Payment/Receive for Accounting'
+    _inherit = ['mail.thread']
     _order = 'id desc'
 
     name = fields.Char(string='Name', required=True, readonly=True, copy=False, index=True, default='New')
-    date = fields.Date(string='Date', required=True)
+    date = fields.Date(string='Date', required=True, default=fields.Date.context_today, tracking=True)
     type = fields.Selection(string='Type', selection=[('payment', 'Payment'), ('receive', 'Receive'), ],
                             required=True)
-    journal_id = fields.Many2one(comodel_name='account.journal', string='Journal')
+    journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', tracking=True)
     main_account_id = fields.Many2one(comodel_name='account.account', string='Main Account Name',
                                       domain='[("account_type", "=", "asset_cash")]', related='journal_id.default_account_id', readonly=False)
-    currency_id = fields.Many2one(comodel_name='res.currency', string='Currency', required=True)
+    currency_id = fields.Many2one(comodel_name='res.currency', string='Currency', required=True, default=lambda self: self.env.company.currency_id.id, tracking=True)
     description = fields.Html(string='Description', required=False)
     line_ids = fields.One2many(comodel_name='account.cashbook.line', inverse_name='cashbook_id', string='Cashbook Line',
                                required=False)
@@ -48,6 +50,12 @@ class AccountCashbook(models.Model):
         store=False,
     )
 
+    @api.depends('currency_id')
+    def _compute_currency_id(self):
+        for record in self:
+            if record.company_id:
+                record.currency_id = record.company__id.currency_id
+
     def action_excel_download(self):
         # Create Excel file
         output = BytesIO()
@@ -60,7 +68,8 @@ class AccountCashbook(models.Model):
             'align': 'center',
             'valign': 'vcenter',
             'font_size': 14,
-            'border': 0
+            'border': 0,
+            'bg_color': '#e6fcf2'
         })
 
         header_format = workbook.add_format({
@@ -68,7 +77,8 @@ class AccountCashbook(models.Model):
             'align': 'left',
             'valign': 'vcenter',
             'border': 1,
-            'border_color': '#C0C0C0'
+            'border_color': '#C0C0C0',
+            'bg_color': '#e6fcf2'
         })
 
         cell_format = workbook.add_format({
@@ -90,14 +100,25 @@ class AccountCashbook(models.Model):
             'border_color': '#C0C0C0',
             # 'bg_color': '#FFB6C1'  # Light pink background for analytic codes
         })
+        date_format = workbook.add_format({'num_format': 'yyyy-mm-dd'})
 
         # Set column widths
-        sheet.set_column('A:A', 45)  # Account Name
-        sheet.set_column('B:B', 30)  # Partner
-        sheet.set_column('C:C', 20)  # Label
-        sheet.set_column('D:D', 20)  # Analytic Distribution
-        sheet.set_column('E:E', 15)  # Currency
-        sheet.set_column('F:F', 15)  # Amount
+        sheet.set_column('A:A', 10)
+        sheet.set_column('B:B', 15)
+        sheet.set_column('C:C', 15)
+        sheet.set_column('D:D', 15)
+        sheet.set_column('E:E', 10)
+        sheet.set_column('F:F', 15)
+        sheet.set_column('G:G', 20)
+        sheet.set_column('H:H', 20)
+        sheet.set_column('I:I', 20)
+        sheet.set_column('J:J', 20)
+        sheet.set_column('K:K', 20)
+        sheet.set_column('L:L', 20)
+        sheet.set_column('M:M', 20)
+        sheet.set_column('N:N', 20)
+        sheet.set_column('O:O', 20)
+        sheet.set_column('P:P', 20)
 
         # Write title at the top center
         if self.type == 'receive':
@@ -107,14 +128,24 @@ class AccountCashbook(models.Model):
         else:
             title = 'Cashbook'
 
-        sheet.merge_range('A1:F1', title, title_format)
+        sheet.merge_range('A1:P1', title, title_format)
         headers = [
+            'Date',
+            'Source Code',
+            'Reference',
+            'Cheque',
+            'DN/CN No.',
+            'Description',
             'Account Name',
             'Partner',
+            'Particular',
             'Label',
             'Analytic Distribution',
             'Currency',
-            'Amount'
+            'Amount',
+            'Main Account',
+            'Sub Account',
+            'Note'
         ]
 
         for col, header in enumerate(headers):
@@ -122,24 +153,25 @@ class AccountCashbook(models.Model):
 
         # Write data starting from row 2 (row index 2 in code corresponds to Excel row 3)
         for row, line in enumerate(self.line_ids, 2):
+            sheet.write(row, 0, line.cashbook_id.date.strftime('%Y-%m-%d') if line.cashbook_id.date else '', date_format)
             # Account Name
             account_name = f"{line.account_id.code} {line.account_id.name}"
-            sheet.write(row, 0, account_name, cell_format)
+            sheet.write(row, 6, account_name, cell_format)
 
             # Partner
-            sheet.write(row, 1, line.partner_id.name if line.partner_id else '', cell_format)
+            sheet.write(row, 7, line.partner_id.name if line.partner_id else '', cell_format)
 
             # Label
-            sheet.write(row, 2, line.name or '', cell_format)
+            sheet.write(row, 9, line.name or '', cell_format)
 
             # Analytic Distribution
-            sheet.write(row, 3, line.analytic_code or '', analytic_format)
+            sheet.write(row, 10, line.analytic_code or '', analytic_format)
 
             # Currency
-            sheet.write(row, 4, line.currency_id.name, cell_format)
+            sheet.write(row, 11, line.currency_id.name, cell_format)
 
             # Amount - write the amount directly (it's already in K)
-            sheet.write(row, 5, line.amount, amount_format)
+            sheet.write(row, 12, line.amount, amount_format)
 
             analytic_value = ''
             if line.analytic_distribution:
@@ -158,12 +190,12 @@ class AccountCashbook(models.Model):
                 analytic_value = ' / '.join(account.code for account in analytic_accounts if account.exists())
 
             # Write to Excel
-            sheet.write(row, 3, analytic_value, analytic_format)
+            sheet.write(row, 10, analytic_value, analytic_format)
 
         # Add total row
         total_row = len(self.line_ids) + 2
-        total_formula = f'=SUM(F3:F{total_row})'
-        sheet.write(total_row, 5, total_formula, amount_format)
+        total_formula = f'=SUM(M3:M{total_row})'
+        sheet.write(total_row, 12, total_formula, amount_format)
 
         workbook.close()
         output.seek(0)
@@ -260,7 +292,7 @@ class AccountCashbook(models.Model):
         # Cashbook Invoice Print
         return self.env.ref('account_extension.action_report_cashbook_invoice').report_action(self)
 
-    def action_print_Payable_invoice(self):
+    def action_print_payable_invoice(self):
         # Cashbook Invoice Print
         return self.env.ref('account_extension.action_report_payable_invoice').report_action(self)
 
@@ -292,7 +324,7 @@ class AccountCashbook(models.Model):
 
                 # Set debit to cashbook line amount if type is 'payment', otherwise set to zero
                 debit = amount if record.type == 'payment' else 0.0
-                credit = 0.0  # Keep credit as zero
+                credit = amount if record.type == 'receive' else 0.0
 
                 line_vals.append((0, 0, {
                     'account_id': line.account_id.id,
@@ -331,6 +363,7 @@ class AccountCashbook(models.Model):
             move = self.env['account.move'].create(move_vals)
             record.write({'move_id': move.id})
 
+
 class AccountCashbookLine(models.Model):
     _name = 'account.cashbook.line'
     _description = 'Cashbook Payment/Receive Line for Accounting'
@@ -360,7 +393,6 @@ class AccountCashbookLine(models.Model):
         for line in self:
             if line.partner_id != line.cashbook_id.partner_id:
                 pass
-
 
     @api.onchange('analytic_distribution')
     def compute_analytic_distribution_account_code(self):
