@@ -1,4 +1,5 @@
 from odoo import api, models
+from datetime import datetime, timedelta
 
 class PassengerSummaryReport(models.AbstractModel):
     _name = 'report.yacl_airline.report_passenger_summary'
@@ -6,24 +7,26 @@ class PassengerSummaryReport(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        start_date = data['start_date']
-        end_date = data['end_date']
+        start_date = datetime.strptime(data['start_date'], '%Y-%m-%d')
+        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')
         flight_type = data['flight_type']
+        adjusted_start_date = start_date - timedelta(hours=6, minutes=30)
+        adjusted_end_date = end_date - timedelta(hours=6, minutes=30)
 
         domain = [
             # ('state', '=', 'invoiced'),
-            ('start_time', '>=', start_date),
-            ('start_time', '<=', end_date),
+            ('start_time', '>=', adjusted_start_date),
+            ('start_time', '<=', adjusted_end_date),
         ]
 
         if flight_type != 'all':
-            domain.append(('type', '=', flight_type))
+            domain.append(('passenger_service_id.type', '=', flight_type))
 
-        invoices = self.env['passenger.service'].search(domain)
+        invoices = self.env['passenger.service.line'].search(domain)
 
         summary = {}
         for invoice in invoices:
-            airline = invoice.airline_id.name
+            airline = invoice.passenger_service_id.airline_id.name
             if airline not in summary:
                 summary[airline] = {
                     'airline': airline,
@@ -39,16 +42,16 @@ class PassengerSummaryReport(models.AbstractModel):
                     'remark': ''
                 }
 
-            for line in invoice.passenger_service_line_ids:
-                summary[airline]['frequency'] += 1
-                summary[airline]['total_pax'] += line.total_pax
-                summary[airline]['inf'] += line.inf
-                summary[airline]['tax_free'] += line.tax_free
-                summary[airline]['ntl'] += line.ntl
-                summary[airline]['inad'] += line.inad
-                summary[airline]['depor'] += line.depor
-                summary[airline]['transit'] += line.transit
-                summary[airline]['invoice_pax'] += line.invoice_pax
+            # for line in invoice.passenger_service_line_ids:
+            summary[airline]['frequency'] += 1
+            summary[airline]['total_pax'] += invoice.total_pax
+            summary[airline]['inf'] += invoice.inf
+            summary[airline]['tax_free'] += invoice.tax_free
+            summary[airline]['ntl'] += invoice.ntl
+            summary[airline]['inad'] += invoice.inad
+            summary[airline]['depor'] += invoice.depor
+            summary[airline]['transit'] += invoice.transit
+            summary[airline]['invoice_pax'] += invoice.invoice_pax
 
         report_data = list(summary.values())
 

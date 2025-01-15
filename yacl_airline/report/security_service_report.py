@@ -1,6 +1,6 @@
 from odoo import models, api
 from collections import defaultdict
-
+from datetime import datetime, timedelta
 
 class BoardingBridgeReport(models.AbstractModel):
     _name = 'report.yacl_airline.report_security_service'
@@ -29,11 +29,14 @@ class BoardingBridgeReport(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         if not data:
             return {}
-
+        start_date = datetime.strptime(data['date_from'], '%Y-%m-%d')
+        end_date = datetime.strptime(data['date_to'], '%Y-%m-%d')
+        adjusted_start_date = start_date - timedelta(hours=6, minutes=30)
+        adjusted_end_date = end_date - timedelta(hours=6, minutes=30)
         # Get boarding bridge lines within date range
         security_lines = self.env['airline.security.service.line'].search([
-            ('start_time', '>=', data['date_from']),
-            ('end_time', '<=', data['date_to'])
+            ('start_time', '>=', adjusted_start_date),
+            ('end_time', '<=', adjusted_end_date)
         ], order='airline_security_service_id, start_time')
 
         # Group data by airline

@@ -41,6 +41,12 @@ class CheckinCounter(models.Model):
             'res_id': self.invoice_id.id,
             'context': {'create': False},
         }
+    def unlink(self):
+        for record in self:
+            if record.checkin_counter_line_ids:
+                raise ValidationError(
+                    _("You cannot delete this Counter record because it has related line items. Please delete all Counter Lines first."))
+        return super(CheckinCounter, self).unlink()
 
     def action_confirm(self):
         for record in self:

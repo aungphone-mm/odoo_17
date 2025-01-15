@@ -24,7 +24,7 @@
         <field name="target">new</field>
     </record>
     <menuitem id="menu_security_service_report"
-          name="Security Service Report"
+          name="Security Service Summary Report"
           action="action_security_service_report_wizard"
           parent="menu_summary_report"
           sequence="2"/>

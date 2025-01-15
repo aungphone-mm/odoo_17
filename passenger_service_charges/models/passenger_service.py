@@ -128,3 +128,9 @@ class PassengerService(models.Model):
                 vals['name'] = f'IPS/{current_date}/{sequence}'
         return super(PassengerService, self).create(vals)
 
+    def unlink(self):
+        for record in self:
+            if record.passenger_service_line_ids:
+                raise ValidationError(
+                    _("You cannot delete this Passenger Service record because it has related line items. Please delete all Passenger Service Lines first."))
+        return super(PassengerService, self).unlink()

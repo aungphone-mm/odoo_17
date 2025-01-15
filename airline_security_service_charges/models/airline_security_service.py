@@ -51,6 +51,13 @@ class AirlineSecurityService(models.Model):
                         'invoice_id': invoice.id
                     })
 
+    def unlink(self):
+        for record in self:
+            if record.airline_security_service_line_ids:
+                raise ValidationError(
+                    _("You cannot delete this Security record because it has related line items. Please delete all Security Lines first."))
+        return super(AirlineSecurityService, self).unlink()
+
     def create_invoice(self):
         self.ensure_one()
         invoice_vals = self._prepare_invoice_vals()

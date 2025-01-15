@@ -41,6 +41,12 @@ class PassengerBoardingBridgeCharges(models.Model):
             'res_id': self.invoice_id.id,
             'context': {'create': False},
         }
+    def unlink(self):
+        for record in self:
+            if record.passenger_boarding_bridge_charges_line_ids:
+                raise ValidationError(
+                    _("You cannot delete this Passenger Boarding record because it has related line items. Please delete all Passenger Boarding Lines first."))
+        return super(PassengerBoardingBridgeCharges, self).unlink()
 
     def action_confirm(self):
         for record in self:

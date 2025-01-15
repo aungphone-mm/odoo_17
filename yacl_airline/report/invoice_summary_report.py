@@ -49,7 +49,7 @@ class InvoiceSummaryReport(models.AbstractModel):
 
     def _get_invoice_data(self, data):
         domain = [
-            # ('move_type', '=', 'out_invoice'),
+            ('move_type', '=', 'out_invoice'),
             # ('state', '=', 'posted'),
             ('invoice_date', '>=', data['start_date']),
             ('invoice_date', '<=', data['end_date'])

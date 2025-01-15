@@ -32,7 +32,7 @@
     </record>
 
     <menuitem id="menu_checkin_summary_report"
-              name="Check-in Counter Report"
+              name="Check-in Counter Summary Report"
               parent="menu_summary_report"
               action="action_report_checkin_selection_wizard"
               sequence="5"/>

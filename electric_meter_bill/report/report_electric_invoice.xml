@@ -276,7 +276,7 @@
                                     <tr>
                                         <td style="width: 60%; text-align: right;"><strong>Total Units:</strong></td>
                                         <td style="width: 40%; text-align: right;">
-                                            <strong><t t-esc="'{:,.0f}'.format(o.get_total_units())"/></strong>
+                                            <strong><t t-esc="'{:,.2f}'.format(o.get_total_units())"/></strong>
                                         </td>
                                     </tr>
                                     <tr>

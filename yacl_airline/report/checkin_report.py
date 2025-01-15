@@ -1,4 +1,5 @@
 from odoo import api, models
+from datetime import datetime, timedelta
 
 class CheckinSummaryReport(models.AbstractModel):
     _name = 'report.yacl_airline.report_checkin_summary'
@@ -6,23 +7,21 @@ class CheckinSummaryReport(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        # if not data:
-        #     data = {}
-
-        # start_date = data.get('start_date')
-        # end_date = data.get('end_date')
-        start_date = data['start_date']
-        end_date = data['end_date']
-
-        checkins = self.env['checkin.counter'].search([
-            # ('state', '=', 'invoiced'),
-            ('start_time', '>=', start_date),
-            ('start_time', '<=', end_date),
+        # Convert string date to datetime object with correct format
+        start_date = datetime.strptime(data['start_date'], '%Y-%m-%d')
+        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')
+        # Subtract 6:30 from date
+        adjusted_start_date = start_date - timedelta(hours=6, minutes=30)
+        adjusted_end_date = end_date - timedelta(hours=6, minutes=30)
+        # Rest of your code remains the same
+        checkins = self.env['checkin.counter.line'].search([
+            ('start_time', '>=', adjusted_start_date),
+            ('end_time', '<=', adjusted_end_date),
         ])
 
         summary = {}
-        for checkin in checkins:
-            airline = checkin.airline_id.name
+        for line in checkins:
+            airline = line.checkin_counter_id.airline_id.name
             if airline not in summary:
                 summary[airline] = {
                     'airline': airline,
@@ -31,13 +30,12 @@ class CheckinSummaryReport(models.AbstractModel):
                     'amount': 0
                 }
 
-            for line in checkin.checkin_counter_line_ids:
-                summary[airline]['frequency'] += 1
-                date = line.end_time.date()
-                flight_no = line.flightno_id if line.flightno_id else False  # Handle possible None value
-                if flight_no:  # Only add if flight_no exists
-                    summary[airline]['unique_flights'].add((date, flight_no))
-                summary[airline]['amount'] += line.amount
+            summary[airline]['frequency'] += 1
+            date = line.end_time.date()
+            flight_no = line.flightno_id if line.flightno_id else False
+            if flight_no:
+                summary[airline]['unique_flights'].add((date, flight_no))
+            summary[airline]['amount'] += line.amount
 
         report_data = []
         for airline, airline_data in summary.items():

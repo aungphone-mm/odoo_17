@@ -25,4 +25,8 @@ class AccountMoveLine(models.Model):
                 else:
                     line.currency_rate = 1.0
 
+    def _get_rate_date(self):
+        self.ensure_one()
+        return self.move_id.invoice_date or self.move_id.date or fields.Date.context_today(self)
+
 

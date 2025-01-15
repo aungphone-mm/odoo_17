@@ -24,7 +24,7 @@
         <field name="target">new</field>
     </record>
     <menuitem id="menu_boarding_bridge_report"
-          name="Boarding Bridge Report"
+          name="Boarding Bridge Summary Report"
           action="action_boarding_bridge_report_wizard"
           parent="menu_summary_report"
           sequence="2"/>

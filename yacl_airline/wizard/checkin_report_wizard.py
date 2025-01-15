@@ -28,15 +28,15 @@ class ReportCheckinSelectionWizard(models.TransientModel):
 
     def action_generate_excel_report(self):
         # Get report data
-        checkins = self.env['checkin.counter'].search([
+        checkins = self.env['checkin.counter.line'].search([
             ('start_time', '>=', self.start_date),
-            ('start_time', '<=', self.end_date),
+            ('end_time', '<=', self.end_date),
         ])
 
         # Prepare data
         summary = {}
-        for checkin in checkins:
-            airline = checkin.airline_id.name
+        for line in checkins:
+            airline = line.checkin_counter_id.airline_id.name
             if airline not in summary:
                 summary[airline] = {
                     'airline': airline,
@@ -45,13 +45,13 @@ class ReportCheckinSelectionWizard(models.TransientModel):
                     'amount': 0
                 }
 
-            for line in checkin.checkin_counter_line_ids:
-                summary[airline]['frequency'] += 1
-                date = line.end_time.date()
-                flight_no = line.flightno_id if line.flightno_id else False
-                if flight_no:
-                    summary[airline]['unique_flights'].add((date, flight_no))
-                summary[airline]['amount'] += line.amount
+            # for line in checkin.checkin_counter_line_ids:
+            summary[airline]['frequency'] += 1
+            date = line.end_time.date()
+            flight_no = line.flightno_id if line.flightno_id else False
+            if flight_no:
+                summary[airline]['unique_flights'].add((date, flight_no))
+            summary[airline]['amount'] += line.amount
 
         # Create Excel file
         output = BytesIO()
@@ -135,9 +135,9 @@ class ReportCheckinSelectionWizard(models.TransientModel):
 
     def action_generate_detail_excel_report(self):
         # Get report data
-        checkins = self.env['checkin.counter'].search([
+        checkins = self.env['checkin.counter.line'].search([
             ('start_time', '>=', self.start_date),
-            ('start_time', '<=', self.end_date),
+            ('end_time', '<=', self.end_date),
         ])
 
         # Create Excel file
@@ -175,26 +175,26 @@ class ReportCheckinSelectionWizard(models.TransientModel):
         row = 1
         sr_no = 1
 
-        for checkin in checkins:
-            for line in checkin.checkin_counter_line_ids:
+        for line in checkins:
+            # for line in checkin.checkin_counter_line_ids:
                 # Convert datetime to local timezone
-                start_time = fields.Datetime.context_timestamp(self, line.start_time)
-                end_time = fields.Datetime.context_timestamp(self, line.end_time)
+            start_time = fields.Datetime.context_timestamp(self, line.start_time)
+            end_time = fields.Datetime.context_timestamp(self, line.end_time)
 
-                # Calculate service time in minutes
-                service_time = (end_time - start_time).total_seconds() / 60
+            # Calculate service time in minutes
+            service_time = (end_time - start_time).total_seconds() / 60
 
-                worksheet.write(row, 0, sr_no, cell_format)  # Sr. No
-                worksheet.write(row, 1, line.start_time.date().strftime('%d.%m.%Y'), cell_format)  # Date
-                worksheet.write(row, 2, line.flightno_id if line.flightno_id else '', cell_format)  # Flight No
-                worksheet.write(row, 3, line.flight_aircraft or '', cell_format)  # Aircraft Type
-                worksheet.write(row, 4, start_time.strftime('%H:%M'), cell_format)  # Start Time
-                worksheet.write(row, 5, end_time.strftime('%H:%M'), cell_format)  # Close Time
-                worksheet.write(row, 6, f"{int(service_time)} Mins", cell_format)  # Service Time
-                worksheet.write(row, 7, line.amount, number_format)  # Amount
+            worksheet.write(row, 0, sr_no, cell_format)  # Sr. No
+            worksheet.write(row, 1, line.start_time.date().strftime('%d.%m.%Y'), cell_format)  # Date
+            worksheet.write(row, 2, line.flightno_id if line.flightno_id else '', cell_format)  # Flight No
+            worksheet.write(row, 3, line.flight_aircraft or '', cell_format)  # Aircraft Type
+            worksheet.write(row, 4, start_time.strftime('%H:%M'), cell_format)  # Start Time
+            worksheet.write(row, 5, end_time.strftime('%H:%M'), cell_format)  # Close Time
+            worksheet.write(row, 6, f"{int(service_time)} Mins", cell_format)  # Service Time
+            worksheet.write(row, 7, line.amount, number_format)  # Amount
 
-                row += 1
-                sr_no += 1
+            row += 1
+            sr_no += 1
 
         # Adjust column widths
         worksheet.set_column('A:A', 8)  # Sr. No

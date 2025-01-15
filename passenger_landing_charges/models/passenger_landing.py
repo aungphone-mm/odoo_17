@@ -95,6 +95,13 @@ class PassengerLanding(models.Model):
             })
         return lines
 
+    def unlink(self):
+        for record in self:
+            if record.passenger_landing_line_ids:
+                raise ValidationError(
+                    _("You cannot delete this Landing record because it has related line items. Please delete all Landing Lines first."))
+        return super(PassengerLanding, self).unlink()
+
     @api.model
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
