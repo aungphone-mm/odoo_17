@@ -1,5 +1,5 @@
 from odoo import models, api, fields
-
+from datetime import datetime, timedelta
 
 class AirlineChargesReport(models.AbstractModel):
     _name = 'report.yacl_airline.report_airline_charges'
@@ -7,9 +7,13 @@ class AirlineChargesReport(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        date_from = data['date_from']
-        date_to = data['date_to']
-
+        start_date = datetime.strptime(data['date_from'], '%Y-%m-%d')
+        end_date = datetime.strptime(data['date_to'], '%Y-%m-%d')
+        # Subtract 6:30 from date
+        date_from = start_date - timedelta(hours=6, minutes=30)
+        date_to = end_date - timedelta(hours=6, minutes=30)
+        # date_from = data['date_from']
+        # date_to = data['date_to']
         # Get USD and MMK currencies
         usd_currency = self.env.ref('base.USD')
         mmk_currency = self.env.ref('base.MMK')

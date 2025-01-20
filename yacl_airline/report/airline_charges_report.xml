@@ -47,7 +47,7 @@
                                     <span t-esc="security_total_usd" t-options='{"widget": "monetary", "display_currency": env.ref("base.USD")}'/>
                                 </td>
                                 <td class="text-right">
-                                    <span t-esc="security_total_usd" t-options='{"widget": "monetary", "display_currency": env.ref("base.MMK")}'/>
+                                    <span t-esc="security_total_mmk" t-options='{"widget": "monetary", "display_currency": env.ref("base.MMK")}'/>
                                 </td>
                             </tr>
                             <!-- Check-in Counter -->
@@ -79,7 +79,7 @@
                                     <span t-esc="bridge_total_usd" t-options='{"widget": "monetary", "display_currency": env.ref("base.USD")}'/>
                                 </td>
                                 <td class="text-right">
-                                    <span t-esc="bridge_total_usd" t-options='{"widget": "monetary", "display_currency": env.ref("base.MMK")}'/>
+                                    <span t-esc="bridge_total_mmk" t-options='{"widget": "monetary", "display_currency": env.ref("base.MMK")}'/>
                                 </td>
                             </tr>
 
