@@ -8,12 +8,17 @@
                     <header>
 <!--                        <button name="action_register_payment" string="Pay" type="object" class="oe_highlight"/>-->
                     </header>
-                    <field name="flightno_id"/>
-                    <field name="start_time"/>
-<!--                    <field name="pax_price"/>-->
-<!--                    <field name="total_minutes" />-->
-<!--                    <field name="amount"/>-->
-
+                        <field name="flightno_id"/>
+                        <field name="start_time" />
+                        <field name="total_pax" sum="Total Pax"/>
+                        <field name="osc" sum="Total OCS"/>
+                        <field name="inf" sum="Total INF"/>
+                        <field name="transit" sum="Total Transit"/>
+                        <field name="ntl" sum="Total NTL"/>
+                        <field name="inad" sum="Total INAD"/>
+                        <field name="depor" sum="Total Depor"/>
+                        <field name="tax_free" sum="Total Tax Free"/>
+                        <field name="invoice_pax" sum="Total Invoice Pax"/>
                 </tree>
             </field>
         </record>

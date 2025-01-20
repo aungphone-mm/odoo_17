@@ -30,6 +30,12 @@ class PassengerBoardingBridgeCharges(models.Model):
         ('confirmed', 'Confirmed'),
         ('invoiced', 'Invoiced')
     ], string='Status', default='draft', tracking=True)
+    total_amount = fields.Float(string='Total Amount', compute='_compute_total_amount', store=True)
+
+    @api.depends('passenger_boarding_bridge_charges_line_ids.amount')
+    def _compute_total_amount(self):
+        for record in self:
+            record.total_amount = sum(record.passenger_boarding_bridge_charges_line_ids.mapped('amount'))
 
     def action_view_invoice(self):
         self.ensure_one()

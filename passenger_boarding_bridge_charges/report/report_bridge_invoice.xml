@@ -200,10 +200,8 @@
                                         </td>
                                     </tr>
                                 </t>
-                            </tbody>
-                            <tfoot>
+                                <t t-if="not next_page">
                                 <tr>
-
                                     <td colspan="7" style="text-align: right; border: 1px solid black;">
                                         <strong>Total</strong>
                                     </td>
@@ -212,52 +210,70 @@
                                         <strong><span t-esc="total_time"/></strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
-                                        <strong>
-                                            <span t-field="o.amount_untaxed"/>
-                                        </strong>
+                                        <strong><span t-field="o.amount_untaxed"/></strong>
                                     </td>
                                     <td style="border: 1px solid black;"></td>
                                 </tr>
-                            </tfoot>
+                            </t>
+                            </tbody>
+
+<!--                            <tfoot>-->
+<!--                                <tr>-->
+
+<!--                                    <td colspan="7" style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>Total</strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: center; border: 1px solid black;">-->
+<!--                                        <t t-set="total_time" t-value="sum(line._get_time_from_rate() or 0 for line in o.invoice_line_ids)"/>-->
+<!--                                        <strong><span t-esc="total_time"/></strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>-->
+<!--                                            <span t-field="o.amount_untaxed"/>-->
+<!--                                        </strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="border: 1px solid black;"></td>-->
+<!--                                </tr>-->
+<!--                            </tfoot>-->
                         </table>
                         <!-- Replace the existing rate amount table with this updated version -->
-<table class="table table-sm mt-4" style="width: 50%; border-collapse: collapse;">
-    <thead>
-        <tr style="background-color: #e9ecef;">
-            <th style="border: 1px solid black;">Rate (Price/Time)</th>
-            <th style="border: 1px solid black; text-align: center;">Count</th>
-            <th style="border: 1px solid black; text-align: right;">Total Amount</th>
-        </tr>
-    </thead>
-    <tbody>
-        <t t-set="total_count" t-value="0"/>
-        <t t-foreach="o._get_amount_totals_bridge().items()" t-as="rate_data">
-            <t t-set="total_count" t-value="total_count + rate_data[1]['count']"/>
-            <tr>
-                <td style="border: 1px solid black;">
-                    <span t-esc="rate_data[0]" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                </td>
-                <td style="border: 1px solid black; text-align: center;">
-                    <t t-esc="rate_data[1]['count']"/>
-                </td>
-                <td style="border: 1px solid black; text-align: right;">
-                    <span t-esc="rate_data[1]['total']" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                </td>
-            </tr>
-        </t>
-        <tr>
-            <td style="border: 1px solid black;">
-                Total (<t t-esc="len(o.invoice_line_ids)"/>) Bridge for (<t t-esc="len(set(o.invoice_line_ids.mapped('name')))"/>) Flights
-            </td>
-            <td style="border: 1px solid black; text-align: center;">
-                <t t-esc="total_count"/>
-            </td>
-            <td style="border: 1px solid black; text-align: right;">
-                <strong><span t-field="o.amount_untaxed"/></strong>
-            </td>
-        </tr>
-    </tbody>
-</table>
+                            <table class="table table-sm mt-4" style="width: 50%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background-color: #e9ecef;">
+                                        <th style="border: 1px solid black;">Rate (Price/Time)</th>
+                                        <th style="border: 1px solid black; text-align: center;">Count</th>
+                                        <th style="border: 1px solid black; text-align: right;">Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="total_count" t-value="0"/>
+                                    <t t-foreach="o._get_amount_totals_bridge().items()" t-as="rate_data">
+                                        <t t-set="total_count" t-value="total_count + rate_data[1]['count']"/>
+                                        <tr>
+                                            <td style="border: 1px solid black;">
+                                                <span t-esc="rate_data[0]" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </td>
+                                            <td style="border: 1px solid black; text-align: center;">
+                                                <t t-esc="rate_data[1]['count']"/>
+                                            </td>
+                                            <td style="border: 1px solid black; text-align: right;">
+                                                <span t-esc="rate_data[1]['total']" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <td style="border: 1px solid black;">
+                                            Total (<t t-esc="len(o.invoice_line_ids)"/>) Bridge for (<t t-esc="len(set(o.invoice_line_ids.mapped('name')))"/>) Flights
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: center;">
+                                            <t t-esc="total_count"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <strong><span t-field="o.amount_untaxed"/></strong>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                     </div>
                 </t>
             </t>

@@ -12,8 +12,16 @@
     </record>
 
     <template id="report_Passenger_service_domestic">
+
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
+                <t t-set="total_pax" t-value="sum(o.passenger_service_id.passenger_service_line_ids.mapped('total_pax'))"/>
+                <t t-set="total_ocs" t-value="sum(o.passenger_service_id.passenger_service_line_ids.mapped('osc'))"/>
+                <t t-set="total_tax_free" t-value="sum(o.passenger_service_id.passenger_service_line_ids.mapped('tax_free'))"/>
+                <t t-set="total_inf" t-value="sum(o.passenger_service_id.passenger_service_line_ids.mapped('inf'))"/>
+                <t t-set="total_transit" t-value="sum(o.passenger_service_id.passenger_service_line_ids.mapped('transit'))"/>
+                <t t-set="total_invoice_pax" t-value="sum(o.passenger_service_id.passenger_service_line_ids.mapped('invoice_pax'))"/>
+                <t t-set="total_flights" t-value="len(o.passenger_service_id.passenger_service_line_ids)"/>
                 <!-- First Page - Invoice -->
                 <t t-call="web.external_layout">
                      <style>
@@ -207,41 +215,48 @@
                                     </tr>
                                 </t>
                             </tbody>
-                            <tfoot>
+
+                            <t t-if="not next_page">
                                 <tr>
                                     <td colspan="3" style="text-align: right; border: 1px solid black;">
-                                        <strong>Total (<t t-esc="len(o.passenger_service_id.passenger_service_line_ids)"/>) Flights</strong>
+                                        <strong>Total (<t t-esc="total_flights"/>) Flights</strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
-                                        <strong>
-                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('total_pax'))"/>
-                                        </strong>
+                                        <strong><t t-esc="total_pax"/></strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
-                                        <strong>
-                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('osc'))"/>
-                                        </strong>
+                                        <strong><t t-esc="total_ocs"/></strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
-                                        <strong>
-                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('tax_free'))"/>
-                                        </strong>
+                                        <strong><t t-esc="total_tax_free"/></strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
-                                        <strong>
-                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('inf'))"/>
-                                        </strong>
+                                        <strong><t t-esc="total_inf"/></strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
-                                        <strong>
-                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('transit'))"/>
-                                        </strong>
+                                        <strong><t t-esc="total_transit"/></strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
-                                        <strong>
-                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('invoice_pax'))"/>
-                                        </strong>
+                                        <strong><t t-esc="total_invoice_pax"/></strong>
                                     </td>
+                                    <td style="border: 1px solid black;"></td>
+                                </tr>
+                            </t>
+                            <tfoot>
+<!--                                <tr>-->
+<!--                                    <td colspan="3" style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>Total (<t t-esc="len(o.passenger_service_id.passenger_service_line_ids)"/>) Flights</strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>-->
+<!--                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('total_pax'))"/>-->
+<!--                                        </strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>-->
+<!--                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('osc'))"/>-->
+<!--                                        </strong>-->
+<!--                                    </td>-->
 <!--                                    <td style="text-align: right; border: 1px solid black;">-->
 <!--                                        <strong>-->
 <!--                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('tax_free'))"/>-->
@@ -249,11 +264,22 @@
 <!--                                    </td>-->
 <!--                                    <td style="text-align: right; border: 1px solid black;">-->
 <!--                                        <strong>-->
+<!--                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('inf'))"/>-->
+<!--                                        </strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>-->
+<!--                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('transit'))"/>-->
+<!--                                        </strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>-->
 <!--                                            <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('invoice_pax'))"/>-->
 <!--                                        </strong>-->
 <!--                                    </td>-->
-                                    <td style="border: 1px solid black;"></td>
-                                </tr>
+
+<!--                                    <td style="border: 1px solid black;"></td>-->
+<!--                                </tr>-->
                             </tfoot>
                         </table>
                     </div>
