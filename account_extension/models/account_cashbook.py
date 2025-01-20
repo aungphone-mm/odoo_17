@@ -289,7 +289,21 @@ class AccountCashbook(models.Model):
         self.update({'state': 'draft'})
 
     def action_print_invoice(self):
-        # Cashbook Invoice Print
+        # Compute analytic values for lines
+        for record in self:
+            for line in record.line_ids:
+                analytic_accounts = []
+                if line.analytic_distribution:
+                    for account_id, percentage in line.analytic_distribution.items():
+                        if ',' in account_id:  # Handle compound keys
+                            account_ids = [int(x) for x in account_id.split(',')]
+                            accounts = self.env['account.analytic.account'].browse(account_ids)
+                            analytic_accounts.extend(accounts)
+                        else:
+                            account = self.env['account.analytic.account'].browse(int(account_id))
+                            analytic_accounts.append(account)
+                # Join analytic codes with '/'
+                line.analytic_code = ' / '.join(account.code for account in analytic_accounts if account.exists())
         return self.env.ref('account_extension.action_report_cashbook_invoice').report_action(self)
 
     def action_print_payable_invoice(self):

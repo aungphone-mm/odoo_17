@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="cashbook_receive_view_form" model="ir.ui.view">
-            <field name="name">cashbook_receive_view_form</field>
+        <record id="cashbook_payment_receive_view_tree" model="ir.ui.view">
+            <field name="name">cashbook_payment_receive_view_tree</field>
             <field name="model">account.cashbook</field>
             <field name="arch" type="xml">
-                <form string="cashbook_receive_form">
+                <tree string="Cashbook Payment Receive"
+                      decoration-info="state == 'draft'"
+                      decoration-primary="state == 'confirm'"
+                      decoration-success="state == 'done'"
+                      decoration-danger="state == 'cancel'">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="partner_id"/>
+                    <field name="journal_id"/>
+                    <field name="main_account_id"/>
+                    <field name="currency_id"/>
+                    <field name="description"/>
+                    <field name="state"
+                           decoration-info="state == 'draft'"
+                           decoration-primary="state == 'confirm'"
+                           decoration-success="state == 'done'"
+                           decoration-danger="state == 'cancel'"
+                           widget="badge"/>
+                </tree>
+            </field>
+        </record>
+        <record id="cashbook_payment_receive_view_form" model="ir.ui.view">
+            <field name="name">cashbook_payment_receive_view_form</field>
+            <field name="model">account.cashbook</field>
+            <field name="arch" type="xml">
+                <form string="cashbook_payment_receive_form">
                     <header>
                         <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" invisible="state not in ['draft']"/>
                         <button name="action_done" string="Mark as Done" type="object" class="oe_highlight" invisible="state not in ['confirm']"/>
@@ -92,32 +117,19 @@
                 </form>
             </field>
         </record>
-        <record id="cashbook_receive_view_tree" model="ir.ui.view">
-            <field name="name">cashbook_receive_view_tree</field>
+
+        <record id="cashbook_payment_receive_view_filter" model="ir.ui.view">
+            <field name="name">cashbook.payment.receive.view.filter</field>
             <field name="model">account.cashbook</field>
             <field name="arch" type="xml">
-                <tree string="cashbook_receive_tree"
-                      decoration-info="state == 'draft'"
-                      decoration-primary="state == 'confirm'"
-                      decoration-success="state == 'done'"
-                      decoration-danger="state == 'cancel'">
-                    <field name="name"/>
-                    <field name="date"/>
+                <search string="Cashbook Search">
+                    <field name="name" filter_domain="[('name', 'ilike', self)]"/>
                     <field name="partner_id"/>
-                    <field name="journal_id"/>
-                    <field name="main_account_id"/>
-                    <field name="currency_id"/>
-                    <field name="description"/>
-                    <field name="state"
-                           decoration-info="state == 'draft'"
-                           decoration-primary="state == 'confirm'"
-                           decoration-success="state == 'done'"
-                           decoration-danger="state == 'cancel'"
-                           widget="badge"/>
-                </tree>
+                    <field name="date" string="Date"/>
+                </search>
             </field>
         </record>
-        
+
         <record id="cashbook_receive" model="ir.actions.act_window">
             <field name="name">Cashbook Receive</field>
             <field name="type">ir.actions.act_window</field>

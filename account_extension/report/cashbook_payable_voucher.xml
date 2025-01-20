@@ -6,7 +6,7 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">account_extension.report_payable_invoice</field>
          <field name="report_file">account_extension.report_payable_invoice</field>
-        <field name="print_report_name">'Payable Invoice'</field>
+        <field name="print_report_name">'Payable Invoice-' + object.name</field>
         <field name="binding_model_id" ref="model_account_cashbook"/>
         <field name="binding_type">report</field>
       </record>
