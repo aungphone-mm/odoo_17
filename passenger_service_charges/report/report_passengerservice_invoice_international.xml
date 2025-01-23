@@ -211,7 +211,7 @@
                                     </tr>
                                 </t>
                             </tbody>
-                            <tfoot>
+                            <t t-if="not next_page">
                                 <tr>
                                     <td colspan="3" style="text-align: right; border: 1px solid black;">
                                         <strong>Total (<t t-esc="len(o.passenger_service_id.passenger_service_line_ids)"/>) Flights</strong>
@@ -258,6 +258,9 @@
                                     </td>
                                     <td style="border: 1px solid black;"></td>
                                 </tr>
+                            </t>
+                            <tfoot>
+
                             </tfoot>
                         </table>
                     </div>

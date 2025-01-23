@@ -14,9 +14,11 @@ class PassengerLandingLine(models.Model):
                                               inverse='_inverse_landing_rate',
                                               store=True, tracking=True)
     flight_no = fields.Char(string='Flight No', required=True)
+    # flight_registration_no = fields.Many2one('passenger.landing.rate.line',
+    #                                        string='Registration No.',
+    #                                        domain="[('rate_id', '=', parent.passenger_landing_rate_id)]")
     flight_registration_no = fields.Many2one('passenger.landing.rate.line',
-                                           string='Registration No.',
-                                           domain="[('rate_id', '=', parent.passenger_landing_rate_id)]")
+                                             string='Registration No.')
     flight_aircraft = fields.Many2one('passenger.landing.rate.line',
                                       string='Aircraft Type',
                                       domain="[('id', '=', flight_registration_no.id)]")
@@ -36,6 +38,19 @@ class PassengerLandingLine(models.Model):
                 line.serial_number = sequence
                 sequence += 1
 
+    # Auto-set flight_aircraft based on registration
+    @api.onchange('flight_registration_no')
+    def _onchange_flight_registration(self):
+        if self.flight_registration_no:
+            self.flight_aircraft = self.flight_registration_no
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('flight_registration_no') and not vals.get('flight_aircraft'):
+                vals['flight_aircraft'] = vals['flight_registration_no']
+        return super().create(vals_list)
+    
     @api.depends('passenger_landing_id.passenger_landing_rate_id')
     def _compute_landing_rate(self):
         for line in self:

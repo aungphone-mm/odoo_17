@@ -190,8 +190,8 @@
                                         </td>
                                     </tr>
                                 </t>
-                            </tbody>
-                            <tfoot>
+
+                                 <t t-if="not next_page">
                                 <tr>
                                     <td style="border: 1px solid black; text-align: center;">
                                         <strong>Total</strong>
@@ -209,6 +209,11 @@
                                     </td>
                                     <td style="border: 1px solid black;"></td>
                                 </tr>
+                                </t>
+
+                            </tbody>
+                            <tfoot>
+
                             </tfoot>
                         </table>
 <!--                        <table class="table table-sm mt-4" style="width: 100%; border-collapse: collapse;">-->

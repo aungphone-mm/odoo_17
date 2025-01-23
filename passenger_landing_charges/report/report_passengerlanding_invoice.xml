@@ -212,8 +212,7 @@
                                         </td>
                                     </tr>
                                 </t>
-                            </tbody>
-                            <tfoot>
+                                <t t-if="not next_page">
                                 <tr>
                                     <td colspan="6" style="text-align: right; border: 1px solid black;">
                                         <t t-esc="sum([g['count'] for g in o.get_grouped_landing_lines()])"/>
@@ -227,8 +226,25 @@
                                         </strong>
                                     </td>
                                     <td style="border: 1px solid black;"></td>
-
                                 </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+<!--                                <tr>-->
+<!--                                    <td colspan="6" style="text-align: right; border: 1px solid black;">-->
+<!--                                        <t t-esc="sum([g['count'] for g in o.get_grouped_landing_lines()])"/>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>Total</strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>-->
+<!--                                            <span t-field="o.amount_total"/>-->
+<!--                                        </strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="border: 1px solid black;"></td>-->
+
+<!--                                </tr>-->
                             </tfoot>
                         </table>
                     </div>

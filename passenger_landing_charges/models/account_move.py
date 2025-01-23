@@ -23,24 +23,35 @@ class AccountMove(models.Model):
     def get_grouped_landing_lines(self):
         grouped_lines = {}
         for line in self.invoice_line_ids:
-            date_key = line.passenger_landing_line_id.start_time.strftime('%d.%m.%y')
-            reg_key = line.passenger_landing_line_id.flight_registration_no.name
+            # Safely get the date and registration number
+            if line.passenger_landing_line_id and line.passenger_landing_line_id.start_time:
+                date_key = line.passenger_landing_line_id.start_time.strftime('%d.%m.%y')
+            else:
+                date_key = ''
+
+            if line.passenger_landing_line_id and line.passenger_landing_line_id.flight_registration_no:
+                reg_key = line.passenger_landing_line_id.flight_registration_no.name or ''
+            else:
+                reg_key = ''
+
             group_key = f"{date_key}-{reg_key}"
 
             if group_key not in grouped_lines:
                 grouped_lines[group_key] = {
                     'date': date_key,
-                    'flight_no': line.passenger_landing_line_id.flight_no,
-                    'aircraft_type': line.passenger_landing_line_id.aircraft_type_display,
+                    'flight_no': line.passenger_landing_line_id.flight_no or '',
+                    'aircraft_type': line.passenger_landing_line_id.aircraft_type_display or '',
                     'reg_no': reg_key,
                     'count': 1,
-                    'amount': line.price_subtotal,
+                    'amount': line.price_subtotal or 0.0,
                 }
             else:
                 grouped_lines[group_key]['count'] += 1
-                grouped_lines[group_key]['amount'] += line.price_subtotal
+                grouped_lines[group_key]['amount'] += line.price_subtotal or 0.0
 
-        return sorted(grouped_lines.values(), key=lambda x: (x['date'], x['reg_no']))
+        # Convert falsy values to empty strings for sorting
+        result = list(grouped_lines.values())
+        return sorted(result, key=lambda x: (x['date'] or '', x['reg_no'] or ''))
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
