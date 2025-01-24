@@ -35,6 +35,7 @@
                             <th>Freq.</th>
                             <th>Total</th>
                             <th>Inf.</th>
+                            <th>OSC</th>
                             <th>T.F</th>
                             <th>NTL</th>
                             <th>INAD</th>
@@ -51,6 +52,7 @@
                                 <td><t t-esc="line['airline']"/></td>
                                 <td class="text-right"><t t-esc="line['frequency']"/></td>
                                 <td class="text-right"><t t-esc="line['total_pax']"/></td>
+                                <td class="text-right"><t t-esc="line['osc']"/></td>
                                 <td class="text-right"><t t-esc="line['inf']"/></td>
                                 <td class="text-right"><t t-esc="line['tax_free']"/></td>
                                 <td class="text-right"><t t-esc="line['ntl']"/></td>
@@ -67,6 +69,7 @@
                             <td colspan="2" class="text-right"><strong>Total</strong></td>
                             <td class="text-right"><strong t-esc="get_total('frequency')"/></td>
                             <td class="text-right"><strong t-esc="get_total('total_pax')"/></td>
+                            <td class="text-right"><strong t-esc="get_total('osc')"/></td>
                             <td class="text-right"><strong t-esc="get_total('inf')"/></td>
                             <td class="text-right"><strong t-esc="get_total('tax_free')"/></td>
                             <td class="text-right"><strong t-esc="get_total('ntl')"/></td>

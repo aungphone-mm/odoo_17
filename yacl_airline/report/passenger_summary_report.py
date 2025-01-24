@@ -32,6 +32,7 @@ class PassengerSummaryReport(models.AbstractModel):
                     'airline': airline,
                     'frequency': 0,
                     'total_pax': 0,
+                    'osc': 0,
                     'inf': 0,
                     'tax_free': 0,
                     'ntl': 0,
@@ -45,6 +46,7 @@ class PassengerSummaryReport(models.AbstractModel):
             # for line in invoice.passenger_service_line_ids:
             summary[airline]['frequency'] += 1
             summary[airline]['total_pax'] += invoice.total_pax
+            summary[airline]['osc'] += invoice.osc
             summary[airline]['inf'] += invoice.inf
             summary[airline]['tax_free'] += invoice.tax_free
             summary[airline]['ntl'] += invoice.ntl
