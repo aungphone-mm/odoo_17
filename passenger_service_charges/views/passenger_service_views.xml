@@ -11,6 +11,7 @@
                 <field name="airline_id"/>
                 <field name="airline_user_id"/>
                 <field name="start_time" />
+                <field name="state" />
 <!--                <field name="end_time" />-->
                 <field name="passenger_service_rate_id"/>
                 <field name="currency_id"/>
@@ -25,6 +26,7 @@
         <form>
             <header>
                 <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                <button name="reset_to_draft" string="Reset to Draft" type="object" class="oe_highlight" invisible="state == 'draft'"/>
                 <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,invoiced"/>
             </header>
             <sheet>

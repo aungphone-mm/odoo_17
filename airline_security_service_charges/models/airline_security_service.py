@@ -39,6 +39,9 @@ class AirlineSecurityService(models.Model):
             'res_id': self.invoice_id.id,
             'context': {'create': False},
         }
+    def reset_to_draft(self):
+        for record in self:
+            record.write({'state': 'draft'})
 
     def action_confirm(self):
         for record in self:

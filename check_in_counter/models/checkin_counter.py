@@ -41,6 +41,10 @@ class CheckinCounter(models.Model):
             'res_id': self.invoice_id.id,
             'context': {'create': False},
         }
+    def reset_to_draft(self):
+        for record in self:
+            record.write({'state': 'draft'})
+
     def unlink(self):
         for record in self:
             if record.checkin_counter_line_ids:

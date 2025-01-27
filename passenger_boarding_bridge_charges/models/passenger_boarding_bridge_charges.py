@@ -37,6 +37,10 @@ class PassengerBoardingBridgeCharges(models.Model):
         for record in self:
             record.total_amount = sum(record.passenger_boarding_bridge_charges_line_ids.mapped('amount'))
 
+    def reset_to_draft(self):
+        for record in self:
+            record.write({'state': 'draft'})
+
     def action_view_invoice(self):
         self.ensure_one()
         return {
