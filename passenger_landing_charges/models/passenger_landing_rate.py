@@ -9,8 +9,12 @@ class PassengerLandingRate(models.Model):
     product_id = fields.Many2one(comodel_name='product.product', string='Product', required=True)
     journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', domain=[('type', '=', 'sale')],
                                  required=True)
+    parking_product_id = fields.Many2one(comodel_name='product.product', string='Parking Product', required=True)
+    parking_journal_id = fields.Many2one(comodel_name='account.journal', string='Parking Journal', domain=[('type', '=', 'sale')],
+                                 required=True)
     passenger_landing_rate_line_ids = fields.One2many(comodel_name='passenger.landing.rate.line', inverse_name='rate_id', string='Rate Line',
                                     required=False)
     currency_id = fields.Many2one('res.currency', string='Currency', required=True)
     active = fields.Boolean(string='Active', default=True)
     airline_id = fields.Many2one('airline',string='Airline')
+    

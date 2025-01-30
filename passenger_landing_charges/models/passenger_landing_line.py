@@ -1,3 +1,4 @@
+import math
 from odoo import fields, models, api, _
 
 class PassengerLandingLine(models.Model):
@@ -24,11 +25,14 @@ class PassengerLandingLine(models.Model):
                                       domain="[('id', '=', flight_registration_no.id)]")
     aircraft_type_display = fields.Char(related='flight_aircraft.aircraft_type', string='Aircraft Type')
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, default=fields.Datetime.now)
-    amount = fields.Float(string="Amount", compute='_compute_amount', store=True)
+    end_time = fields.Datetime(string='End Date & Time', tracking=True, default=fields.Datetime.now)
+    amount = fields.Float(string="Landing Amount", compute='_compute_amount', store=True)
+    parking_amount = fields.Float(string="Parking Amount", compute='_compute_parking_amount', store=True)
     route = fields.Char(string='Route')
     serial_number = fields.Integer(string='S/N', compute='_compute_serial_number', store=True)
     sequence = fields.Integer(string='Sequence', default=10)
     airline_id = fields.Many2one('airline', string='Airline')
+    parking_rate = fields.Float(string='Parking Rate', required=True, tracking=True)
 
     @api.depends('passenger_landing_id.passenger_landing_line_ids', 'passenger_landing_id.passenger_landing_line_ids.sequence')
     def _compute_serial_number(self):
@@ -50,7 +54,7 @@ class PassengerLandingLine(models.Model):
             if vals.get('flight_registration_no') and not vals.get('flight_aircraft'):
                 vals['flight_aircraft'] = vals['flight_registration_no']
         return super().create(vals_list)
-    
+
     @api.depends('passenger_landing_id.passenger_landing_rate_id')
     def _compute_landing_rate(self):
         for line in self:
@@ -72,5 +76,19 @@ class PassengerLandingLine(models.Model):
         for record in self:
             if record.flight_aircraft:
                 record.amount = record.flight_aircraft.unit_price
+                record.parking_rate = record.flight_aircraft.parking_rate
             else:
                 record.amount = 0.0
+
+    @api.depends('flight_aircraft', 'start_time', 'end_time', 'parking_rate')
+    def _compute_parking_amount(self):
+        for record in self:
+            if not all([record.start_time, record.end_time, record.parking_rate]):
+                record.parking_amount = 0.0
+                continue
+            # Calculate time difference in days
+            time_diff = record.end_time - record.start_time
+            days = time_diff.total_seconds() / (24 * 60 * 60)  # Convert to days
+            # Round up to nearest day - any partial day counts as full day
+            days = math.ceil(days)
+            record.parking_amount = days * record.parking_rate

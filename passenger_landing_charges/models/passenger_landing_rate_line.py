@@ -10,6 +10,7 @@ class PassengerLandingRateLine(models.Model):
     rate_id = fields.Many2one('passenger.landing.rate', string='Passenger Landing Rate', required=True)
     aircraft_type = fields.Char(string='Aircraft Type', required=True)
     unit_price = fields.Float(string='Unit Price', required=True)
+    parking_rate = fields.Float(string='Parking Rate', required=True, tracking=True)
 
     # @api.model
     # def create(self, vals):

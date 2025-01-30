@@ -9,6 +9,9 @@ class AccountMove(models.Model):
     def action_print_landing_invoice(self):
         return self.env.ref('passenger_landing_charges.action_landing_report').report_action(self)
 
+    def action_print_parking_invoice(self):
+        return self.env.ref('passenger_landing_charges.action_parking_report').report_action(self)
+
     def action_view_passenger_landing(self):
         self.ensure_one()
         return {

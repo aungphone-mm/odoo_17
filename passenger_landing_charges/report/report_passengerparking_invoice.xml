@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_parking_report" model="ir.actions.report">
+        <field name="name">Aircraft Parking Invoice With Breakdown</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">passenger_landing_charges.report_passenger_parking</field>
+        <field name="report_file">passenger_landing_charges.report_passenger_parking</field>
+        <field name="print_report_name">(object.name) and ('Aircraftparking-' + object.name) or 'Aircraftparking-Invoice'</field>
+        <field name="binding_model_id" ref="model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_passenger_parking">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <!-- First Page - Invoice -->
+                <t t-call="web.external_layout">
+                    <style>
+                        .security-table th {
+                            background-color: #e9ecef;
+                        }
+                    </style>
+                    <div class="row mb-4">
+                        <div class="col-12 text-center">
+                            <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
+                        </div>
+                    </div>
+                    <div class="page">
+                        <!-- Invoice Info Section -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div t-field="o.partner_id.name"/>
+                                <div t-field="o.partner_id.street"/>
+                                <div t-field="o.partner_id.street2"/>
+                                <div t-if="o.partner_id.city">
+                                    <t t-esc="o.partner_id.city"/>
+                                </div>
+
+                                    <div>
+                                        <t t-esc="o.partner_id.state_id.name"/>
+                                        <t t-if="o.partner_id.zip">, <t t-esc="o.partner_id.zip"/></t>
+                                        <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
+                                    </div>
+
+                                <div t-if="o.partner_id.contact_name">
+                                            Attention: <t t-esc="o.partner_id.contact_name"/><br/>
+                                        </div>
+                                        <div t-if="o.partner_id.contact_job_position">
+                                            Position: <t t-esc="o.partner_id.contact_job_position"/>
+                                        </div>
+                            </div>
+
+                            <div class="col-6 d-flex justify-content-end">
+                                <div>
+                                    <strong>Invoice No:</strong>
+                                    <span t-field="o.name"/><br/>
+                                    <strong>Date:</strong>
+                                    <span t-field="o.invoice_date"/><br/>
+                                    <strong>Due Date:</strong>
+                                    <span t-field="o.invoice_date_due"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Invoice Lines -->
+                        <table class="table table-bordered security-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%;">Sr.</th>
+                                    <th style="width: 55%;">Description</th>
+                                    <th style="width: 20%;">Units</th>
+                                    <th style="width: 20%;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><br/>1</td>
+                                    <td><br/>
+                                        <span>Aircraft Parking Charges for:<br/>
+                                        Flight No: As per attached</span><br/>
+                                        <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "yy"}'/>
+                                        <br/>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <br/>
+                                        <span t-esc="len(o.invoice_line_ids)"/>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <br/>
+                                        <span t-field="o.amount_untaxed"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: center;">
+                                        <span t-esc="'Total Amount'"/>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <span t-field="o.amount_untaxed"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: center;">
+                                        <span t-esc="'Commercial Tax 5%'"/>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <span t-field="o.amount_tax"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: center;">
+                                        <span t-esc="'Grand Total'"/>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <span t-field="o.amount_total"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="text-align: left;">
+                                        <span t-esc="'('+o.currency_id.amount_to_text(o.amount_total)+' Only)'"/>
+                                    </td>
+<!--                                    <td style="text-align: right;">-->
+<!--                                        <span t-field="o.amount_total"/>-->
+<!--                                    </td>-->
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Payment Information -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <strong>NOTE:</strong>
+                                <span><p>- Payment has to be made in the currency stated above.<br/>
+                                   - For CASH payment, please pay at:<br/>
+                                   Yangon Aerodrome Company Limited Building, Finance Department, Infront of (T-2) Yangon International Airport<br/>
+                                   - For payment via ACCOUNT TRANSFER (bank charges to be borne by the payee), account no.:</p>
+                                <ul>
+                                    <li>CB Bank, USD Account No. 0010101200703796, (Swift Code- CPOBMMMY)</li>
+                                    <li>Industrial and Commercial Bank of China (ICBC), Yangon Branch,<br/>
+                                        USD Account No. 6010010000000150996, (Swift Code- ICBKMMMY)</li>
+                                    <li>Bank of China (BOC), Yangon Branch,<br/>
+                                        USD Account No. 05312220007069, (Swift Code- BKCHMMMY)</li>
+                                </ul></span>
+                            </div>
+                        </div>
+                        <!-- Signature -->
+                        <div class="row mt-5">
+                            <div class="col-6">
+                                <p>Issued by:</p><br/><br/><br/>
+                                <p>____________________</p>
+                                <p>Aye Thida</p>
+                                <p>General Manager</p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Second Page - Breakdown -->
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h3>DETAIL STATEMENT OF AIRCRAFT PARKING CHARGES</h3>
+                            <h4>AIRLINES-<span t-field="o.partner_id.name"/></h4>
+                        </div>
+
+                        <table class="table table-sm" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background-color: #e9ecef;">
+                                    <th style="border: 1px solid black;">No</th>
+                                    <th style="border: 1px solid black;">Date</th>
+                                    <th style="border: 1px solid black;">CALL SIGN</th>
+                                    <th style="border: 1px solid black;">A/C TYPE</th>
+                                    <th style="border: 1px solid black;">Registration</th>
+                                    <th style="border: 1px solid black;">Ldg</th>
+                                    <th style="border: 1px solid black;">Rate</th>
+                                    <th style="border: 1px solid black;">Total Amount</th>
+                                    <th style="border: 1px solid black;">Remark</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.get_grouped_landing_lines()" t-as="group">
+                                    <tr>
+                                        <td style="border: 1px solid black; text-align: center;">
+                                            <t t-esc="group_index + 1"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <t t-esc="group['date']"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <t t-esc="group['flight_no']"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <t t-esc="group['aircraft_type']"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <t t-esc="group['reg_no']"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                             <t t-esc="group['count']"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <span t-esc="group['amount'] / group['count']"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <span t-esc="group['amount']"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+
+                                        <td style="border: 1px solid black;">
+                                            <!-- Remarks field -->
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-if="not next_page">
+                                <tr>
+                                    <td colspan="6" style="text-align: right; border: 1px solid black;">
+                                        <t t-esc="sum([g['count'] for g in o.get_grouped_landing_lines()])"/>
+                                    </td>
+                                    <td style="text-align: right; border: 1px solid black;">
+                                        <strong>Total</strong>
+                                    </td>
+                                    <td style="text-align: right; border: 1px solid black;">
+                                        <strong>
+                                            <span t-field="o.amount_total"/>
+                                        </strong>
+                                    </td>
+                                    <td style="border: 1px solid black;"></td>
+                                </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+<!--                                <tr>-->
+<!--                                    <td colspan="6" style="text-align: right; border: 1px solid black;">-->
+<!--                                        <t t-esc="sum([g['count'] for g in o.get_grouped_landing_lines()])"/>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>Total</strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>-->
+<!--                                            <span t-field="o.amount_total"/>-->
+<!--                                        </strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="border: 1px solid black;"></td>-->
+
+<!--                                </tr>-->
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
