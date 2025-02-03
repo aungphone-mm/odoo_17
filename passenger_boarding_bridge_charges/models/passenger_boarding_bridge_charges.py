@@ -1,6 +1,7 @@
 from odoo import fields, models, api, _
 from datetime import datetime
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
+
 
 class PassengerBoardingBridgeCharges(models.Model):
     _name = 'passenger.boarding.bridge.charges'
@@ -20,8 +21,11 @@ class PassengerBoardingBridgeCharges(models.Model):
     currency_id = fields.Many2one('res.currency', string='Currency', related='bridge_rate_id.currency_id',
                                   store=True,
                                   readonly=True)
-    passenger_boarding_bridge_charges_line_ids = fields.One2many('passenger.boarding.bridge.charges.line', 'passenger_boarding_bridge_charges_id',
-                                                      string='Bridge Details')
+    passenger_boarding_bridge_charges_line_ids = fields.One2many(
+        'passenger.boarding.bridge.charges.line',
+        'passenger_boarding_bridge_charges_id',
+        string='Bridge Details',
+    )
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
     bridge_rate_id = fields.Many2one('passenger.boarding.bridge.charges.rate', string='Bridge Rate')
     for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
@@ -31,6 +35,7 @@ class PassengerBoardingBridgeCharges(models.Model):
         ('invoiced', 'Invoiced')
     ], string='Status', default='draft', tracking=True)
     total_amount = fields.Float(string='Total Amount', compute='_compute_total_amount', store=True)
+    active = fields.Boolean(string='Active', default=True, tracking=True)
 
     @api.depends('passenger_boarding_bridge_charges_line_ids.amount')
     def _compute_total_amount(self):
@@ -51,11 +56,11 @@ class PassengerBoardingBridgeCharges(models.Model):
             'res_id': self.invoice_id.id,
             'context': {'create': False},
         }
+
     def unlink(self):
         for record in self:
-            if record.passenger_boarding_bridge_charges_line_ids:
-                raise ValidationError(
-                    _("You cannot delete this Passenger Boarding record because it has related line items. Please delete all Passenger Boarding Lines first."))
+            if record.active:
+                raise UserError(_("You cannot delete an active record. Please archive it first."))
         return super(PassengerBoardingBridgeCharges, self).unlink()
 
     def action_confirm(self):

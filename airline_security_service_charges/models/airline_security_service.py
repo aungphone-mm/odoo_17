@@ -1,6 +1,7 @@
 from odoo import fields, models, api, _
 from datetime import datetime
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
+
 
 class AirlineSecurityService(models.Model):
     _name = 'airline.security.service'
@@ -23,11 +24,19 @@ class AirlineSecurityService(models.Model):
     security_rate_id = fields.Many2one('airline.security.rate', string='Security Rate')
     for_date = fields.Date(string='Invoice For', default=fields.Date.today, tracking=True)
     inv_desc = fields.Html(string='Invoice Description')
+    active = fields.Boolean(string='Active', default=True, tracking=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
         ('invoiced', 'Invoiced')
     ], string='Status', default='draft', tracking=True)
+    active = fields.Boolean(string='Active', default=True, tracking=True)
+
+    def unlink(self):
+        for record in self:
+            if record.active:
+                raise UserError(_("You cannot delete an active record. Please archive it first."))
+        return super(AirlineSecurityService, self).unlink()
 
     def action_view_invoice(self):
         self.ensure_one()

@@ -6,7 +6,7 @@ class AirlineSecurityServiceLine(models.Model):
     _description = 'Airline security service Line'
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
-    airline_security_service_id = fields.Many2one('airline.security.service', string='Airlines security service', tracking=True)
+    airline_security_service_id = fields.Many2one('airline.security.service', string='Airlines security service', tracking=True,ondelete='cascade')
     flightno_id = fields.Char(string='Flight No.')
     flight_registration_no = fields.Char(string='Registration No.', store=True)
     start_time = fields.Datetime(string='Start Date & Time', tracking=True, default=fields.Datetime.now)
@@ -20,6 +20,19 @@ class AirlineSecurityServiceLine(models.Model):
     amount = fields.Float(string="Amount", compute='_compute_amount', store=True)
     gate = fields.Integer(string="Gate")
     avsec = fields.Integer(string="AVSEC QTY",default = 4)
+    serial_number = fields.Integer(string='S/N', compute='_compute_serial_number', store=True)
+    sequence = fields.Integer(string='Sequence', default=10)
+    active = fields.Boolean(string='Active', related='airline_security_service_id.active',
+                            store=True, readonly=True)
+
+    @api.depends('airline_security_service_id.airline_security_service_line_ids',
+                 'airline_security_service_id.airline_security_service_line_ids.sequence')
+    def _compute_serial_number(self):
+        for parent in self.mapped('airline_security_service_id'):
+            sequence = 1
+            for line in parent.airline_security_service_line_ids.sorted('sequence'):
+                line.serial_number = sequence
+                sequence += 1
 
     @api.depends('airline_security_service_id.security_rate_id')
     def _compute_security_rate(self):

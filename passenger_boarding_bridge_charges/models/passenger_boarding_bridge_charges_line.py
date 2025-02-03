@@ -6,7 +6,12 @@ class PassengerBoardingBridgeChargesLine(models.Model):
     _description = 'Passenger Boarding Bridge Charges Line'
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
-    passenger_boarding_bridge_charges_id = fields.Many2one('passenger.boarding.bridge.charges', string='Passenger Boarding Bridge Charges', tracking=True, )
+    passenger_boarding_bridge_charges_id = fields.Many2one(
+        'passenger.boarding.bridge.charges',
+        string='Passenger Boarding Bridge Charges',
+        tracking=True,
+        ondelete='cascade'  # Ensure this record is deleted when the parent is deleted
+    )
     flightno_id = fields.Char(string='Flight No.')
     flight_registration_no = fields.Char(string='Registration No.')
     flight_aircraft = fields.Char(string='Aircraft Type')
@@ -21,6 +26,8 @@ class PassengerBoardingBridgeChargesLine(models.Model):
     seat_capacity = fields.Integer(string='Seat Capacity',related='bridge_rate_id.seat_capacity')
     serial_number = fields.Integer(string='S/N', compute='_compute_serial_number', store=True)
     sequence = fields.Integer(string='Sequence', default=10)
+    active = fields.Boolean(string='Active', related='passenger_boarding_bridge_charges_id.active',
+                            store=True, readonly=True)
 
     @api.depends('passenger_boarding_bridge_charges_id.passenger_boarding_bridge_charges_line_ids',
                  'passenger_boarding_bridge_charges_id.passenger_boarding_bridge_charges_line_ids.sequence')
