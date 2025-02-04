@@ -1,3 +1,5 @@
+import math
+from dateutil.relativedelta import relativedelta
 from odoo import fields, models, api
 from odoo.tools.translate import _
 from odoo.exceptions import ValidationError, UserError
@@ -468,3 +470,75 @@ class AccountCashbookLine(models.Model):
         for line in self:
             if line.amount <= 0:
                 raise ValidationError(_('Amount must be positive.'))
+
+class AccountAsset(models.Model):
+    _inherit = 'account.asset'
+
+    per_depreciation_amount = fields.Float(string='Per Depreciation Amount')
+    # per_depreciation_date = fields.Date(string='Per Depreciation Date')
+    dep_ref = fields.Char(string='Reference')
+    dep_rate = fields.Char(string='Depreciation Rate')
+    remark = fields.Char(string='Remark')
+
+    def compute_depreciation_board(self):
+        self.ensure_one()
+
+        if self.per_depreciation_amount > 0 and self.prorata_date:
+            # Clear existing unposted depreciation lines
+            self.depreciation_move_ids.filtered(lambda x: x.state == 'draft').unlink()
+
+            # Calculate remaining value and number of periods
+            remaining_value = self.book_value
+            depreciation_amount = self.per_depreciation_amount
+
+            # Calculate exact number of periods needed
+            number_of_periods = math.ceil(remaining_value / depreciation_amount)
+
+            # Generate depreciation moves
+            commands = []
+            # Adjust base date to the last day of the initial month
+            base_date = self.prorata_date + relativedelta(day=31)
+            for i in range(number_of_periods):
+                # For each period, add 'i' months and force the day to 31
+                depreciation_date = base_date + relativedelta(months=i, day=31)  # KEY CHANGE
+
+                # Calculate current period's depreciation
+                if i == number_of_periods - 1:
+                    current_depreciation = remaining_value  # Last period uses remaining value
+                else:
+                    current_depreciation = min(depreciation_amount, remaining_value)
+
+                # Create the move (unchanged)
+                vals = {
+                    'asset_id': self.id,
+                    'amount_total': current_depreciation,
+                    'date': depreciation_date,
+                    'ref': f'{self.name}: Depreciation',
+                    'move_type': 'entry',
+                    'journal_id': self.journal_id.id,
+                    'currency_id': self.currency_id.id,
+                    'line_ids': [
+                        (0, 0, {
+                            'name': f'{self.name}: Depreciation',
+                            'debit': current_depreciation,
+                            'account_id': self.account_depreciation_expense_id.id,
+                        }),
+                        (0, 0, {
+                            'name': f'{self.name}: Depreciation',
+                            'credit': current_depreciation,
+                            'account_id': self.account_depreciation_id.id,
+                        })
+                    ]
+                }
+                move = self.env['account.move'].create(vals)
+                move.write({'auto_post': 'at_date'})
+                commands.append((4, move.id))
+
+                remaining_value -= current_depreciation
+                if remaining_value <= 0:
+                    break
+
+            self.write({'depreciation_move_ids': commands})
+            return True
+
+        return super(AccountAsset, self).compute_depreciation_board()

@@ -50,6 +50,20 @@
                 </tree>
             </field>
         </record>
+        <record id="view_account_asset_form_inherit" model="ir.ui.view">
+        <field name="name">account.asset.form.inherit</field>
+        <field name="model">account.asset</field>
+        <field name="inherit_id" ref="account_asset.view_account_asset_form"/>
+        <field name="arch" type="xml">
+            <field name="prorata_date" position="after">
+                <field name="per_depreciation_amount"/>
+<!--                <field name="per_depreciation_date"/>-->
+                <field name="dep_ref"/>
+                <field name="dep_rate"/>
+                <field name="remark"/>
+            </field>
+        </field>
+    </record>
 
         <!-- Menu -->
         <menuitem id="menu_account_asset_category" name="Asset Categories"
