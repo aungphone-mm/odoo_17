@@ -48,13 +48,14 @@
                         <field name="type"/>
                         <field name="currency_id"/>
                         <field name="airline_user_id" options="{'no_create': True}"/>
-                         <field name="non_schedule"/>
+<!--                         <field name="non_schedule"/>-->
                     </group>
                     <group>
                         <field name="passenger_landing_rate_id"/>
                         <field name="start_time"/>
                         <field name="end_time" />
                         <field name="for_date" />
+                        <field name="create_parking_invoice"/>
                     </group>
                     <group>
                     <group>
@@ -173,6 +174,7 @@
                             <field name="product_id"/>
                             <field name="parking_product_id"/>
                             <field name="airline_id"/>
+
                         </group>
                         <group>
                             <field name="journal_id"/>

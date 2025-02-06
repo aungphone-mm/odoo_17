@@ -32,6 +32,7 @@ class PassengerLanding(models.Model):
     ], string='Status', default='draft', tracking=True)
     total_lines = fields.Integer(compute='_compute_total_lines', string='Total Lines', store=True)
     non_schedule = fields.Boolean(string='Non Schedule', default=False, tracking=True)
+    create_parking_invoice = fields.Boolean(string='Create Parking Invoice', default=True, tracking=True)
 
     @api.depends('passenger_landing_line_ids')
     def _compute_total_lines(self):
@@ -55,6 +56,8 @@ class PassengerLanding(models.Model):
 
     def action_view_parking_invoice(self):
         self.ensure_one()
+        if not self.parking_invoice_id:
+            return
         return {
             'type': 'ir.actions.act_window',
             'name': 'Parking Invoice',
@@ -77,14 +80,22 @@ class PassengerLanding(models.Model):
 
     def create_invoice(self):
         self.ensure_one()
+        # Create landing invoice
         invoice_vals = self._prepare_invoice_vals()
         invoice = self.env['account.move'].create(invoice_vals)
-        invoice_parking_vals = self._prepare_invoice_vals_parking()
-        parking_invoice = self.env['account.move'].create(invoice_parking_vals)
-        self.write({
-            'invoice_id': invoice.id,
-            'parking_invoice_id': parking_invoice.id
-        })
+
+        # Create parking invoice only if create_parking_invoice is True
+        parking_invoice = False
+        if self.create_parking_invoice:
+            invoice_parking_vals = self._prepare_invoice_vals_parking()
+            parking_invoice = self.env['account.move'].create(invoice_parking_vals)
+
+        # Update records
+        vals = {'invoice_id': invoice.id}
+        if parking_invoice:
+            vals['parking_invoice_id'] = parking_invoice.id
+
+        self.write(vals)
         return invoice
 
     def _prepare_invoice_vals(self):
