@@ -9,6 +9,7 @@ class AirlineChargesReport(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         start_date = datetime.strptime(data['date_from'], '%Y-%m-%d')
         end_date = datetime.strptime(data['date_to'], '%Y-%m-%d')
+        end_date = end_date.replace(hour=23, minute=59, second=59)
         # Subtract 6:30 from date
         date_from = start_date - timedelta(hours=6, minutes=30)
         date_to = end_date - timedelta(hours=6, minutes=30)

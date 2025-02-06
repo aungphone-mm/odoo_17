@@ -10,6 +10,7 @@ class CheckinSummaryReport(models.AbstractModel):
         # Convert string date to datetime object with correct format
         start_date = datetime.strptime(data['start_date'], '%Y-%m-%d')
         end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')
+        end_date = end_date.replace(hour=23, minute=59, second=59)
         # Subtract 6:30 from date
         adjusted_start_date = start_date - timedelta(hours=6, minutes=30)
         adjusted_end_date = end_date - timedelta(hours=6, minutes=30)

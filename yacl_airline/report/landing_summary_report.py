@@ -8,7 +8,9 @@ class LandingSummaryReport(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         start_date = datetime.strptime(data['start_date'], '%Y-%m-%d')
         end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')
-        # Subtract 6:30 from date
+        # First adjust the end_date to 23:59:59
+        end_date = end_date.replace(hour=23, minute=59, second=59)
+        # Then subtract 6:30 from both dates
         adjusted_start_date = start_date - timedelta(hours=6, minutes=30)
         adjusted_end_date = end_date - timedelta(hours=6, minutes=30)
         landing_lines = self.env['passenger.landing.line'].search([

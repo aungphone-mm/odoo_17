@@ -31,6 +31,7 @@ class BoardingBridgeReport(models.AbstractModel):
             return {}
         start_date = datetime.strptime(data['date_from'], '%Y-%m-%d')
         end_date = datetime.strptime(data['date_to'], '%Y-%m-%d')
+        end_date = end_date.replace(hour=23, minute=59, second=59)
         adjusted_start_date = start_date - timedelta(hours=6, minutes=30)
         adjusted_end_date = end_date - timedelta(hours=6, minutes=30)
         # Get boarding bridge lines within date range
