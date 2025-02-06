@@ -477,7 +477,7 @@ class AccountAsset(models.Model):
     per_depreciation_amount = fields.Float(string='Per Depreciation Amount')
     # per_depreciation_date = fields.Date(string='Per Depreciation Date')
     dep_ref = fields.Char(string='Reference')
-    dep_rate = fields.Char(string='Depreciation Rate')
+    dep_rate = fields.Char(string='Depreciation Rate %')
     remark = fields.Char(string='Remark')
 
     def compute_depreciation_board(self):
