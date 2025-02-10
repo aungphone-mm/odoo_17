@@ -41,31 +41,31 @@ class AccountMoveLine(models.Model):
 
     passenger_boarding_bridge_charges_line_id = fields.Many2one('passenger.boarding.bridge.charges.line', string='Bridge Service Line')
 
-    def _get_time_from_rate(self):
-        self.ensure_one()
-        if not self.price_unit:
-            return False
-
-        rate_line = self.env['passenger.boarding.bridge.charges.rate.line'].search([
-            ('unit_price', '=', self.price_unit)
-        ], limit=1)
-
-        return rate_line.time if rate_line else False
-
-    # def _get_time_from_rate_security(self):
-    #     """Get time value based on total service duration in minutes"""
+    # def _get_time_from_rate(self):
     #     self.ensure_one()
-    #     if not self.airline_security_service_line_id:
+    #     if not self.price_unit:
     #         return False
-    #     # Get total minutes from the service line
-    #     total_minutes = self.airline_security_service_line_id.total_minutes
-    #     # Find matching rate line based on duration range
-    #     rate_line = self.env['airline.security.rate.line'].search([
-    #         ('rate_id', '=', self.airline_security_service_line_id.security_rate_id.id),
-    #         ('from_unit', '<=', total_minutes),
-    #         ('to_unit', '>=', total_minutes)
-    #     ], limit=1)
-    #     if rate_line:
-    #         return str(rate_line.time)
     #
-    #     return False
+    #     rate_line = self.env['passenger.boarding.bridge.charges.rate.line'].search([
+    #         ('unit_price', '=', self.price_unit)
+    #     ], limit=1)
+    #
+    #     return rate_line.time if rate_line else False
+
+    def _get_time_from_rate(self):
+        """Get time value based on total service duration in minutes"""
+        self.ensure_one()
+        if not self.passenger_boarding_bridge_charges_line_id:
+            return False
+        # Get total minutes from the service line
+        total_minutes = self.passenger_boarding_bridge_charges_line_id.total_minutes
+        # Find matching rate line based on duration range
+        rate_line = self.env['passenger.boarding.bridge.charges.rate.line'].search([
+            ('rate_id', '=', self.passenger_boarding_bridge_charges_line_id.bridge_rate_id.id),
+            ('from_unit', '<=', total_minutes),
+            ('to_unit', '>=', total_minutes)
+        ], limit=1)
+        if rate_line:
+            return rate_line.time
+        return 0.0
+

@@ -30,7 +30,6 @@ class AirlineSecurityService(models.Model):
         ('confirmed', 'Confirmed'),
         ('invoiced', 'Invoiced')
     ], string='Status', default='draft', tracking=True)
-    active = fields.Boolean(string='Active', default=True, tracking=True)
 
     def unlink(self):
         for record in self:
