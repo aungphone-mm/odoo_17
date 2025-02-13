@@ -698,10 +698,17 @@ class AccountMove(models.Model):
                     final_total += line.price_unit  # Adding negative values will subtract them
         return final_total
 
+    # def get_total_units(self):
+    #     """Get total units across all meters"""
+    #     return sum(line.reading_line_id.total_unit
+    #                for line in self.invoice_line_ids.filtered(lambda l: l.reading_line_id))
+
     def get_total_units(self):
-        """Get total units across all meters"""
-        return sum(line.reading_line_id.total_unit
-                   for line in self.invoice_line_ids.filtered(lambda l: l.reading_line_id))
+        """Calculate total units from all meter readings, including adjustments"""
+        total_units = 0
+        for meter in self._compute_meter_details():
+            total_units += meter['total_units']
+        return total_units
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
