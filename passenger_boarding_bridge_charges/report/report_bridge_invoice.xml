@@ -263,7 +263,7 @@
                                     </t>
                                     <tr>
                                         <td style="border: 1px solid black;">
-                                            Total (<t t-esc="len(o.invoice_line_ids)"/>) Bridge for (<t t-esc="len(set(o.invoice_line_ids.mapped('name')))"/>) Flights
+<!--                                            Total (<t t-esc="len(o.invoice_line_ids)"/>) Bridge for (<t t-esc="len(set(o.invoice_line_ids.mapped('name')))"/>) Flights-->
                                         </td>
                                         <td style="border: 1px solid black; text-align: center;">
                                             <t t-esc="total_count"/>

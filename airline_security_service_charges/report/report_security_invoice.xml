@@ -77,21 +77,21 @@
                                 <tr>
                                     <td><br/><br/>1</td>
                                     <td>
-                                        <br/>
-
-<!--                                        <span t-field="o.airline_security_service_id.inv_desc"/>-->
-<!--                                        <span t-field="o.for_date" t-options='({"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>)-->
                                         <span>Security Service Charges for:<br/>
                                         Flight No: As per attached(
                                             <span t-field="o.airline_security_service_id.for_date" t-options='{"format": "MMM"}'/>'
                                             <span t-field="o.airline_security_service_id.for_date" t-options='{"format": "yy"}'/>
                                         )</span>
                                         <span t-field="o.airline_security_service_id.inv_desc"/>
-
                                     </td>
                                     <td style="text-align: center;">
                                         <br/><br/>
-                                        <span t-esc="len(o.invoice_line_ids)"/>
+                                        <t t-set="total_minutes" t-value="sum(line.airline_security_service_line_id.total_minutes for line in o.invoice_line_ids)"/>
+                                        <t t-set="total_hours" t-value="int(total_minutes // 60)"/>
+                                        <t t-set="total_mins" t-value="int(total_minutes % 60)"/>
+                <!--                        <span t-esc="len(o.invoice_line_ids)"/>-->
+                                        <br/>
+                                        <span t-esc="'%02d:%02d' % (total_hours, total_mins)"/>
                                     </td>
                                     <td style="text-align: right;">
                                         <br/><br/>
@@ -230,7 +230,16 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="9" style="text-align: right; border: 1px solid black;">
+                                    <td colspan="6" style="text-align: right; border: 1px solid black;">
+                                        <t t-set="total_minutes" t-value="sum(line.airline_security_service_line_id.total_minutes for line in o.invoice_line_ids)"/>
+                                        <t t-set="total_hours" t-value="int(total_minutes // 60)"/>
+                                        <t t-set="total_mins" t-value="int(total_minutes % 60)"/>
+                                        <strong>Total Service Hours:</strong>
+                                    </td>
+                                    <td style="text-align: center; border: 1px solid black;">
+                                        <strong><t t-esc="'%02d:%02d' % (total_hours, total_mins)"/></strong>
+                                    </td>
+                                    <td colspan="2" style="text-align: right; border: 1px solid black;">
                                         <strong>Total</strong>
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
