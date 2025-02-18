@@ -31,13 +31,14 @@ class AccountMove(models.Model):
     #     return rate_totals
 
     def _get_unique_date_flights(self):
-        # Create a set of tuples (date, flight_no) to count unique combinations
         unique_combinations = set()
         for line in self.invoice_line_ids:
+            if not line.checkin_counter_line_id or not line.checkin_counter_line_id.end_time:
+                continue
             date = line.checkin_counter_line_id.end_time.date()
-            flight_no = line.name
+            flight_no = line.name or ''
             unique_combinations.add((date, flight_no))
-        return len(unique_combinations)
+        return len(unique_combinations) if unique_combinations else 0
 
     def _get_amount_totals(self):
         amount_totals = {}

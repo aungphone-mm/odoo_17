@@ -80,9 +80,10 @@
                                         <br/><br/>
                                     </td>
                                     <td style="text-align: center;">
-                                        <br/><br/>
-                                        <span t-esc="len(o.invoice_line_ids)"/>
-                                    </td>
+    <br/><br/>
+    <t t-set="total_time" t-value="sum(line._get_time_from_rate() or 0 for line in o.invoice_line_ids)"/>
+    <span t-esc="total_time"/>
+</td>
                                     <td style="text-align: right;">
                                         <br/><br/>
                                         <span t-field="o.amount_untaxed"/>

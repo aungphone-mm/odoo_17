@@ -78,7 +78,7 @@
                                     <td>
                                         Check-In Counter Service Charges for: <br/><span t-field="o.checkin_counter_id.inv_desc" style="display: inline-block;"/><br/>
                                         Flight No: As per attached<br/>
-                                        <span t-field="o.checkin_counter_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.checkin_counter_id.for_date" t-options='{"format": "yy"}'/>
+<!--                                        <span t-field="o.checkin_counter_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.checkin_counter_id.for_date" t-options='{"format": "yy"}'/>-->
                                     </td>
 
                                     <td style="text-align: center;">

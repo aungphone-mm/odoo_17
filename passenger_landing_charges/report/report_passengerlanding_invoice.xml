@@ -84,7 +84,7 @@
                                     </td>
                                     <td style="text-align: center;">
                                         <br/>
-                                        <span t-esc="len(o.invoice_line_ids)"/>
+                                        <t t-esc="sum([g['count'] for g in o.get_grouped_landing_lines()])"/>
                                     </td>
                                     <td style="text-align: right;">
                                         <br/>
