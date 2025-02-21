@@ -225,9 +225,8 @@
                                         </td>
                                     </tr>
                                 </t>
-                            </tbody>
-                            <tfoot>
-                                <tr>
+                                <t t-if="not next_page">
+                                    <tr>
                                     <td colspan="8" style="border: 1px solid black; text-align: right;">
                                         <strong>Total</strong>
                                     </td>
@@ -242,6 +241,10 @@
                                     </td>
                                     <td style="border: 1px solid black;"></td>
                                 </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+
                             </tfoot>
                         </table>
                     </div>

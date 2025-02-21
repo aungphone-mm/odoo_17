@@ -222,7 +222,7 @@
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
                                         <strong>
-                                            <span t-field="o.amount_total"/>
+                                            <span t-field="o.amount_untaxed"/>
                                         </strong>
                                     </td>
                                     <td style="border: 1px solid black;"></td>
