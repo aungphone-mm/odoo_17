@@ -24,5 +24,13 @@ class Airline(models.Model):
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
+    _description = 'Res'
 
     is_airline = fields.Boolean(string='Is Airline', default=False)
+    old_ac = fields.Char(string='Old Account Code')
+
+class AccountAsset(models.Model):
+    _inherit = 'account.asset'
+    _description = 'Account Asset'
+
+    main_ac = fields.Char(string='Main Account Code')

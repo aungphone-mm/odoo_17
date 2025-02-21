@@ -45,5 +45,26 @@
                </form>
            </field>
        </record>
+       <record id="view_res_inherit" model="ir.ui.view">
+           <field name="name">res.partner.form</field>
+           <field name="model">res.partner</field>
+           <field name="inherit_id" ref="base.view_partner_form"/>
+           <field name="arch" type="xml">
+                <xpath expr="//field[@name='vat']" position="after">
+                    <field name="old_ac"/>
+            </xpath>
+           </field>
+       </record>
+       <record id="view_account_asset_form_inherit" model="ir.ui.view">
+        <field name="name">account.asset.form.inherit</field>
+        <field name="model">account.asset</field>
+        <field name="inherit_id" ref="account_asset.view_account_asset_form"/>
+        <field name="arch" type="xml">
+            <!-- Add fields after the name field -->
+            <xpath expr="//field[@name='analytic_distribution']" position="after">
+                <field name="main_ac"/>
+            </xpath>
+        </field>
+    </record>
    </data>
 </odoo>
