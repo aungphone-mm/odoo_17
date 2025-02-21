@@ -26,33 +26,34 @@ class AccountMove(models.Model):
     def get_grouped_landing_lines(self):
         grouped_lines = {}
         for line in self.invoice_line_ids:
-            # Safely get the date and registration number
-            if line.passenger_landing_line_id and line.passenger_landing_line_id.start_time:
-                date_key = line.passenger_landing_line_id.start_time.strftime('%d.%m.%y')
-            else:
-                date_key = ''
+            # Get date
+            landing_line = line.passenger_landing_line_id
+            date_key = ''
+            if landing_line and landing_line.start_time:
+                date_key = landing_line.start_time.strftime('%d.%m.%y')
 
-            if line.passenger_landing_line_id and line.passenger_landing_line_id.flight_registration_no:
-                reg_key = line.passenger_landing_line_id.flight_registration_no.name or ''
-            else:
-                reg_key = ''
+            # Get registration number
+            reg_key = ''
+            if landing_line and landing_line.flight_registration_no:
+                reg_key = landing_line.flight_registration_no.name or ''
 
+            # Group key combines just date and registration
             group_key = f"{date_key}-{reg_key}"
 
             if group_key not in grouped_lines:
                 grouped_lines[group_key] = {
                     'date': date_key,
-                    'flight_no': line.passenger_landing_line_id.flight_no or '',
-                    'aircraft_type': line.passenger_landing_line_id.aircraft_type_display or '',
+                    'flight_no': landing_line.flight_no or '',  # Keep first flight number seen
+                    'aircraft_type': landing_line.aircraft_type_display or '',
                     'reg_no': reg_key,
                     'count': 1,
                     'amount': line.price_subtotal or 0.0,
                 }
             else:
+                # Combine counts and amounts for same date+registration
                 grouped_lines[group_key]['count'] += 1
                 grouped_lines[group_key]['amount'] += line.price_subtotal or 0.0
 
-        # Convert falsy values to empty strings for sorting
         result = list(grouped_lines.values())
         return sorted(result, key=lambda x: (x['date'] or '', x['reg_no'] or ''))
 

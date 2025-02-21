@@ -75,19 +75,19 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><br/>1</td>
-                                    <td><br/>
+                                    <td>1</td>
+                                    <td>
                                         <span>Aircraft Landing Charges for:<br/>
                                         Flight No: As per attached</span><br/>
                                         <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "yy"}'/>
-                                        <br/>
+
                                     </td>
                                     <td style="text-align: center;">
-                                        <br/>
+
                                         <t t-esc="sum([g['count'] for g in o.get_grouped_landing_lines()])"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <br/>
+
                                         <span t-field="o.amount_untaxed"/>
                                     </td>
                                 </tr>
