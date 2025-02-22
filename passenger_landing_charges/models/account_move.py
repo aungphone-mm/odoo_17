@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from odoo import fields, models, _
 
 class AccountMove(models.Model):
@@ -30,7 +32,8 @@ class AccountMove(models.Model):
             landing_line = line.passenger_landing_line_id
             date_key = ''
             if landing_line and landing_line.start_time:
-                date_key = landing_line.start_time.strftime('%d.%m.%y')
+                adjusted_time = landing_line.start_time + timedelta(hours=6, minutes=30) #to correct at report UI time
+                date_key = adjusted_time.strftime('%d.%m.%y')
 
             # Get registration number
             reg_key = ''
