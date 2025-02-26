@@ -20,7 +20,7 @@ class AccountCashbook(models.Model):
                             required=True)
     journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', tracking=True)
     main_account_id = fields.Many2one(comodel_name='account.account', string='Main Account Name',
-                                      domain='[("account_type", "=", "asset_cash")]', related='journal_id.default_account_id', readonly=False)
+                                       related='journal_id.default_account_id', readonly=False)
     currency_id = fields.Many2one(comodel_name='res.currency', string='Currency', required=True, default=lambda self: self.env.company.currency_id.id, tracking=True)
     description = fields.Html(string='Description', required=False)
     line_ids = fields.One2many(comodel_name='account.cashbook.line', inverse_name='cashbook_id', string='Cashbook Line',
@@ -100,7 +100,6 @@ class AccountCashbook(models.Model):
             'align': 'left',
             'border': 1,
             'border_color': '#C0C0C0',
-            # 'bg_color': '#FFB6C1'  # Light pink background for analytic codes
         })
         date_format = workbook.add_format({'num_format': 'yyyy-mm-dd'})
 
@@ -131,6 +130,8 @@ class AccountCashbook(models.Model):
             title = 'Cashbook'
 
         sheet.merge_range('A1:P1', title, title_format)
+
+        # Define headers that match exactly how you want to use them in the data section
         headers = [
             'Date',
             'Source Code',
@@ -138,15 +139,17 @@ class AccountCashbook(models.Model):
             'Cheque',
             'DN/CN No.',
             'Description',
-            'Account Name',
-            'Partner',
+            'Name',
             'Particular',
             'Label',
-            'Analytic Distribution',
+            'USD(AMT)',
             'Currency',
+            'Price',
             'Amount',
             'Main Account',
+            'Main Dept',
             'Sub Account',
+            'Sub Dept',
             'Note'
         ]
 
@@ -155,26 +158,29 @@ class AccountCashbook(models.Model):
 
         # Write data starting from row 2 (row index 2 in code corresponds to Excel row 3)
         for row, line in enumerate(self.line_ids, 2):
-            sheet.write(row, 0, line.cashbook_id.date.strftime('%Y-%m-%d') if line.cashbook_id.date else '', date_format)
-            # Account Name
+            # Date - column A
+            sheet.write(row, 0, line.cashbook_id.date.strftime('%Y-%m-%d') if line.cashbook_id.date else '',
+                        date_format)
+
+            # Source Code - column B is left empty
+            # Reference - column C is left empty
+            # Cheque - column D is left empty
+            # DN/CN No. - column E is left empty
+            # Description - column F is left empty
+
+            # Name (Account Name) - column G
             account_name = f"{line.account_id.code} {line.account_id.name}"
             sheet.write(row, 6, account_name, cell_format)
 
-            # Partner
+            # Particular (Partner) - column H
             sheet.write(row, 7, line.partner_id.name if line.partner_id else '', cell_format)
 
-            # Label
-            sheet.write(row, 9, line.name or '', cell_format)
+            # Label - column I
+            sheet.write(row, 8, line.name or '', cell_format)
 
-            # Analytic Distribution
-            sheet.write(row, 10, line.analytic_code or '', analytic_format)
+            # USD(AMT) - column J is left empty
 
-            # Currency
-            sheet.write(row, 11, line.currency_id.name, cell_format)
-
-            # Amount - write the amount directly (it's already in K)
-            sheet.write(row, 12, line.amount, amount_format)
-
+            # Analytic Distribution (should be in Note column or a dedicated analytic column)
             analytic_value = ''
             if line.analytic_distribution:
                 # Get account info for each entry in the distribution
@@ -191,8 +197,21 @@ class AccountCashbook(models.Model):
                 # Create the display string using code field
                 analytic_value = ' / '.join(account.code for account in analytic_accounts if account.exists())
 
-            # Write to Excel
-            sheet.write(row, 10, analytic_value, analytic_format)
+            # Currency - column K
+            sheet.write(row, 10, line.currency_id.name, cell_format)
+
+            # Price - column L is left empty
+
+            # Amount - column M
+            sheet.write(row, 12, line.amount, amount_format)
+
+            # Main Account - column N is left empty
+            # Main Dept - column O is left empty
+            # Sub Account - column P is left empty
+            # Sub Dept - column Q is left empty
+
+            # Note (Analytic Code) - column R
+            sheet.write(row, 17, analytic_value, analytic_format)
 
         # Add total row
         total_row = len(self.line_ids) + 2
@@ -310,6 +329,20 @@ class AccountCashbook(models.Model):
 
     def action_print_payable_invoice(self):
         # Cashbook Invoice Print
+        for record in self:
+            for line in record.line_ids:
+                analytic_accounts = []
+                if line.analytic_distribution:
+                    for account_id, percentage in line.analytic_distribution.items():
+                        if ',' in account_id:  # Handle compound keys
+                            account_ids = [int(x) for x in account_id.split(',')]
+                            accounts = self.env['account.analytic.account'].browse(account_ids)
+                            analytic_accounts.extend(accounts)
+                        else:
+                            account = self.env['account.analytic.account'].browse(int(account_id))
+                            analytic_accounts.append(account)
+                # Join analytic codes with '/'
+                line.analytic_code = ' / '.join(account.code for account in analytic_accounts if account.exists())
         return self.env.ref('account_extension.action_report_payable_invoice').report_action(self)
 
     def cancel_journal_entries(self):
@@ -471,65 +504,132 @@ class AccountCashbookLine(models.Model):
             if line.amount <= 0:
                 raise ValidationError(_('Amount must be positive.'))
 
+
 class AccountAsset(models.Model):
     _inherit = 'account.asset'
 
+    # Existing fields
     per_depreciation_amount = fields.Float(string='Per Depreciation Amount')
-    # per_depreciation_date = fields.Date(string='Per Depreciation Date')
     dep_ref = fields.Char(string='Reference')
     dep_rate = fields.Char(string='Depreciation Rate %')
     remark = fields.Char(string='Remark')
+
+    # Currency fields
+    asset_currency = fields.Selection([
+        ('MMK', 'MMK'),
+        ('USD', 'USD')
+    ], string='Asset Currency', default='MMK')
+
+    exchange_rate = fields.Float(
+        string='Exchange Rate (USD)',
+        default=1.0,
+        help='Exchange rate for converting MMK to USD'
+    )
+
+    # Computed USD fields
+    per_depreciation_amount_usd = fields.Float(
+        string='Per Depreciation Amount (USD)',
+        compute='_compute_usd_amounts',
+        store=True
+    )
+
+    book_value_usd = fields.Float(
+        string='Book Value (USD)',
+        compute='_compute_usd_amounts',
+        store=True
+    )
+    depreciation_usd = fields.Float(
+        string='Depreciation (USD)',
+        compute='_compute_board_values_usd',
+        store=True
+    )
+    cumulative_depreciation_usd = fields.Float(
+        string='Cumulative Depreciation (USD)',
+        compute='_compute_board_values_usd',
+        store=True
+    )
+    depreciable_value_usd = fields.Float(
+        string='Depreciable Value (USD)',
+        compute='_compute_board_values_usd',
+        store=True
+    )
+
+    @api.depends('original_value', 'book_value', 'exchange_rate', 'asset_currency')
+    def _compute_board_values_usd(self):
+        for asset in self:
+            if asset.asset_currency == 'USD' and asset.exchange_rate:
+                asset.depreciation_usd = asset.original_value / asset.exchange_rate
+                asset.cumulative_depreciation_usd = (asset.original_value - asset.book_value) / asset.exchange_rate
+                asset.depreciable_value_usd = asset.book_value / asset.exchange_rate
+            else:
+                asset.depreciation_usd = 0.0
+                asset.cumulative_depreciation_usd = 0.0
+                asset.depreciable_value_usd = 0.0
+
+    @api.depends('per_depreciation_amount', 'book_value', 'exchange_rate', 'asset_currency')
+    def _compute_usd_amounts(self):
+        for asset in self:
+            if asset.asset_currency == 'USD' and asset.exchange_rate:
+                # Convert MMK to USD by dividing by exchange rate
+                asset.per_depreciation_amount_usd = asset.per_depreciation_amount / asset.exchange_rate
+                asset.book_value_usd = asset.book_value / asset.exchange_rate
+            else:
+                asset.per_depreciation_amount_usd = 0.0
+                asset.book_value_usd = 0.0
 
     def compute_depreciation_board(self):
         self.ensure_one()
 
         if self.per_depreciation_amount > 0 and self.prorata_date:
-            # Clear existing unposted depreciation lines
             self.depreciation_move_ids.filtered(lambda x: x.state == 'draft').unlink()
 
-            # Calculate remaining value and number of periods
-            remaining_value = self.book_value
-            depreciation_amount = self.per_depreciation_amount
+            # Use USD amounts if currency is USD
+            if self.asset_currency == 'USD' and self.exchange_rate:
+                remaining_value = self.book_value_usd
+                depreciation_amount = self.per_depreciation_amount_usd
+            else:
+                remaining_value = self.book_value
+                depreciation_amount = self.per_depreciation_amount
 
-            # Calculate exact number of periods needed
             number_of_periods = math.ceil(remaining_value / depreciation_amount)
-
-            # Generate depreciation moves
             commands = []
-            # Adjust base date to the last day of the initial month
             base_date = self.prorata_date + relativedelta(day=31)
-            for i in range(number_of_periods):
-                # For each period, add 'i' months and force the day to 31
-                depreciation_date = base_date + relativedelta(months=i, day=31)  # KEY CHANGE
 
-                # Calculate current period's depreciation
+            for i in range(number_of_periods):
+                depreciation_date = base_date + relativedelta(months=i, day=31)
+
                 if i == number_of_periods - 1:
-                    current_depreciation = remaining_value  # Last period uses remaining value
+                    current_depreciation = remaining_value
                 else:
                     current_depreciation = min(depreciation_amount, remaining_value)
 
-                # Create the move (unchanged)
+                # Convert amount to MMK if using USD
+                move_amount = current_depreciation
+                if self.asset_currency == 'USD':
+                    move_amount = current_depreciation * self.exchange_rate
+
                 vals = {
                     'asset_id': self.id,
-                    'amount_total': current_depreciation,
+                    'amount_total': move_amount,
                     'date': depreciation_date,
-                    'ref': f'{self.name}: Depreciation',
+                    'ref': f'{self.name}: Depreciation ({self.asset_currency})',
                     'move_type': 'entry',
                     'journal_id': self.journal_id.id,
                     'currency_id': self.currency_id.id,
                     'line_ids': [
                         (0, 0, {
                             'name': f'{self.name}: Depreciation',
-                            'debit': current_depreciation,
+                            'debit': move_amount,
                             'account_id': self.account_depreciation_expense_id.id,
                         }),
                         (0, 0, {
                             'name': f'{self.name}: Depreciation',
-                            'credit': current_depreciation,
+                            'credit': move_amount,
                             'account_id': self.account_depreciation_id.id,
                         })
                     ]
                 }
+
                 move = self.env['account.move'].create(vals)
                 move.write({'auto_post': 'at_date'})
                 commands.append((4, move.id))
@@ -542,3 +642,8 @@ class AccountAsset(models.Model):
             return True
 
         return super(AccountAsset, self).compute_depreciation_board()
+
+    @api.onchange('asset_currency')
+    def _onchange_asset_currency(self):
+        if self.asset_currency == 'MMK':
+            self.exchange_rate = 1.0

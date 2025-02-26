@@ -16,6 +16,25 @@ class AccountMove(models.Model):
         store=True,
         readonly=False
     )
+
+    # def write(self, vals):
+    #     # First perform the original write operation
+    #     res = super().write(vals)
+    #
+    #     # If payment reference was updated
+    #     if 'payment_reference' in vals:
+    #         for move in self:
+    #             move.line_ids.write({
+    #                 'ref': move.payment_reference
+    #             })
+    #     return res
+    # @api.onchange('payment_reference')
+    # def _onchange_payment_reference(self):
+    #     for move in self:
+    #         if move.payment_reference:
+    #             # Update all journal items with the payment reference
+    #             for line in move.line_ids:
+    #                 line.ref = move.payment_reference
     @api.depends('line_ids', 'line_ids.account_id', 'partner_id')
     def _compute_account_receivable_id(self):
         """Compute account_receivable_id from existing move lines or partner"""
@@ -73,20 +92,57 @@ class AccountMove(models.Model):
         if self.partner_id and self.move_type in ('out_invoice', 'out_refund'):
             self.account_receivable_id = self.partner_id.property_account_receivable_id
 
-    # def action_post(self):
-    #     """Additional validation before posting"""
-    #     for move in self:
-    #         if move.move_type in ('out_invoice', 'out_refund') and not move.account_receivable_id:
-    #             raise ValidationError(_('Please select an account receivable before posting.'))
-    #     return super().action_post()
-
     def action_print_custom_invoice(self):
         """Print the custom invoice report"""
         self.ensure_one()
         return self.env.ref('account_extension.action_report_custom_invoice').report_action(self)
 
-    # @api.model
-    # def write(self, vals):
-    #     # print('hello world')
-    #     res = super(AccountMove, self).write(vals)
-    #     return res
+    depreciation_usd = fields.Float(
+        string='Depreciation (USD)',
+        compute='_compute_usd_amounts',
+        store=True
+    )
+    cumulative_depreciation_usd = fields.Float(
+        string='Cumulative Depreciation (USD)',
+        compute='_compute_usd_amounts',
+        store=True
+    )
+    depreciable_value_usd = fields.Float(
+        string='Depreciable Value (USD)',
+        compute='_compute_usd_amounts',
+        store=True
+    )
+
+    @api.depends('amount_total', 'asset_id.exchange_rate', 'asset_id.asset_currency')
+    def _compute_usd_amounts(self):
+        for move in self:
+            if move.asset_id.asset_currency == 'USD' and move.asset_id.exchange_rate:
+                # Convert amount_total to USD
+                move.depreciation_usd = move.amount_total / move.asset_id.exchange_rate
+
+                # Calculate cumulative depreciation in USD
+                previous_moves = self.env['account.move'].search([
+                    ('asset_id', '=', move.asset_id.id),
+                    ('date', '<=', move.date),
+                    ('state', '!=', 'cancel')
+                ], order='date')
+
+                cumulative_mmk = sum(m.amount_total for m in previous_moves)
+                move.cumulative_depreciation_usd = cumulative_mmk / move.asset_id.exchange_rate
+
+                # Calculate depreciable value in USD
+                if move.asset_id:
+                    move.depreciable_value_usd = move.asset_id.book_value_usd
+            else:
+                move.depreciation_usd = 0.0
+                move.cumulative_depreciation_usd = 0.0
+                move.depreciable_value_usd = 0.0
+
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
+
+    # The ref field already exists in account.move.line
+    # We're just making it editable in the view
+    ref_no = fields.Char(string='Reference', readonly=False)
+    note = fields.Char(string='Note')
+    date = fields.Datetime(string='Date')

@@ -35,6 +35,59 @@
                        readonly="state != 'draft'"
                        domain="[('account_type', '=', 'asset_receivable')]"/>
             </xpath>
+            <xpath expr="//field[@name='line_ids']/tree//field[@name='account_id']" position="after">
+                <field name="ref_no" optional="show"/>
+                <field name="note" string="Note" optional="show"/>
+                <field name="date" string="Date" optional="show"/>
+            </xpath>
+
+        </field>
+    </record>
+    <record id="view_move_line_tree_inherit_ref" model="ir.ui.view">
+        <field name="name">account.move.line.tree.inherit.ref</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_id']" position="after">
+                <field name="ref_no"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_account_asset_form_currency" model="ir.ui.view">
+        <field name="name">account.asset.form.currency</field>
+        <field name="model">account.asset</field>
+        <field name="inherit_id" ref="account_asset.view_account_asset_form"/>
+        <field name="arch" type="xml">
+            <!-- Add currency fields in the asset info section -->
+            <xpath expr="//field[@name='original_value']" position="after">
+                <field name="asset_currency"/>
+                <field name="exchange_rate"
+                    invisible="asset_currency == 'MMK'"
+                    required="asset_currency == 'USD'"/>
+                <field name="per_depreciation_amount_usd"
+                    invisible="asset_currency == 'MMK'"/>
+                <field name="book_value_usd"
+                    invisible="asset_currency == 'MMK'"/>
+            </xpath>
+
+            <!-- Add USD columns to depreciation board -->
+            <xpath expr="//field[@name='depreciation_move_ids']/tree" position="inside">
+                <field name="amount_total"
+                    string="Depreciation (MMK)"
+                    optional="show"/>
+                <field name="depreciation_usd"
+                    string="Depreciation (USD)"
+                    optional="show"
+                    invisible="parent.asset_currency == 'MMK'"/>
+                <field name="cumulative_depreciation_usd"
+                    string="Cumulative Dep. (USD)"
+                    optional="show"
+                    invisible="parent.asset_currency == 'MMK'"/>
+                <field name="depreciable_value_usd"
+                    string="Depreciable Value (USD)"
+                    optional="show"
+                    invisible="parent.asset_currency == 'MMK'"/>
+            </xpath>
         </field>
     </record>
 </odoo>

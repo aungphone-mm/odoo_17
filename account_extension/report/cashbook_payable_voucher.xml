@@ -35,7 +35,7 @@
                                 <div>
                                     <t t-foreach="o.line_ids" t-as="line">
                                     <strong>Particular:</strong>
-                                     <span t-esc="line.account_id.name" />><br/>
+                                     <span t-esc="line.account_id.name" /><br/>
                                      <strong>Date:</strong>
                                     <span t-field="o.date"/><br/>
                                     </t>
@@ -45,6 +45,7 @@
                       <table class="table table-bordered entry-table" style="width:100%; height:50px; border: 1px solid black;">
                            <thead>
                                 <tr >
+                                    <th style="text-align: center;">Main-Account Code</th>
                                     <th style="text-align: center;">A/C Code</th>
                                     <th style="text-align: center;">Debit</th>
                                     <th style="text-align: center;">Credit</th>
@@ -53,17 +54,29 @@
                             </thead>
                       <tbody>
                           <t t-foreach="o.move_line_ids" t-as="mline">
+                              <!-- Find corresponding cashbook line to get analytic code -->
+                              <t t-set="matching_line" t-value="o.line_ids.filtered(lambda l: l.account_id.id == mline.account_id.id and l.amount == (mline.debit or mline.credit))"/>
                               <tr>
+                                    <td style="text-align: center; width:10%">
+                                        <!-- Show analytic code if available from matching cashbook line -->
+                                        <t t-if="matching_line and matching_line.analytic_code">
+                                            <span t-esc="matching_line.analytic_code"/>
+                                        </t>
+                                        <!-- Fallback to main account code if no analytic code found -->
+                                        <t t-else="">
+                                            <span t-esc="o.main_account_id.code"/>
+                                        </t>
+                                    </td>
                                   <td style="text-align: center;">
                                       <span t-esc="mline.account_id.code" />
                                  </td>
-                                   <td style="text-align: center;">  <!-- Account Name 2-->
+                                   <td style="text-align: center;">
                                        <span t-esc="'{:,}'.format(mline.debit)"/>
                                    </td>
-                                  <td style="text-align: center;">  <!-- Account Name 2-->
+                                  <td style="text-align: center;">
                                        <span t-esc="'{:,}'.format(mline.credit)"/>
                                  </td>
-                                    <td style="text-align: center;">  <!-- Account Name 2-->
+                                    <td style="text-align: center;">
                                        <t t-foreach="o.move_id" t-as="move">
                                             <span t-esc="move.currency_id.name"/>
                                        </t>
@@ -73,16 +86,18 @@
                       </tbody>
                              <tfoot>
                              <tr class="border-top">
+                                 <td></td>
                                 <td colspan="1" style="text-align: center; vertical-align: middle;">
                                     <strong>Total  </strong>
                                 </td>
                                  <td colspan="1" style="text-align: center; vertical-align: middle;">
-                                     <span t-esc="'{:,}'.format(mline.credit)"/>
+                                     <span t-esc="'{:,}'.format(sum(o.move_line_ids.mapped('debit')))"/>
                                  </td>
                                   <td colspan="1" style="text-align: center; vertical-align: middle;">
-                                     <span t-esc="'{:,}'.format(mline.credit)"/>
+                                     <span t-esc="'{:,}'.format(sum(o.move_line_ids.mapped('credit')))"/>
                                 </td>
                                  <td></td>
+
                              </tr>
                            </tfoot>
                       </table>
