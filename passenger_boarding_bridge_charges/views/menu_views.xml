@@ -12,7 +12,6 @@
                 </p>
             </field>
         </record>
-
         <record id="action_passenger_boarding_bridge_charges_line" model="ir.actions.act_window">
             <field name="name">Passenger Boarding Bridge Charges Line</field>
             <field name="res_model">passenger.boarding.bridge.charges.line</field>
@@ -28,7 +27,6 @@
                   name="Bridge Service Charges"
                   sequence="10"
                   web_icon="passenger_boarding_bridge_charges,static/description/icon.png"/>
-
         <menuitem id="menu_passenger_boarding_bridge_charges"
                   name="Passenger Boarding Bridge"
                   parent="passenger_service_charges.menu_passenger_service_root"

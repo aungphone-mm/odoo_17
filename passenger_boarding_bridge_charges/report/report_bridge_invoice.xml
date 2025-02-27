@@ -181,9 +181,17 @@
                                                 00:00
                                             </t>
                                         </td>
+<!--                                        <td style="border: 1px solid black; text-align: right;">-->
+<!--                                            <t t-if="line.passenger_boarding_bridge_charges_line_id">-->
+<!--                                                <span t-esc="line.price_unit / line._get_time_from_rate()"/>-->
+<!--                                            </t>-->
+<!--                                        </td>-->
                                         <td style="border: 1px solid black; text-align: right;">
-                                            <t t-if="line.passenger_boarding_bridge_charges_line_id">
-                                                <span t-esc="line.price_unit / line._get_time_from_rate()"/>
+                                            <t t-if="line._get_time_from_rate()">
+                                                 <span t-esc="line.price_unit / line._get_time_from_rate()"/>
+                                            </t>
+                                            <t t-else="">
+                                                 <span>0</span>
                                             </t>
                                         </td>
                                         <td style="border: 1px solid black; text-align: center;">

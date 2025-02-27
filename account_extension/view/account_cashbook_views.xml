@@ -48,7 +48,7 @@
                                 <field name="date"/>
                                 <field name="type" readonly="1"/>
                                 <field name="partner_id"/>  <!-- Add partner field -->
-
+                                <field name="ref_no"/>
                             </group>
                             <group>
                                 <field name="journal_id"/>

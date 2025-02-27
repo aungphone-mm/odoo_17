@@ -35,6 +35,7 @@ class AccountCashbook(models.Model):
         ],
         required=True,
         default='draft')
+    ref_no = fields.Char(string='Reference No.')
     move_id = fields.Many2one(comodel_name='account.move', string='Journal Entry', readonly=True, copy=False)
     move_line_ids = fields.One2many(related='move_id.line_ids', string='Journal Items', readonly=True)
     # total_credit = fields.Float(string='Total Credit', compute='_compute_total_credit', store=True)
