@@ -145,4 +145,4 @@ class AccountMoveLine(models.Model):
     # We're just making it editable in the view
     ref_no = fields.Char(string='Reference', readonly=False)
     note = fields.Char(string='Note')
-    date = fields.Datetime(string='Date')
+    date = fields.Char(string='Date')
