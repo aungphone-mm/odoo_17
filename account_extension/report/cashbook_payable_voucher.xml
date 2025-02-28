@@ -1,107 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-      <record id="action_report_payable_invoice" model="ir.actions.report">
+    <record id="action_report_payable_invoice" model="ir.actions.report">
         <field name="name">Payable Invoice</field>
         <field name="model">account.cashbook</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">account_extension.report_payable_invoice</field>
-         <field name="report_file">account_extension.report_payable_invoice</field>
-        <field name="print_report_name">'Payable Invoice-' + object.name</field>
+        <field name="report_file">account_extension.report_payable_invoice</field>
+        <field name="print_report_name">'Payable_Invoice-%s' % (object.name)</field>
         <field name="binding_model_id" ref="model_account_cashbook"/>
         <field name="binding_type">report</field>
-      </record>
-     <template id="report_payable_invoice">
-         <t t-call="web.html_container">
-             <t t-foreach="docs" t-as="o">
-                  <t t-call="web.external_layout">
-                        <style>
-                            .security-table th {
-                                background-color: #e9ecef;
-                            }
-                        </style>
-                       <div class="row mb-5">
+    </record>
+
+    <template id="report_payable_invoice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <style>
+                        .security-table th {
+                            background-color: #e9ecef;
+                        }
+                        .page-break {
+                            page-break-before: always;
+                        }
+                    </style>
+                    <div class="page">
+                        <div class="row mb-4">
                             <div class="col-12 text-center">
-                                <h2 style="font-weight: bold; font-size: 20px;">Payable Invoice</h2>
+                                <h2 style="font-weight: bold; font-size: 24px;">PAYABLE INVOICE</h2>
                             </div>
-                       </div>
-                        <div class="row mb-5"> <!-- First Page Invoice  -->
-                                <div class="col-6">
-                                    <strong>Invoice No:</strong>
-                                    <span t-field="o.name"/><br/>
-                                    <strong>Credit to:</strong>
-                                    <span t-field="o.partner_id.name"/><br/>
-                                </div>
-                               <div class="col-6 d-flex justify-content-end">
+                        </div>
+
+                        <!-- Invoice Info Section -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <strong>Invoice No:</strong>
+                                <span t-field="o.name"/><br/>
+                                <strong>Credit to:</strong>
+                                <span t-field="o.partner_id.name"/><br/>
+                                <strong>Reference No:</strong>
+                                <span t-field="o.ref_no"/><br/>
+                            </div>
+
+                            <div class="col-6 d-flex justify-content-end">
                                 <div>
                                     <t t-foreach="o.line_ids" t-as="line">
-                                    <strong>Particular:</strong>
-                                     <span t-esc="line.account_id.name" /><br/>
-                                     <strong>Date:</strong>
-                                    <span t-field="o.date"/><br/>
+                                        <strong>Particular:</strong>
+                                        <span t-esc="line.account_id.name" /><br/>
                                     </t>
+                                    <strong>Date:</strong>
+                                    <span t-field="o.date"/><br/>
                                 </div>
                             </div>
                         </div>
-                      <table class="table table-bordered entry-table" style="width:100%; height:50px; border: 1px solid black;">
-                           <thead>
-                                <tr >
-                                    <th style="text-align: center;">Main-Account Code</th>
-                                    <th style="text-align: center;">A/C Code</th>
-                                    <th style="text-align: center;">Debit</th>
-                                    <th style="text-align: center;">Credit</th>
-                                    <th style="text-align: center;">Currency</th>
+
+                        <!-- Main Transaction Table -->
+                        <table class="table table-bordered security-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%; text-align: center;">Main-Account Code</th>
+                                    <th style="width: 20%; text-align: center;">A/C Code</th>
+                                    <th style="width: 20%; text-align: center;">Debit</th>
+                                    <th style="width: 20%; text-align: center;">Credit</th>
+                                    <th style="width: 20%; text-align: center;">Currency</th>
                                 </tr>
                             </thead>
-                      <tbody>
-                          <t t-foreach="o.move_line_ids" t-as="mline">
-                              <!-- Find corresponding cashbook line to get analytic code -->
-                              <t t-set="matching_line" t-value="o.line_ids.filtered(lambda l: l.account_id.id == mline.account_id.id and l.amount == (mline.debit or mline.credit))"/>
-                              <tr>
-                                    <td style="text-align: center; width:10%">
-                                        <!-- Show analytic code if available from matching cashbook line -->
-                                        <t t-if="matching_line and matching_line.analytic_code">
-                                            <span t-esc="matching_line.analytic_code"/>
-                                        </t>
-                                        <!-- Fallback to main account code if no analytic code found -->
-                                        <t t-else="">
-                                            <span t-esc="o.main_account_id.code"/>
-                                        </t>
+                            <tbody>
+                                <t t-foreach="o.move_line_ids" t-as="mline">
+                                    <!-- Find corresponding cashbook line to get analytic code -->
+                                    <t t-set="matching_line" t-value="o.line_ids.filtered(lambda l: l.account_id.id == mline.account_id.id and l.amount == (mline.debit or mline.credit))"/>
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            <!-- Show analytic code if available from matching cashbook line -->
+                                            <t t-if="matching_line and matching_line.analytic_code">
+                                                <span t-esc="matching_line.analytic_code"/>
+                                            </t>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <span t-esc="mline.account_id.code" />
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span t-esc="'{:,}'.format(mline.debit)"/>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span t-esc="'{:,}'.format(mline.credit)"/>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <t t-foreach="o.move_id" t-as="move">
+                                                <span t-esc="move.currency_id.name"/>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr class="border-black">
+                                    <td></td>
+                                    <td style="text-align: center; vertical-align: middle;">
+                                        <strong>Total</strong>
                                     </td>
-                                  <td style="text-align: center;">
-                                      <span t-esc="mline.account_id.code" />
-                                 </td>
-                                   <td style="text-align: center;">
-                                       <span t-esc="'{:,}'.format(mline.debit)"/>
-                                   </td>
-                                  <td style="text-align: center;">
-                                       <span t-esc="'{:,}'.format(mline.credit)"/>
-                                 </td>
-                                    <td style="text-align: center;">
-                                       <t t-foreach="o.move_id" t-as="move">
-                                            <span t-esc="move.currency_id.name"/>
-                                       </t>
-                                 </td>
-                              </tr>
-                          </t>
-                      </tbody>
-                             <tfoot>
-                             <tr class="border-top">
-                                 <td></td>
-                                <td colspan="1" style="text-align: center; vertical-align: middle;">
-                                    <strong>Total  </strong>
-                                </td>
-                                 <td colspan="1" style="text-align: center; vertical-align: middle;">
-                                     <span t-esc="'{:,}'.format(sum(o.move_line_ids.mapped('debit')))"/>
-                                 </td>
-                                  <td colspan="1" style="text-align: center; vertical-align: middle;">
-                                     <span t-esc="'{:,}'.format(sum(o.move_line_ids.mapped('credit')))"/>
-                                </td>
-                                 <td></td>
+                                    <td style="text-align: right; vertical-align: middle;">
+                                        <strong><span t-esc="'{:,}'.format(sum(o.move_line_ids.mapped('debit')))"/></strong>
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle;">
+                                        <strong><span t-esc="'{:,}'.format(sum(o.move_line_ids.mapped('credit')))"/></strong>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
 
-                             </tr>
-                           </tfoot>
-                      </table>
-                      <table class="table table-bordered entry-table" style="width:100%; height:400px; border: 0px solid white;">
+                        <!-- Signature Section -->
+                        <table class="table table-bordered entry-table" style="width:100%; height:400px; border: 0px solid white;">
                         <tfoot>
                             <tr class="border-bottom">
                                 <!-- Column 1: Cashier -->
@@ -131,8 +140,9 @@
                             </tr>
                         </tfoot>
                     </table>
-                  </t>
-             </t>
-         </t>
-     </template>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
 </odoo>

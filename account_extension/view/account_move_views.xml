@@ -36,9 +36,9 @@
                        domain="[('account_type', '=', 'asset_receivable')]"/>
             </xpath>
             <xpath expr="//field[@name='line_ids']/tree//field[@name='account_id']" position="after">
-                <field name="ref_no" optional="show"/>
+                <field name="ref_no" string="Reference No" optional="show"/>
                 <field name="note" string="Note" optional="show"/>
-                <field name="date" string="Date" optional="show"/>
+                <field name="received_date" string="Received Date" optional="show"/>
             </xpath>
 
         </field>

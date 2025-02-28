@@ -6,119 +6,131 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">account_extension.report_cashbook_invoice</field>
         <field name="report_file">account_extension.report_cashbook_invoice</field>
-        <field name="print_report_name">'Cashbook Invoice -' + object.name</field>
+        <field name="print_report_name">'Cashbook_Invoice-%s' % (object.name)</field>
         <field name="binding_model_id" ref="model_account_cashbook"/>
         <field name="binding_type">report</field>
     </record>
-     <template id="report_cashbook_invoice">
-         <t t-call="web.html_container">
-               <t t-foreach="docs" t-as="o">
-                   <t t-call="web.external_layout">
-                        <style>
-                            .security-table th {
-                                background-color: #e9ecef;
-                            }
-                        </style>
-                       <div class="col-12 text-center">
-                            <h2 style="font-weight: bold; font-size: 20px;">
-                                <t t-if="o.type == 'payment'">PAYMENT VOUCHER</t>
-                                <t t-if="o.type == 'receive'">RECEIVE VOUCHER</t>
-                            </h2>
+
+    <template id="report_cashbook_invoice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <style>
+                        .security-table th {
+                            background-color: #e9ecef;
+                        }
+                        .page-break {
+                            page-break-before: always;
+                        }
+                    </style>
+                    <div class="page">
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <h2 style="font-weight: bold; font-size: 24px;">
+                                    <t t-if="o.type == 'payment'">PAYMENT VOUCHER</t>
+                                    <t t-if="o.type == 'receive'">RECEIVE VOUCHER</t>
+                                </h2>
+                            </div>
                         </div>
-                           <div class="row mb-5"> <!-- First Page Invoice  -->
-                                <div class="col-6">
-                                    <strong>Sr No:</strong>
-                                    <span t-field="o.name"/><br/>
-                                    <strong>Date:</strong>
-                                    <span t-field="o.date"/><br/>
-                                    <strong>Type:</strong>
-                                    <span t-field="o.type"/>
-                                </div>
-                               <div class="col-6 d-flex justify-content-end">
+
+                        <!-- Voucher Info Section -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <strong>Sr No:</strong>
+                                <span t-field="o.name"/><br/>
+                                <strong>Date:</strong>
+                                <span t-field="o.date"/><br/>
+                                <strong>Type:</strong>
+                                <span t-field="o.type"/><br/>
+                                <strong>Reference No:</strong>
+                                <span t-field="o.ref_no"/>
+                            </div>
+
+                            <div class="col-6 d-flex justify-content-end">
                                 <div>
                                     <strong>Journal:</strong>
                                     <span t-field="o.journal_id"/><br/>
-                                     <strong>Main Account Name:</strong>
+                                    <strong>Main Account Name:</strong>
                                     <span t-field="o.main_account_id"/><br/>
                                     <strong>Currency:</strong>
                                     <span t-field="o.currency_id"/><br/>
                                 </div>
                             </div>
                         </div>
-                       <table class="table table-sm table-striped table-bordered table-hover" style="width:100%; height:200px; border: 0px solid black;">
+
+                        <!-- Main Transaction Table -->
+                        <table class="table table-bordered security-table">
                             <thead>
-                                <tr >
-                                    <th style="text-align: center;" >Main-Account Code</th>
-                                    <th style="text-align: center;">Sub-Account Code</th>
-                                    <th style="text-align: center;">Name</th>
-                                    <th style="text-align: center;">Description</th>
-                                    <th style="text-align: center;">Amount</th>
+                                <tr>
+                                    <th style="width: 15%; text-align: center;">Main-Account Code</th>
+                                    <th style="width: 15%; text-align: center;">Sub-Account Code</th>
+                                    <th style="width: 20%; text-align: center;">Name</th>
+                                    <th style="width: 30%; text-align: center;">Description</th>
+                                    <th style="width: 20%; text-align: center;">Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
-                               <t t-foreach="o.line_ids" t-as="line">
-                                <tr>
-                                    <td style="text-align: center; width:10%"> <!-- analytic_precision 1-->
-                                      <span t-esc="line.analytic_code"/>
-                                 </td>
-                                  <td style="text-align: center; width:10%">  <!-- Account Name 2-->
-                                      <span t-esc="line.account_id.code" />
-                                 </td>
-                                     <td style="text-align: center; width:15%">   <!-- partner Name 3-->
-                                      <span t-esc="line.partner_id.name"/>
-                                 </td>
-                                       <td style="text-align: center;">   <!-- Description 4-->
-                                      <span t-esc="line.name"/>
-                                 </td>
-                                <td style="text-align: center; width:15%"> <!-- Total 5 -->
-                                    <span t-esc="'{:,.2f}'.format(line.amount)"/>
-                                </td>
-                                  </tr>
+                                <t t-foreach="o.line_ids" t-as="line">
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            <span t-esc="line.analytic_code"/>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <span t-esc="line.account_id.code" />
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <span t-esc="line.partner_id.name"/>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <span t-esc="line.name"/>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span t-esc="'{:,.2f}'.format(line.amount)"/>
+                                        </td>
+                                    </tr>
                                 </t>
                             </tbody>
-                           <tfoot>
-                             <tr class="border-top:none;">
-                                <t t-foreach="o.line_ids[:1]" t-as="line">
-                                <td colspan="4" style="text-align: left; vertical-align: middle;">
-                                    <t t-set="line_amount_sum" t-value="sum(line.amount for line in o.line_ids if line.amount)"/>
-                                    <span t-esc="o.currency_id.amount_to_text(line_amount_sum or 0.0)"/>
-                                </td>
+                            <tfoot>
+                                <tr class="border-black">
+                                    <td colspan="4" style="text-align: left; vertical-align: middle;">
+                                        <t t-set="line_amount_sum" t-value="sum(line.amount for line in o.line_ids if line.amount)"/>
+                                        <span t-esc="o.currency_id.amount_to_text(line_amount_sum or 0.0)"/>
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle;">
+                                        <t t-set="line_amount_sum" t-value="sum(line.amount for line in o.line_ids)"/>
+                                        <strong><span t-esc="'{:,.2f}'.format(line_amount_sum)"/></strong>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
 
-                               <td colspan="0" style="text-align: center; vertical-align: middle;">
-                                      <t t-set="line_amount_sum" t-value="sum(line.amount for line in o.line_ids)"/>
-                                       <span t-esc="'{:,.2f}'.format(line_amount_sum)"/>
-<!--                                   <span t-esc="line.total_amount" t-options='{"widget": "monetary", "display_currency": line.currency_id}'/>-->
-                                </td>
-                                </t>
-                             </tr>
-                           </tfoot>
-                       </table>
-                          <!-- Footer Sign-->
-                    <table class="table table-bordered entry-table" style="width:100%; height:400px; border: 0px solid white;">
-                        <tfoot>
-                            <tr class="border-bottom">
-                                <td style="text-align: center; vertical-align: bottom;">
-                                    <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong>
-                                    <br/>
-                                    <strong>(Cashier By)</strong>
-                                </td>
-                                <td style="text-align: center; vertical-align: bottom;">
-                                    <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong><br/>
-                                    <strong>(Debit By)</strong>
-                                </td>
-                                <td style="text-align: center; vertical-align: bottom;">
-                                    <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong><br/>
-                                    <strong>(Submitted By)</strong>
-                                </td>
-                                <td style="text-align: center; vertical-align: bottom;">
-                                    <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong><br/>
-                                    <strong>(Approved By)</strong>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                   </t>
-               </t>
-         </t>
-     </template>
+                        <!-- Signature Section -->
+                        <table class="table table-bordered entry-table" style="width:100%; height:400px; border: 0px solid white;">
+                            <tfoot>
+                                <tr class="border-bottom">
+                                    <td style="text-align: center; vertical-align: bottom;">
+                                        <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong>
+                                        <br/>
+                                        <strong>(Cashier By)</strong>
+                                    </td>
+                                    <td style="text-align: center; vertical-align: bottom;">
+                                        <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong><br/>
+                                        <strong>(Debit By)</strong>
+                                    </td>
+                                    <td style="text-align: center; vertical-align: bottom;">
+                                        <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong><br/>
+                                        <strong>(Submitted By)</strong>
+                                    </td>
+                                    <td style="text-align: center; vertical-align: bottom;">
+                                        <strong>_ _ _ _ _ _ _ _ _ _ _ _ _</strong><br/>
+                                        <strong>(Approved By)</strong>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
 </odoo>

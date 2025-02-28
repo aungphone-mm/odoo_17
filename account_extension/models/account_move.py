@@ -142,7 +142,6 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     # The ref field already exists in account.move.line
-    # We're just making it editable in the view
     ref_no = fields.Char(string='Reference', readonly=False)
     note = fields.Char(string='Note')
-    date = fields.Char(string='Date')
+    received_date = fields.Char(string='Received Date')

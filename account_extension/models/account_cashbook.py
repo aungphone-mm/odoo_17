@@ -197,6 +197,7 @@ class AccountCashbook(models.Model):
 
                 # Create the display string using code field
                 analytic_value = ' / '.join(account.code for account in analytic_accounts if account.exists())
+                analytic_name = ' / '.join(account.name for account in analytic_accounts if account.exists())
 
             # Currency - column K
             sheet.write(row, 10, line.currency_id.name, cell_format)
@@ -206,13 +207,13 @@ class AccountCashbook(models.Model):
             # Amount - column M
             sheet.write(row, 12, line.amount, amount_format)
 
-            # Main Account - column N is left empty
             # Main Dept - column O is left empty
             # Sub Account - column P is left empty
             # Sub Dept - column Q is left empty
 
             # Note (Analytic Code) - column R
-            sheet.write(row, 17, analytic_value, analytic_format)
+            sheet.write(row, 13, analytic_value, analytic_format)
+            sheet.write(row, 14, analytic_name, analytic_format)
 
         # Add total row
         total_row = len(self.line_ids) + 2
