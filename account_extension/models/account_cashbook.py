@@ -522,6 +522,12 @@ class AccountAsset(models.Model):
         ('USD', 'USD')
     ], string='Asset Currency', default='MMK')
 
+    original_value_usd = fields.Float(
+        string='Original Value (USD)',
+        compute='_compute_usd_amounts',
+        store=True
+    )
+
     exchange_rate = fields.Float(
         string='Exchange Rate (USD)',
         default=1.0,
@@ -568,14 +574,16 @@ class AccountAsset(models.Model):
                 asset.cumulative_depreciation_usd = 0.0
                 asset.depreciable_value_usd = 0.0
 
-    @api.depends('per_depreciation_amount', 'book_value', 'exchange_rate', 'asset_currency')
+    @api.depends('original_value', 'per_depreciation_amount', 'book_value', 'exchange_rate', 'asset_currency')
     def _compute_usd_amounts(self):
         for asset in self:
             if asset.asset_currency == 'USD' and asset.exchange_rate:
                 # Convert MMK to USD by dividing by exchange rate
+                asset.original_value_usd = asset.original_value / asset.exchange_rate
                 asset.per_depreciation_amount_usd = asset.per_depreciation_amount / asset.exchange_rate
                 asset.book_value_usd = asset.book_value / asset.exchange_rate
             else:
+                asset.original_value_usd = 0.0
                 asset.per_depreciation_amount_usd = 0.0
                 asset.book_value_usd = 0.0
 

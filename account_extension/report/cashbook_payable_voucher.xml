@@ -37,18 +37,18 @@
                                 <span t-field="o.name"/><br/>
                                 <strong>Credit to:</strong>
                                 <span t-field="o.partner_id.name"/><br/>
-                                <strong>Reference No:</strong>
-                                <span t-field="o.ref_no"/><br/>
+                                <t t-foreach="o.line_ids" t-as="line">
+                                        <strong>Particular:</strong>
+                                        <span t-esc="line.account_id.name" /><br/>
+                                    </t>
                             </div>
 
                             <div class="col-6 d-flex justify-content-end">
                                 <div>
-                                    <t t-foreach="o.line_ids" t-as="line">
-                                        <strong>Particular:</strong>
-                                        <span t-esc="line.account_id.name" /><br/>
-                                    </t>
                                     <strong>Date:</strong>
                                     <span t-field="o.date"/><br/>
+                                    <strong>Reference No:</strong>
+                                <span t-field="o.ref_no"/><br/>
                                 </div>
                             </div>
                         </div>

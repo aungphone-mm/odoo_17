@@ -142,6 +142,6 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     # The ref field already exists in account.move.line
-    ref_no = fields.Char(string='Reference', readonly=False)
+    ref_no = fields.Char(string='Reference No', readonly=False)
     note = fields.Char(string='Note')
     received_date = fields.Char(string='Received Date')

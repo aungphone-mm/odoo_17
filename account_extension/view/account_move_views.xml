@@ -64,6 +64,8 @@
                 <field name="exchange_rate"
                     invisible="asset_currency == 'MMK'"
                     required="asset_currency == 'USD'"/>
+                <field name="original_value_usd"
+                invisible="asset_currency == 'MMK'"/>
                 <field name="per_depreciation_amount_usd"
                     invisible="asset_currency == 'MMK'"/>
                 <field name="book_value_usd"
