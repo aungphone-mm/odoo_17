@@ -5,7 +5,7 @@ from odoo.exceptions import UserError
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    currency_rate_display = fields.Float(string="Exchange Rate", compute='_compute_currency_rate')
+    currency_rate_display = fields.Float(string="Exchange Rate")
 
     @api.depends('currency_id', 'company_id', 'move_id.date')
     def _compute_currency_rate(self):
