@@ -33,7 +33,7 @@
         # Passenger wizard and report
         'wizard/report_passenger_wizard_view.xml',
         'report/passenger_summary_report.xml',
-
+        'report/report_rampbus_invoice.xml',
         'report/subscription_report.xml',
         'wizard/checkin_report_wizard_view.xml',
         'report/checkin_report_template.xml',

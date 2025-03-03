@@ -121,6 +121,7 @@ class AccountCashbook(models.Model):
         sheet.set_column('N:N', 20)
         sheet.set_column('O:O', 20)
         sheet.set_column('P:P', 20)
+        sheet.set_column('Q:Q', 20)
 
         # Write title at the top center
         if self.type == 'receive':
@@ -130,7 +131,7 @@ class AccountCashbook(models.Model):
         else:
             title = 'Cashbook'
 
-        sheet.merge_range('A1:P1', title, title_format)
+        sheet.merge_range('A1:Q1', title, title_format)
 
         # Define headers that match exactly how you want to use them in the data section
         headers = [
@@ -140,16 +141,16 @@ class AccountCashbook(models.Model):
             'Cheque',
             'DN/CN No.',
             'Description',
+            'Sub Account',
             'Name',
             'Particular',
-            'Label',
             'USD(AMT)',
             'Currency',
             'Price',
             'Amount',
             'Main Account',
             'Main Dept',
-            'Sub Account',
+            # 'Sub Account',
             'Sub Dept',
             'Note'
         ]
@@ -183,6 +184,7 @@ class AccountCashbook(models.Model):
 
             # Analytic Distribution (should be in Note column or a dedicated analytic column)
             analytic_value = ''
+            analytic_name=''
             if line.analytic_distribution:
                 # Get account info for each entry in the distribution
                 analytic_accounts = []

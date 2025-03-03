@@ -32,7 +32,7 @@
                 <field name="account_receivable_id"
                        options="{'no_create': True}"
                        invisible="move_type not in ('out_invoice', 'out_refund')"
-                       readonly="state != 'draft'"
+
                        domain="[('account_type', '=', 'asset_receivable')]"/>
             </xpath>
             <xpath expr="//field[@name='line_ids']/tree//field[@name='account_id']" position="after">
