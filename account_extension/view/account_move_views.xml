@@ -23,6 +23,7 @@
             </notebook>
         </field>
     </record>
+
     <record id="view_move_form_inherit_account_receivable" model="ir.ui.view">
         <field name="name">account.move.form.inherit.account.receivable</field>
         <field name="model">account.move</field>
@@ -32,7 +33,6 @@
                 <field name="account_receivable_id"
                        options="{'no_create': True}"
                        invisible="move_type not in ('out_invoice', 'out_refund')"
-
                        domain="[('account_type', '=', 'asset_receivable')]"/>
             </xpath>
             <xpath expr="//field[@name='line_ids']/tree//field[@name='account_id']" position="after">
@@ -40,9 +40,9 @@
                 <field name="note" string="Note" optional="show"/>
                 <field name="received_date" string="Received Date" optional="show"/>
             </xpath>
-
         </field>
     </record>
+
     <record id="view_move_line_tree_inherit_ref" model="ir.ui.view">
         <field name="name">account.move.line.tree.inherit.ref</field>
         <field name="model">account.move.line</field>
@@ -53,6 +53,7 @@
             </xpath>
         </field>
     </record>
+
     <record id="view_account_asset_form_currency" model="ir.ui.view">
         <field name="name">account.asset.form.currency</field>
         <field name="model">account.asset</field>
@@ -70,6 +71,8 @@
                     invisible="asset_currency == 'MMK'"/>
                 <field name="book_value_usd"
                     invisible="asset_currency == 'MMK'"/>
+                <field name="depreciated_amount_usd" string="Depreciated Amount (USD)"
+                invisible="asset_currency == 'MMK'"/>
             </xpath>
 
             <!-- Add USD columns to depreciation board -->
@@ -89,7 +92,13 @@
                     string="Depreciable Value (USD)"
                     optional="show"
                     invisible="parent.asset_currency == 'MMK'"/>
+
             </xpath>
+<!--            <xpath expr="//field[@name='value_residual']/ancestor::group" position="after">-->
+<!--                <group string="USD VALUES" invisible="asset_currency == 'MMK'">-->
+<!--                    <field name="depreciated_amount_usd" string="Depreciated Amount (USD)"/>-->
+<!--                </group>-->
+<!--            </xpath>-->
         </field>
     </record>
 </odoo>
