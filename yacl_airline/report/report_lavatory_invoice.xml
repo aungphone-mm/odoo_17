@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <record id="action_report_rampbus" model="ir.actions.report">
-        <field name="name">Ramp Bus Invoice With Breakdown</field>
+    <record id="action_report_lavatory" model="ir.actions.report">
+        <field name="name">Lavatory Invoice With Breakdown</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">yacl_airline.report_rampbus</field>
-        <field name="report_file">yacl_airline.report_rampbus</field>
-        <field name="print_report_name">'Ramp_Bus_Invoice-%s' % (object.name)</field>
+        <field name="report_name">yacl_airline.report_lavatory</field>
+        <field name="report_file">yacl_airline.report_lavatory</field>
+        <field name="print_report_name">'lavatory_Invoice-%s' % (object.name)</field>
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
     </record>
 
-    <template id="report_rampbus">
+    <template id="report_lavatory">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <!-- First Page - Invoice -->
@@ -81,7 +81,7 @@
                                 <tr>
                                     <td>1</td>
                                     <td>
-                                        <span>Ramp Bus Charges for:<br/>
+                                        <span>Lavatory Charges for:<br/>
                                         Flight No: As per attached</span>
                                         <t t-set="current_date" t-value="o.invoice_date or o.date"/>
                                         <t t-set="month" t-value="current_date.month - 1 if current_date.month > 1 else 12"/>
@@ -189,8 +189,8 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <div style="text-align: center; margin-bottom: 20px;">
-                            <h3>DETAIL STATEMENT OF RAMP BUS CHARGES</h3>
-                            <h4>AIRLINES-<span t-field="o.partner_id.name"/></h4>
+                            <h3>DETAIL STATEMENT OF LAVATORY CHARGES</h3>
+                            <h4><span t-field="o.partner_id.name"/></h4>
                         </div>
 
                         <!-- Invoice Details Table -->
