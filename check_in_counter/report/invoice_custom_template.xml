@@ -33,7 +33,7 @@
                     <t t-foreach="doc.checkin_counter_id.checkin_counter_line_ids" t-as="line">
                         <tr style="text-align: center;">
                             <td style="border: 1px solid black;"><t t-esc="line_index + 1"/></td>
-                            <td style="border: 1px solid black;"><t t-esc="line.flightno_id.name"/></td>
+                            <td style="border: 1px solid black;"><t t-esc="line.flightno_id"/></td>
                             <td style="border: 1px solid black;"><t t-esc="line.flight_registration_no"/></td>
                             <td style="border: 1px solid black;"><t t-esc="line.start_time" t-options="{'widget': 'datetime'}"/></td>
                             <td style="border: 1px solid black;"><t t-esc="line.end_time" t-options="{'widget': 'datetime'}"/></td>
