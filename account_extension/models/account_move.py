@@ -145,3 +145,5 @@ class AccountMoveLine(models.Model):
     ref_no = fields.Char(string='Reference No', readonly=False)
     note = fields.Char(string='Note')
     received_date = fields.Char(string='Received Date')
+    ref_name = fields.Char(string="Name")
+    ref_desc = fields.Char(string="Description")
