@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-
     <record id="action_report_lavatory" model="ir.actions.report">
-        <field name="name">Lavatory Invoice With Breakdown</field>
+        <field name="name">Lavatory Invoice</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">yacl_airline.report_lavatory</field>
         <field name="report_file">yacl_airline.report_lavatory</field>
-        <field name="print_report_name">'lavatory_Invoice-%s' % (object.name)</field>
+        <field name="print_report_name">'Non_schedule_Invoice-%s' % (object.name)</field>
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
     </record>
@@ -17,14 +16,6 @@
             <t t-foreach="docs" t-as="o">
                 <!-- First Page - Invoice -->
                 <t t-call="web.external_layout">
-                    <style>
-                        .security-table th {
-                            background-color: #e9ecef;
-                        }
-                        .page-break {
-                            page-break-before: always;
-                        }
-                    </style>
                     <div class="page">
                         <div class="row mb-4">
                             <div class="col-12 text-center">
@@ -35,124 +26,95 @@
                         <!-- Invoice Info Section -->
                         <div class="row mb-4">
                             <div class="col-6">
-                                <div t-field="o.partner_id.name"/>
-                                <div t-field="o.partner_id.street"/>
-                                <div t-field="o.partner_id.street2"/>
-                                <div t-if="o.partner_id.city">
-                                    <t t-esc="o.partner_id.city"/>
-                                </div>
-                                <div>
-                                    <t t-esc="o.partner_id.state_id.name"/>
-                                    <t t-if="o.partner_id.zip">, <t t-esc="o.partner_id.zip"/></t>
-                                    <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
-                                </div>
-                                <div t-if="o.partner_id.contact_name">
-                                    Attention: <t t-esc="o.partner_id.contact_name"/><br/>
-                                </div>
-                                <div t-if="o.partner_id.contact_job_position">
-                                    Position: <t t-esc="o.partner_id.contact_job_position"/>
-                                </div>
+                                <strong><span t-field="o.partner_id.name"/></strong><br/>
+                                <span t-field="o.partner_id.street"/>
+                                <t t-if="o.partner_id.street2"><br/><span t-field="o.partner_id.street2"/></t>
+                                <t t-if="o.partner_id.city"><br/><span t-field="o.partner_id.city"/></t>
+                                <t t-if="o.partner_id.state_id or o.partner_id.zip or o.partner_id.country_id">
+                                    <br/>
+                                    <t t-if="o.partner_id.state_id"><span t-field="o.partner_id.state_id.name"/></t>
+                                    <t t-if="o.partner_id.zip">, <span t-field="o.partner_id.zip"/></t>
+                                    <t t-if="o.partner_id.country_id">, <span t-field="o.partner_id.country_id.name"/></t>
+                                </t>
                             </div>
 
                             <div class="col-6 d-flex justify-content-end">
-                                <div>
-                                    <strong>Invoice No:</strong>
-                                    <span t-field="o.name"/><br/>
-                                    <strong>Date:</strong>
-                                    <span t-field="o.invoice_date"/><br/>
-                                    <strong>Due Date:</strong>
-                                    <span t-field="o.invoice_date_due"/>
-                                </div>
+                                <strong>Inv No:</strong>
+                                <span t-field="o.name"/><br/>
+                                <strong>Date:</strong>
+                                <span t-field="o.invoice_date"/><br/>
+                                <strong>Payment Due:</strong>
+                                <span t-field="o.invoice_date_due"/>
                             </div>
                         </div>
 
-                        <!-- First Page Summary Table -->
-                        <table class="table table-bordered security-table">
+                        <!-- First Page Line Items Table -->
+                        <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th style="width: 5%;">Sr.</th>
                                     <th style="width: 55%;">Description</th>
-                                    <th style="width: 55%;">Quantity</th>
-                                    <th style="width: 20%;">Units</th>
-                                    <th style="width: 20%;">Amount</th>
+                                    <th style="width: 10%;">Quantity</th>
+                                    <th style="width: 15%;">Unit Price</th>
+                                    <th style="width: 15%;">Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <t t-set="line_no" t-value="1"/>
+                                <t t-foreach="o.invoice_line_ids" t-as="line">
+                                    <tr>
+                                        <td><t t-esc="line_no"/></td>
+                                        <td>
+                                            <span t-field="line.name"/>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <span t-field="line.quantity"/>
+                                            <t t-if="line.product_uom_id">
+                                                <span t-field="line.product_uom_id.name"/>
+                                            </t>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <t t-set="line_no" t-value="line_no + 1"/>
+                                </t>
                                 <tr>
-                                    <td>1</td>
-                                    <td>
-                                        <span>Lavatory Charges for:<br/>
-                                        Flight No: As per attached</span>
-                                        <t t-set="current_date" t-value="o.invoice_date or o.date"/>
-                                        <t t-set="month" t-value="current_date.month - 1 if current_date.month > 1 else 12"/>
-                                        <t t-set="year" t-value="current_date.year if current_date.month > 1 else current_date.year - 1"/>
-                                        <t t-set="month_names" t-value="['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']"/>
-                                        <span t-esc="month_names[month-1][:3] + ', ' + str(year)"/>
+                                    <td colspan="4" style="text-align: right;">
+                                        <strong>Total Amount</strong>
                                     </td>
                                     <td style="text-align: right;">
-<!--                                        <span t-field="o.quantity"/>-->
-                                        <t t-set="total_quantity" t-value="sum(line.quantity for line in o.invoice_line_ids)"/>
-                                        <span t-esc="total_quantity"/>
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <t t-set="total_quantity" t-value="sum(line.quantity for line in o.invoice_line_ids)"/>
-                                        <t t-set="avg_price_unit" t-value="(total_quantity and sum(line.price_unit * line.quantity for line in o.invoice_line_ids) / total_quantity) or 0"/>
-                                        <span t-esc="avg_price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                    <td style="text-align: right;">
-                                        <span t-field="o.amount_untaxed"/>
+                                        <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="4" style="text-align: center;">
-                                        <span t-esc="'Subtotal'"/>
+                                    <td colspan="4" style="text-align: right;">
+                                        <strong>Commercial Tax 5%</strong>
                                     </td>
                                     <td style="text-align: right;">
-                                        <t t-set="subtotal_before_discount" t-value="sum(line.price_unit * line.quantity for line in o.invoice_line_ids)"/>
-                                        <span t-esc="subtotal_before_discount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                </tr>
-                                <tr t-if="any(line.discount for line in o.invoice_line_ids)">
-                                    <td colspan="4" style="text-align: center;">
-                                        <span t-esc="'Discount'"/>
-                                    </td>
-                                    <td style="text-align: right;">
-                                        <t t-set="total_discount" t-value="sum(line.price_unit * line.quantity * (line.discount/100) for line in o.invoice_line_ids)"/>
-                                        <span t-esc="total_discount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                </tr>
-<!--                                <tr>-->
-<!--                                    <td colspan="3" style="text-align: center;">-->
-<!--                                        <span t-esc="'Total Amount'"/>-->
-<!--                                    </td>-->
-<!--                                    <td style="text-align: right;">-->
-<!--                                        <span t-field="o.amount_untaxed"/>-->
-<!--                                    </td>-->
-<!--                                </tr>-->
-                                <tr>
-                                    <td colspan="4" style="text-align: center;">
-                                        <span t-esc="'Commercial Tax 5%'"/>
-                                    </td>
-                                    <td style="text-align: right;">
-                                        <span t-field="o.amount_tax"/>
+                                        <span t-field="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="4" style="text-align: center;">
-                                        <span t-esc="'Grand Total'"/>
+                                    <td colspan="4" style="text-align: right;">
+                                        <strong>Total Invoice Amount</strong>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-field="o.amount_total"/>
+                                        <strong><span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></strong>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="5" style="text-align: left;">
-                                        <span t-esc="'('+o.currency_id.amount_to_text(o.amount_total)+' Only)'"/>
+                                        <span t-esc="'(' + o.currency_id.amount_to_text(o.amount_total) + ' Only)'"/>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
 
+                        <!-- Payment Information -->
                         <!-- Payment Information -->
                         <div class="row mt-4">
                             <div class="col-12">
@@ -180,87 +142,6 @@
                                 <p>____________________</p>
                                 <p>Aye Thida</p>
                                 <p>General Manager</p>
-                            </div>
-                        </div>
-                    </div>
-                </t>
-
-                <!-- Second Page - Breakdown -->
-                <t t-call="web.external_layout">
-                    <div class="page">
-                        <div style="text-align: center; margin-bottom: 20px;">
-                            <h3>DETAIL STATEMENT OF LAVATORY CHARGES</h3>
-                            <h4><span t-field="o.partner_id.name"/></h4>
-                        </div>
-
-                        <!-- Invoice Details Table -->
-                        <table class="table table-sm o_main_table mt-4" name="invoice_line_table">
-                             <thead>
-                                <tr>
-                                    <th style="width: 5%">No.</th>
-<!--                                    <th style="width: 25%">Product</th>-->
-                                    <th style="width: 25%">Label</th>
-<!--                                    <th style="width: 10%">Account</th>-->
-                                    <th class="text-right" style="width: 10%">Quantity</th>
-                                    <th class="text-right" style="width: 10%">Unit Price</th>
-                                    <th class="text-right" style="width: 10%">Disc.%</th>
-                                    <th class="text-right" style="width: 10%">Amount</th>
-                                    <th class="text-right" style="width: 10%">Taxes</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-set="line_no" t-value="1"/>
-                                <t t-foreach="o.invoice_line_ids" t-as="line">
-                                    <tr>
-                                        <td class="text-center"><t t-esc="line_no"/></td>
-<!--                                        <td><span t-field="line.product_id.name"/></td>-->
-                                        <td><span t-field="line.name"/></td>
-<!--                                        <td><span t-field="line.account_id.code"/></td>-->
-                                        <td class="text-right">
-                                            <span t-field="line.quantity"/>
-                                            <span t-field="line.product_uom_id.name" groups="uom.group_uom"/>
-                                        </td>
-                                        <td class="text-right">
-                                            <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                        </td>
-                                        <td class="text-right">
-                                            <span t-field="line.discount"/>
-                                        </td>
-                                        <td class="text-right">
-                                            <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                        </td>
-                                        <td class="text-right">
-                                            <span t-esc="', '.join(map(lambda x: (x.description or x.name), line.tax_ids))"/>
-                                        </td>
-                                    </tr>
-                                    <t t-set="line_no" t-value="line_no + 1"/>
-                                </t>
-                            </tbody>
-                        </table>
-
-                        <!-- Totals Table -->
-                        <div class="row justify-content-end">
-                            <div class="col-4">
-                                <table class="table table-sm">
-                                    <tr class="border-black">
-                                        <td><strong>Total Without Taxes</strong></td>
-                                        <td class="text-right">
-                                            <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Taxes</td>
-                                        <td class="text-right">
-                                            <span t-field="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-black o_total">
-                                        <td><strong>Total</strong></td>
-                                        <td class="text-right">
-                                            <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                        </td>
-                                    </tr>
-                                </table>
                             </div>
                         </div>
                     </div>
