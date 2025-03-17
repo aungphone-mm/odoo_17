@@ -88,11 +88,19 @@ class AccountCashbook(models.Model):
             'border_color': '#C0C0C0'
         })
 
+        # Format for account codes - text format to preserve leading zeros
+        account_code_format = workbook.add_format({
+            'align': 'left',
+            'border': 1,
+            'border_color': '#C0C0C0',
+            'num_format': '@'
+        })
+
         amount_format = workbook.add_format({
             'align': 'right',
             'border': 1,
             'border_color': '#C0C0C0',
-            'num_format': '#,##0.00'  # Format to show numbers with 2 decimals WITHOUT K suffix
+            'num_format': '#,##0.00'
         })
 
         date_format = workbook.add_format({
@@ -102,25 +110,26 @@ class AccountCashbook(models.Model):
             'num_format': 'dd/mm/yyyy'
         })
 
-        # Set column widths to match the requested format
+        # Set column widths
         sheet.set_column('A:A', 12)  # Date
         sheet.set_column('B:B', 15)  # Source Code
         sheet.set_column('C:C', 15)  # Reference
         sheet.set_column('D:D', 15)  # Cheque
         sheet.set_column('E:E', 12)  # DN/CN No.
-        sheet.set_column('F:F', 25)  # Description
-        sheet.set_column('G:G', 25)  # Name
-        sheet.set_column('H:H', 25)  # Particular
+        sheet.set_column('F:F', 50)  # Description
+        sheet.set_column('G:G', 50)  # Name
+        sheet.set_column('H:H', 15)  # Particular
         sheet.set_column('I:I', 15)  # USD(AMT)
         sheet.set_column('J:J', 10)  # Currency
         sheet.set_column('K:K', 15)  # Price
         sheet.set_column('L:L', 15)  # Amount
-        sheet.set_column('M:M', 20)  # Main Account
-        sheet.set_column('N:N', 20)  # Main Dept
-        sheet.set_column('O:O', 20)  # Sub Account Code
-        sheet.set_column('P:P', 30)  # Sub Account Name
-        sheet.set_column('Q:Q', 20)  # Sub Dept
-        sheet.set_column('R:R', 20)  # Note
+        sheet.set_column('M:M', 15)  # Main Account
+        sheet.set_column('N:N', 12)  # Main Account Code (now column N)
+        sheet.set_column('O:O', 15)  # Main Dept (now column O)
+        sheet.set_column('P:P', 15)  # Sub Account Code (now column P)
+        sheet.set_column('Q:Q', 30)  # Sub Account Name (now column Q)
+        sheet.set_column('R:R', 15)  # Sub Dept (now column R)
+        sheet.set_column('S:S', 15)  # Note (now column S)
 
         # Write title at the top center
         if self.type == 'receive':
@@ -130,9 +139,14 @@ class AccountCashbook(models.Model):
         else:
             title = 'Cashbook'
 
-        sheet.merge_range('A1:R1', title, title_format)
+        sheet.merge_range('A1:S1', title, title_format)
 
-        # Define headers exactly as requested
+        # Get main account code for later use
+        main_account_code = ''
+        if self.main_account_id and self.main_account_id.code:
+            main_account_code = self.main_account_id.code
+
+        # Define headers - with Main Account Code immediately after Main Account
         headers = [
             'Date',
             'Source Code',
@@ -147,6 +161,7 @@ class AccountCashbook(models.Model):
             'Price',
             'Amount',
             'Main Account',
+            'Main Account Code',  # Now column N instead of S
             'Main Dept',
             'Sub Account Code',
             'Sub Account Name',
@@ -157,31 +172,39 @@ class AccountCashbook(models.Model):
         for col, header in enumerate(headers):
             sheet.write(1, col, header, header_format)
 
-        # Write data starting from row 2 (row index 2 in code corresponds to Excel row 3)
-        for row, line in enumerate(self.line_ids, 2):
-            # Date - column A
-            date_str = line.cashbook_id.date.strftime('%d/%m/%Y') if line.cashbook_id.date else ''
-            sheet.write(row, 0, date_str, date_format)
+        # Process line data
+        row = 2  # Start from row 2 (Excel row 3)
 
-            # Source Code - column B is left empty
+        # Calculate total amount
+        total_amount = sum(line.amount for line in self.line_ids)
+
+        # Write data for each line
+        for line in self.line_ids:
+            # Date - column A
+            sheet.write(row, 0, self.date, date_format)
+
+            # Source Code - column B
             sheet.write(row, 1, '', cell_format)
 
             # Reference - column C
-            sheet.write(row, 2, line.cashbook_id.ref_no or '', cell_format)
+            sheet.write(row, 2, self.ref_no or '', cell_format)
 
-            # Cheque - column D is left empty
+            # Cheque - column D
             sheet.write(row, 3, '', cell_format)
 
-            # DN/CN No. - column E is left empty
+            # DN/CN No. - column E
             sheet.write(row, 4, '', cell_format)
 
             # Description - column F
             sheet.write(row, 5, line.name or '', cell_format)
 
-            # Name - column G (Partner name)
-            sheet.write(row, 6, line.partner_id.name if line.partner_id else '', cell_format)
+            # Name - column G
+            partner_name = line.partner_id.name if line.partner_id else ''
+            if not partner_name and self.partner_id:
+                partner_name = self.partner_id.name
+            sheet.write(row, 6, partner_name, cell_format)
 
-            # Particular - column H (leaving empty as this seems to be a duplicate of Description)
+            # Particular - column H
             sheet.write(row, 7, '', cell_format)
 
             # USD(AMT) - column I
@@ -193,17 +216,16 @@ class AccountCashbook(models.Model):
             # Currency - column J
             sheet.write(row, 9, line.currency_id.name, cell_format)
 
-            # Price - column K is left empty
+            # Price - column K
             sheet.write(row, 10, '', cell_format)
 
             # Amount - column L
             sheet.write(row, 11, line.amount, amount_format)
 
-            # Main Account and Main Dept - columns M and N (Analytic Distribution)
-            main_account = ''
-            main_dept = ''
+            # Get analytic data
+            analytic_code = ''
+            analytic_name = ''
             if line.analytic_distribution:
-                # Get account info for each entry in the distribution
                 analytic_accounts = []
                 for account_id, percentage in line.analytic_distribution.items():
                     if ',' in account_id:
@@ -214,34 +236,43 @@ class AccountCashbook(models.Model):
                         account = self.env['account.analytic.account'].browse(int(account_id))
                         analytic_accounts.append(account)
 
-                # Extract codes and names as needed
+                # Get codes and names
                 if analytic_accounts:
-                    for account in analytic_accounts:
-                        if account.exists():
-                            if not main_account:
-                                main_account = account.code
-                            if not main_dept and account.name:
-                                main_dept = account.name
+                    analytic_codes = [account.code for account in analytic_accounts if
+                                      account.exists() and account.code]
+                    analytic_names = [account.name for account in analytic_accounts if
+                                      account.exists() and account.name]
+                    analytic_code = ' / '.join(analytic_codes) if analytic_codes else ''
+                    analytic_name = ' / '.join(analytic_names) if analytic_names else ''
 
-            sheet.write(row, 12, main_account, cell_format)
-            sheet.write(row, 13, main_dept, cell_format)
+            # Main Account - column M
+            sheet.write(row, 12, analytic_code, account_code_format)
 
-            # Sub Account Code - column O
-            sheet.write(row, 14, line.account_id.code or '', cell_format)
+            # Main Account Code - column N (now immediately after Main Account)
+            sheet.write(row, 13, main_account_code, account_code_format)
 
-            # Sub Account Name - column P
-            sheet.write(row, 15, line.account_id.name or '', cell_format)
+            # Main Dept - column O (moved from N to O)
+            sheet.write(row, 14, analytic_name, cell_format)
 
-            # Sub Dept - column Q is left empty
-            sheet.write(row, 16, '', cell_format)
+            # Sub Account Code - column P (moved from O to P)
+            sub_account_code = line.account_id.code if line.account_id else ''
+            sheet.write(row, 15, sub_account_code, account_code_format)
 
-            # Note - column R is left empty
+            # Sub Account Name - column Q (moved from P to Q)
+            sub_account_name = line.account_id.name if line.account_id else ''
+            sheet.write(row, 16, sub_account_name, cell_format)
+
+            # Sub Dept - column R (moved from Q to R)
             sheet.write(row, 17, '', cell_format)
+
+            # Note - column S (moved from R to S)
+            sheet.write(row, 18, '', cell_format)
+
+            row += 1
 
         # Add total row
         total_row = len(self.line_ids) + 2
-        total_formula = f'=SUM(L3:L{total_row})'
-        sheet.write(total_row, 11, total_formula, amount_format)
+        sheet.write(total_row, 11, total_amount, amount_format)
 
         workbook.close()
         output.seek(0)
