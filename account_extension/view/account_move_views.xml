@@ -42,6 +42,9 @@
                 <field name="ref_name" string="Name" optional="show"/>
                 <field name="ref_desc" string="Description" optional="show"/>
             </xpath>
+            <xpath expr="//field[@name='line_ids']/tree//field[@name='partner_id']" position="attributes">
+                <attribute name="domain">[]</attribute>
+            </xpath>
         </field>
     </record>
 
