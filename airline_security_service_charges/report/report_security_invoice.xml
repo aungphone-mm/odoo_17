@@ -106,10 +106,10 @@
                                 </tr>
                                 <tr>
                                     <td colspan="3" style="text-align: center;">
-                                        <span t-esc="'5% Commercial Tax'"/>
+                                        <span t-esc="'Commercial Tax 5%'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-field="o.amount_tax"/>
+                                        <span t-esc="o.amount_untaxed * 0.05"/>
                                     </td>
                                 </tr>
                                 <tr>
