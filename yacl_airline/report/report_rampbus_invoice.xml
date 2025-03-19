@@ -82,8 +82,9 @@
                                         <t t-if="line.discount > 0">
                                             <t t-set="line_discount" t-value="line.price_unit * line.quantity * (line.discount/100)"/>
                                             <t t-set="total_discount" t-value="total_discount + line_discount"/>
-                                            <span t-esc="line_discount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-<!--                                            (<span t-field="line.discount"/>%)-->
+<!--                                            <span t-esc="line_discount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+<!--                                            <span t-field="line.discount"/>-->
+                                            <span t-esc="str(line.discount) + ' %'"/>
                                         </t>
                                     </td>
                                     <td style="text-align: right;">
