@@ -48,19 +48,21 @@
                             </div>
                         </div>
 
-                        <!-- First Page Line Items Table -->
+                        <!-- First Page Line Items Table with Discount Column -->
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th style="width: 5%;">Sr.</th>
-                                    <th style="width: 55%;">Description</th>
+                                    <th style="width: 45%;">Description</th>
                                     <th style="width: 10%;">Quantity</th>
-                                    <th style="width: 15%;">Unit Price</th>
+                                    <th style="width: 10%;">Price</th>
+                                    <th style="width: 10%;">Discount</th>
                                     <th style="width: 15%;">Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <t t-set="line_no" t-value="1"/>
+                                <t t-set="total_discount" t-value="0"/>
                                 <t t-foreach="o.invoice_line_ids" t-as="line">
                                 <tr>
                                     <td><t t-esc="line_no"/></td>
@@ -77,32 +79,37 @@
                                         <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                </tr>
-                                <!-- Add discount row for each line that has a discount -->
-                                <tr t-if="line.discount > 0">
-                                    <td></td>
-                                    <td colspan="3" style="text-align: right;">
-                                        <strong>Discount</strong>
+                                        <t t-if="line.discount > 0">
+                                            <t t-set="line_discount" t-value="line.price_unit * line.quantity * (line.discount/100)"/>
+                                            <t t-set="total_discount" t-value="total_discount + line_discount"/>
+                                            <span t-esc="line_discount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+<!--                                            (<span t-field="line.discount"/>%)-->
+                                        </t>
                                     </td>
                                     <td style="text-align: right;">
-                                        <t t-set="line_discount" t-value="line.price_unit * line.quantity * (line.discount/100)"/>
-                                        <span t-esc="line_discount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                     </td>
                                 </tr>
                                 <t t-set="line_no" t-value="line_no + 1"/>
                             </t>
-                                <tr>
-                                    <td colspan="4" style="text-align: right;">
-                                        <strong>Total Amount</strong>
+                                <tr t-if="total_discount > 0">
+                                    <td colspan="5" style="text-align: right;">
+                                        <strong>Total Discount</strong>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="total_discount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                     </td>
                                 </tr>
+<!--                                <tr>-->
+<!--                                    <td colspan="5" style="text-align: right;">-->
+<!--                                        <strong>Total Amount</strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right;">-->
+<!--                                        <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
                                 <tr t-if="o.amount_tax > 0">
-                                    <td colspan="4" style="text-align: right;">
+                                    <td colspan="5" style="text-align: right;">
                                         <strong>Commercial Tax 5%</strong>
                                     </td>
                                     <td style="text-align: right;">
@@ -110,15 +117,15 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="4" style="text-align: right;">
-                                        <strong>Total Invoice Amount</strong>
+                                    <td colspan="5" style="text-align: right;">
+                                        <strong>Total Amount</strong>
                                     </td>
                                     <td style="text-align: right;">
                                         <strong><span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></strong>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="5" style="text-align: left;">
+                                    <td colspan="6" style="text-align: left;">
                                         <span t-esc="'(' + o.currency_id.amount_to_text(o.amount_total) + ' Only)'"/>
                                     </td>
                                 </tr>
