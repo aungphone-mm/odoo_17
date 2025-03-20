@@ -16,6 +16,18 @@ class AccountMove(models.Model):
         store=True,
         readonly=False
     )
+    custom_tax_amount = fields.Monetary(
+        string="Custom Tax Amount",
+        compute="_compute_custom_tax_amount",
+        store=True
+    )
+
+    @api.depends('amount_untaxed', 'invoice_line_ids')
+    def _compute_custom_tax_amount(self):
+        for move in self:
+            # Your custom calculation here
+            # Example: 3% of untaxed amount or any other logic you want
+            move.custom_tax_amount = move.amount_untaxed * 0.05
 
     # def write(self, vals):
     #     # First perform the original write operation
@@ -138,6 +150,7 @@ class AccountMove(models.Model):
                 move.cumulative_depreciation_usd = 0.0
                 move.depreciable_value_usd = 0.0
 
+
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
@@ -147,3 +160,84 @@ class AccountMoveLine(models.Model):
     received_date = fields.Char(string='Received Date')
     ref_name = fields.Char(string="Name")
     ref_desc = fields.Char(string="Description")
+    old_account_code = fields.Char(string='Old Account Code', help='Legacy account code that will auto-fill partner')
+
+    # Changed from Many2many to Many2one for dropdown behavior
+    old_account_code_partner_id = fields.Many2one('res.partner', string='Select Partner',
+                                                  help='Select a partner matching the old account code')
+
+    # Keep this as a Many2many for displaying all options
+    old_account_code_partner_options = fields.Many2many('res.partner', string='Matching Partners',
+                                                        compute='_compute_matching_partners')
+
+    @api.onchange('old_account_code')
+    def _onchange_old_account_code(self):
+        if self.old_account_code:
+            # Search for partners with this old account code
+            partners = self.env['res.partner'].search([('old_ac', '=', self.old_account_code)])
+
+            # Update the many2many field to show matching partners
+            self.old_account_code_partner_options = [(6, 0, partners.ids)]
+
+            # Clear the dropdown selection
+            self.old_account_code_partner_id = False
+
+            if len(partners) == 1:
+                # If only one partner, auto-select it in the dropdown
+                self.old_account_code_partner_id = partners.id
+                # Partner_id will be set by the onchange of old_account_code_partner_id
+            elif len(partners) == 0:
+                # No matching partners
+                return {
+                    'warning': {
+                        'title': 'No Partners Found',
+                        'message': f'No partners found with old account code: {self.old_account_code}'
+                    }
+                }
+        else:
+            # Clear fields when old_account_code is empty
+            self.old_account_code_partner_options = [(5, 0, 0)]
+            self.old_account_code_partner_id = False
+            self.partner_id = False
+
+    @api.depends('old_account_code')
+    def _compute_matching_partners(self):
+        for line in self:
+            if line.old_account_code:
+                partners = self.env['res.partner'].search([('old_ac', '=', line.old_account_code)])
+                line.old_account_code_partner_options = [(6, 0, partners.ids)]
+            else:
+                line.old_account_code_partner_options = [(6, 0, [])]
+
+    @api.onchange('old_account_code_partner_id')
+    def _onchange_old_account_code_partner_id(self):
+        # When a partner is selected from the dropdown, update the partner_id
+        if self.old_account_code_partner_id:
+            self.partner_id = self.old_account_code_partner_id
+            self._set_account_based_on_partner()
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        if self.partner_id:
+            self._set_account_based_on_partner()
+
+    def _set_account_based_on_partner(self):
+        # Set account based on selected partner
+        if self.partner_id:
+            if self.move_id.move_type in ('out_invoice', 'out_refund'):
+                self.account_id = self.partner_id.property_account_receivable_id.id
+            elif self.move_id.move_type in ('in_invoice', 'in_refund'):
+                self.account_id = self.partner_id.property_account_payable_id.id
+
+    # @api.onchange('old_account_code')
+    # def _onchange_old_account_code(self):
+    #     if self.old_account_code:
+    #         # Search for partner with this old account code
+    #         partner = self.env['res.partner'].search([('old_ac', '=', self.old_account_code)], limit=1)
+    #         if partner:
+    #             self.partner_id = partner.id
+    #             # You may also want to set account based on partner if needed
+    #             if self.move_id.move_type in ('out_invoice', 'out_refund'):
+    #                 self.account_id = partner.property_account_receivable_id.id
+    #             elif self.move_id.move_type in ('in_invoice', 'in_refund'):
+    #                 self.account_id = partner.property_account_payable_id.id

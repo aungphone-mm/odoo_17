@@ -12,6 +12,58 @@
                         type="object"
                         class="oe_highlight"/>
             </xpath>
+<!--            <xpath expr="//field[@name='line_ids']/tree//field[@name='account_id']" position="after">-->
+<!--                <field name="old_account_code" string="Old Account Code" optional="show"/>-->
+<!--            </xpath>-->
+            <xpath expr="//field[@name='line_ids']/tree" position="attributes">
+                <attribute name="editable">bottom</attribute>
+            </xpath>
+
+            <!-- Add the new fields to the line items -->
+            <xpath expr="//field[@name='line_ids']/tree//field[@name='account_id']" position="after">
+                <field name="ref_no"/>
+                <field name="received_date"/>
+                <field name="ref_name"/>
+                <field name="ref_desc"/>
+                <field name="old_account_code"/>
+                <!-- Changed from old_account_code_partner_ids to old_account_code_partner_id -->
+                <field name="old_account_code_partner_id" widget="selection"
+                       options="{'no_create': True, 'no_open': True}"
+                       domain="[('id', 'in', old_account_code_partner_options)]"/>
+                <!-- This is the hidden field that holds the available options -->
+                <field name="old_account_code_partner_options" invisible="not context.get('1qq')"/>
+            </xpath>
+<!--            <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='tax_ids']"-->
+<!--                       position="attributes">-->
+<!--                    <attribute name="invisible">1</attribute>-->
+<!--                </xpath>-->
+            <!-- If you have a form view for line items, update that too -->
+            <xpath expr="//field[@name='line_ids']/form//field[@name='account_id']" position="after">
+                <field name="ref_no"/>
+                <field name="received_date"/>
+                <field name="ref_name"/>
+                <field name="ref_desc"/>
+                <field name="old_account_code"/>
+                <field name="old_account_code_partner_id" widget="selection"
+                       options="{'no_create': True, 'no_open': True}"
+                       domain="[('id', 'in', old_account_code_partner_options)]"/>
+                <field name="old_account_code_partner_options" invisible="1"/>
+            </xpath>
+<!--            <xpath expr="//group[contains(@class, 'oe_subtotal_footer')]" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
+            <xpath expr="//field[@name='line_ids']/form//field[@name='old_account_code_partner_options']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+<xpath expr="//field[@name='narration']" position="before">
+    <group name="inclusive_tax_group" class="mt-2 mb-2">
+        <div class="row">
+            <label for="custom_tax_amount" string="Inclusive Tax 5%:" class="col-5 text-end"/>
+            <field name="custom_tax_amount" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+        </div>
+    </group>
+</xpath>
+
             <!-- Add custom header and note fields -->
             <notebook position="inside">
                 <page string="Custom Invoice Details">
@@ -35,16 +87,18 @@
                        invisible="move_type not in ('out_invoice', 'out_refund')"
                        domain="[('account_type', '=', 'asset_receivable')]"/>
             </xpath>
-            <xpath expr="//field[@name='line_ids']/tree//field[@name='account_id']" position="after">
-                <field name="ref_no" string="Reference No" optional="show"/>
-                <field name="note" string="Note" optional="show"/>
-                <field name="received_date" string="Received Date" optional="show"/>
-                <field name="ref_name" string="Name" optional="show"/>
-                <field name="ref_desc" string="Description" optional="show"/>
-            </xpath>
+
             <xpath expr="//field[@name='line_ids']/tree//field[@name='partner_id']" position="attributes">
                 <attribute name="domain">[]</attribute>
             </xpath>
+            <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='tax_ids']"
+                       position="attributes">
+                    <attribute name="string">Service/Taxes</attribute>
+                </xpath>
+            <!--                <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/group/field[@name='tax_totals']"-->
+<!--                       position="attributes">-->
+<!--                    <attribute name="string">Service/Taxes</attribute>-->
+<!--                </xpath>-->
         </field>
     </record>
 
@@ -106,4 +160,5 @@
 <!--            </xpath>-->
         </field>
     </record>
+
 </odoo>
