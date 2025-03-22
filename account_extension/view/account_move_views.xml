@@ -22,6 +22,7 @@
             <!-- Add the new fields to the line items -->
             <xpath expr="//field[@name='line_ids']/tree//field[@name='account_id']" position="after">
                 <field name="ref_no"/>
+                <field name="note"/>
                 <field name="received_date"/>
                 <field name="ref_name"/>
                 <field name="ref_desc"/>
@@ -40,6 +41,7 @@
             <!-- If you have a form view for line items, update that too -->
             <xpath expr="//field[@name='line_ids']/form//field[@name='account_id']" position="after">
                 <field name="ref_no"/>
+                <field name="note"/>
                 <field name="received_date"/>
                 <field name="ref_name"/>
                 <field name="ref_desc"/>
@@ -55,14 +57,14 @@
             <xpath expr="//field[@name='line_ids']/form//field[@name='old_account_code_partner_options']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-<xpath expr="//field[@name='narration']" position="before">
-    <group name="inclusive_tax_group" class="mt-2 mb-2">
-        <div class="row">
-            <label for="custom_tax_amount" string="Inclusive Tax 5%:" class="col-5 text-end"/>
-            <field name="custom_tax_amount" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
-        </div>
-    </group>
-</xpath>
+                <xpath expr="//field[@name='narration']" position="before">
+                    <group name="inclusive_tax_group" class="mt-2 mb-2">
+                        <div class="row">
+                            <label for="custom_tax_amount" string="Inclusive Tax 5%:" class="col-5 text-end"/>
+                            <field name="custom_tax_amount" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                        </div>
+                    </group>
+                </xpath>
 
             <!-- Add custom header and note fields -->
             <notebook position="inside">
@@ -160,5 +162,6 @@
 <!--            </xpath>-->
         </field>
     </record>
+
 
 </odoo>
