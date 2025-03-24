@@ -22,12 +22,62 @@ class AccountMove(models.Model):
         store=True
     )
 
-    @api.depends('amount_untaxed', 'invoice_line_ids')
+    show_custom_tax = fields.Boolean(
+        string="Show Custom Tax",
+        compute="_compute_custom_tax_amount",
+        store=True
+    )
+
+    @api.depends('amount_untaxed', 'invoice_line_ids.tax_ids')
     def _compute_custom_tax_amount(self):
         for move in self:
-            # Your custom calculation here
-            # Example: 3% of untaxed amount or any other logic you want
-            move.custom_tax_amount = move.amount_untaxed * 0.05
+            # Only calculate custom tax if the invoice lines have taxes applied
+            has_tax = any(line.tax_ids for line in move.invoice_line_ids)
+            if has_tax:
+                # 5% of untaxed amount
+                move.custom_tax_amount = move.amount_untaxed * 0.05
+                move.show_custom_tax = True
+            else:
+                move.custom_tax_amount = 0.0
+                move.show_custom_tax = False
+
+    def action_apply_old_account_code(self):
+        """Apply partner's old account code to all journal items"""
+        self.ensure_one()
+        if self.partner_id and hasattr(self.partner_id, 'old_ac') and self.partner_id.old_ac:
+            for line in self.line_ids:
+                line.old_account_code = self.partner_id.old_ac
+        return True
+
+
+    # For AccountMove class
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        """Update account receivable when partner changes"""
+        if self.partner_id and self.move_type in ('out_invoice', 'out_refund'):
+            self.account_receivable_id = self.partner_id.property_account_receivable_id
+
+            # Update old_account_code on line items if they exist
+            if hasattr(self.partner_id, 'old_ac') and self.partner_id.old_ac:
+                for line in self.line_ids:
+                    line.old_account_code = self.partner_id.old_ac
+
+    # Add this method to the AccountMove class
+    def _set_account_based_on_partner(self):
+        """Set accounts based on partner for move lines"""
+        if self.partner_id:
+            for line in self.line_ids:
+                # Set old account code if it exists on the partner
+                if hasattr(self.partner_id, 'old_ac') and self.partner_id.old_ac:
+                    line.old_account_code = self.partner_id.old_ac
+
+                # Set appropriate account based on move type
+                if self.move_type in (
+                'out_invoice', 'out_refund') and not line.account_id.account_type == 'asset_receivable':
+                    line.account_id = self.partner_id.property_account_receivable_id
+                elif self.move_type in (
+                'in_invoice', 'in_refund') and not line.account_id.account_type == 'liability_payable':
+                    line.account_id = self.partner_id.property_account_payable_id
 
     # def write(self, vals):
     #     # First perform the original write operation

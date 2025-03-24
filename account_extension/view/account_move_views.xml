@@ -11,6 +11,11 @@
                         string="Print Custom Invoice"
                         type="object"
                         class="oe_highlight"/>
+                <button name="action_apply_old_account_code"
+                        string="Apply Old Account Code"
+                        type="object"
+                        class="oe_highlight"
+                         />
             </xpath>
 <!--            <xpath expr="//field[@name='line_ids']/tree//field[@name='account_id']" position="after">-->
 <!--                <field name="old_account_code" string="Old Account Code" optional="show"/>-->
@@ -32,7 +37,7 @@
                        options="{'no_create': True, 'no_open': True}"
                        domain="[('id', 'in', old_account_code_partner_options)]"/>
                 <!-- This is the hidden field that holds the available options -->
-                <field name="old_account_code_partner_options" invisible="not context.get('1qq')"/>
+                <field name="old_account_code_partner_options" invisible="1"/>
             </xpath>
 <!--            <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='tax_ids']"-->
 <!--                       position="attributes">-->
@@ -54,17 +59,17 @@
 <!--            <xpath expr="//group[contains(@class, 'oe_subtotal_footer')]" position="attributes">-->
 <!--                <attribute name="invisible">1</attribute>-->
 <!--            </xpath>-->
-            <xpath expr="//field[@name='line_ids']/form//field[@name='old_account_code_partner_options']" position="attributes">
-                <attribute name="invisible">1</attribute>
+            <xpath expr="//field[@name='narration']" position="before">
+                <!-- Using invisible directly with a field reference for Odoo 17 compatibility -->
+                <field name="show_custom_tax" invisible="1"/>
+                <group name="inclusive_tax_group" class="mt-2 mb-2" invisible="not show_custom_tax">
+                    <div class="row">
+                        <label for="custom_tax_amount" string="Inclusive Tax 5%:" class="col-5 text-end"/>
+                        <field name="custom_tax_amount" widget="monetary"
+                               options="{'currency_field': 'currency_id'}" readonly="1"/>
+                    </div>
+                </group>
             </xpath>
-                <xpath expr="//field[@name='narration']" position="before">
-                    <group name="inclusive_tax_group" class="mt-2 mb-2">
-                        <div class="row">
-                            <label for="custom_tax_amount" string="Inclusive Tax 5%:" class="col-5 text-end"/>
-                            <field name="custom_tax_amount" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
-                        </div>
-                    </group>
-                </xpath>
 
             <!-- Add custom header and note fields -->
             <notebook position="inside">
