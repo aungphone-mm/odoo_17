@@ -104,7 +104,8 @@
                                         <span t-esc="'Commercial Tax 5%'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-esc="o.amount_untaxed * 0.05"/>
+<!--                                        <span t-esc="o.amount_untaxed * 0.05"/>-->
+                                        <span t-options='{"widget": "monetary", "display_currency": o.currency_id}' t-esc="o.amount_untaxed * 0.05"/>
                                     </td>
                                 </tr>
                                 <tr>

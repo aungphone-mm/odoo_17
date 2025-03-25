@@ -2,12 +2,12 @@
 <odoo>
     <record id="action_report_subscription" model="ir.actions.report">
         <field name="name">Subscription Report</field>
-        <field name="model">sale.order</field>
+        <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">yacl_airline.subscription_report</field>
         <field name="report_file">yacl_airline.subscription_report</field>
         <field name="print_report_name">'Subscription - %s' % (object.name)</field>
-        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
     </record>
 
@@ -28,14 +28,14 @@
                                 <div t-field="subscription.partner_id.country_id.name"/>
                             </div>
                             <div class="col-6">
-                                <strong>Order Date:</strong>
-                                <div t-field="subscription.date_order"/>
-                                <strong>Recurring Plan:</strong>
-                                <div t-field="subscription.plan_id.name"/>
-                                <strong>Date of Next Invoice:</strong>
-                                <div t-field="subscription.next_invoice_date"/>
-                                <strong>Pricelist:</strong>
-                                <div t-field="subscription.pricelist_id.name"/>
+                                <strong>Invoice Date:</strong>
+                                <div t-field="subscription.invoice_date"/>
+                                <strong>Payment Terms:</strong>
+                                <div t-field="subscription.invoice_payment_term_id.name"/>
+                                <strong>Due Date:</strong>
+                                <div t-field="subscription.invoice_date_due"/>
+                                <strong>Journal:</strong>
+                                <div t-field="subscription.journal_id.name"/>
                             </div>
                         </div>
 
@@ -49,21 +49,21 @@
                                     <th class="text-right">Quantity</th>
                                     <th>UoM</th>
                                     <th class="text-right">Unit Price</th>
-                                    <th class="text-right">Taxes</th>
+                                    <th class="text-right">Inclusive Taxes</th>
                                     <th class="text-right">Tax excl.</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr t-foreach="subscription.order_line" t-as="line">
+                                <tr t-foreach="subscription.invoice_line_ids" t-as="line">
                                     <td><span t-field="line.product_id.name"/></td>
                                     <td><span t-field="line.name"/></td>
-                                    <td class="text-right"><span t-field="line.product_uom_qty"/></td>
-                                    <td><span t-field="line.product_uom.name"/></td>
+                                    <td class="text-right"><span t-field="line.quantity"/></td>
+                                    <td><span t-field="line.product_uom_id.name"/></td>
                                     <td class="text-right">
                                         <span t-field="line.price_unit"/>
                                     </td>
                                     <td class="text-right">
-                                        <span t-esc="','.join(map(lambda x: x.name, line.tax_id))"/>
+                                        <span t-esc="','.join(map(lambda x: x.name, line.tax_ids))"/>
                                     </td>
                                     <td class="text-right">
                                         <span t-field="line.price_subtotal"/>
