@@ -90,22 +90,22 @@
                                         <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td colspan="4" style="text-align: right;">
-                                        <strong>Commercial Tax 5%</strong>
-                                    </td>
-                                    <td style="text-align: right;">
-                                        <span t-field="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" style="text-align: right;">
-                                        <strong>Total Invoice Amount</strong>
-                                    </td>
-                                    <td style="text-align: right;">
-                                        <strong><span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></strong>
-                                    </td>
-                                </tr>
+<!--                                <tr>-->
+<!--                                    <td colspan="4" style="text-align: right;">-->
+<!--                                        <strong>Commercial Tax 5%</strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right;">-->
+<!--                                        <span t-field="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
+<!--                                <tr>-->
+<!--                                    <td colspan="4" style="text-align: right;">-->
+<!--                                        <strong>Total Invoice Amount</strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right;">-->
+<!--                                        <strong><span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></strong>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
                                 <tr>
                                     <td colspan="5" style="text-align: left;">
                                         <span t-esc="'(' + o.currency_id.amount_to_text(o.amount_total) + ' Only)'"/>
