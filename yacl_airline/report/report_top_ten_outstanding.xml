@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Register the report in the system -->
+    <record id="action_report_top_ten_outstanding" model="ir.actions.report">
+        <field name="name">Top Ten Outstanding Report</field>
+        <field name="model">top.ten.outstanding.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">yacl_airline.report_top_ten_outstanding</field>
+        <field name="report_file">yacl_airline.report_top_ten_outstanding</field>
+        <field name="print_report_name">'Top Ten Outstanding Report'</field>
+        <field name="binding_model_id" ref="yacl_airline.model_top_ten_outstanding_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- QWeb Template for the Report -->
+    <template id="report_top_ten_outstanding">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <!-- Report Header Section -->
+                    <div class="row mb-4">
+                        <div class="col-12 text-center">
+                            <h2 style="font-weight: bold; font-size: 24px;">Top Ten Outstanding Invoices</h2>
+                            <p>As of <span t-esc="current_date" t-options='{"widget": "date"}'/></p>
+                        </div>
+                    </div>
+
+                    <!-- Main Content Table -->
+                    <t t-if="outstanding_invoices">
+                        <table class="table table-bordered table-sm">
+                            <thead style="background-color: #e9ecef;">
+                                <tr>
+                                    <th style="width: 5%;">Rank</th>
+                                    <th style="width: 15%;">Invoice Number</th>
+                                    <th style="width: 20%;">Customer</th>
+                                    <th style="width: 15%;">Invoice Date</th>
+                                    <th style="width: 15%;">Due Date</th>
+                                    <th style="width: 10%;">Days Overdue</th>
+                                    <th style="width: 10%;">Amount</th>
+                                    <th style="width: 10%;">Outstanding</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="rank" t-value="1"/>
+                                <t t-foreach="outstanding_invoices" t-as="invoice">
+                                    <tr t-attf-class="{{ rank &lt;= 3 and 'bg-danger text-white' or '' }}">
+                                        <td style="text-align: center;"><t t-esc="rank"/></td>
+                                        <td><span t-field="invoice.name"/></td>
+                                        <td><span t-field="invoice.partner_id.name"/></td>
+                                        <td><span t-field="invoice.invoice_date"/></td>
+                                        <td><span t-field="invoice.invoice_date_due"/></td>
+                                        <td style="text-align: center;">
+                                            <t t-esc="get_days_overdue(invoice)"/>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span t-field="invoice.amount_total" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span t-field="invoice.amount_residual" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <t t-set="rank" t-value="rank + 1"/>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr style="background-color: #f8f9fa; font-weight: bold;">
+                                    <td colspan="7" style="text-align: right;">Total Outstanding Amount</td>
+                                    <td style="text-align: right;">
+                                        <t t-esc="total_outstanding" t-options='{"widget": "monetary", "display_currency": company_currency}'/>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info">
+                            <p class="mb-0">No outstanding invoices found.</p>
+                        </div>
+                    </t>
+
+                    <!-- Summary Section -->
+                    <div class="row mt-5">
+                        <div class="col-12">
+<!--                            <h5>Summary</h5>-->
+                            <div class="card">
+                                <div class="card-body">
+                                    <p>This report shows the top 10 outstanding invoices based on the remaining amount to be paid. The top 3 invoices with the highest outstanding amounts are highlighted in red and require immediate attention.</p>
+                                    <p>Total outstanding amount: <strong><t t-esc="total_outstanding" t-options='{"widget": "monetary", "display_currency": company_currency}'/></strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer with generation information -->
+                    <div class="row mt-5">
+                        <div class="col-12 text-center">
+                            <p style="font-size: 10px; color: #6c757d;">
+                                Report generated on <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M:%S')"/>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

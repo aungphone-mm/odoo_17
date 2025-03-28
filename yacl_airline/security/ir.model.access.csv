@@ -8,3 +8,4 @@ access_airline_charges_report_wizard,access.airline.charges.report.wizard,model_
 access_report_checkin_selection_wizard,access.report.checkin.selection.wizard,model_report_checkin_selection_wizard,base.group_user,1,1,1,1
 access_boarding_bridge_report_wizard,access.boarding.bridge.report.wizard,model_boarding_bridge_report_wizard,base.group_user,1,1,1,1
 access_security_service_report_wizard,access.security.service.report.wizard,model_security_service_report_wizard,base.group_user,1,1,1,1
+access_top_ten_outstanding_wizard,access.top.ten.outstanding.wizard,model_top_ten_outstanding_wizard,base.group_user,1,1,1,1

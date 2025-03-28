@@ -44,6 +44,8 @@
         'report/boarding_bridge_report.xml',
         'wizard/security_service_report_wizard_view.xml',
         'report/security_service_report.xml',
+        'wizard/top_ten_outstanding_wizard_view.xml',
+        'report/report_top_ten_outstanding.xml',
     ],
     'installable': True,
     'application': False,

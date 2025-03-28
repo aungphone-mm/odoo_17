@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_top_ten_outstanding_wizard_form" model="ir.ui.view">
+        <field name="name">top.ten.outstanding.wizard.form</field>
+        <field name="model">top.ten.outstanding.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Top Ten Outstanding Report">
+                <div class="alert alert-info" role="alert">
+                    <p>This report will show the top 10 customer invoices with the highest outstanding amounts.</p>
+                    <p>The report highlights the most critical outstanding invoices that require immediate attention.</p>
+                </div>
+                <!-- Future filters can be added here -->
+                <footer>
+                    <button name="action_generate_report" string="Generate Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_top_ten_outstanding_wizard" model="ir.actions.act_window">
+        <field name="name">Top Ten Outstanding Report</field>
+        <field name="res_model">top.ten.outstanding.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_top_ten_outstanding_wizard_form"/>
+    </record>
+
+    <!-- Add menu item for the report -->
+    <menuitem id="menu_top_ten_outstanding_report"
+              name="Top Ten Outstanding Report"
+              parent="yacl_airline.menu_summary_report"
+              action="action_top_ten_outstanding_wizard"
+              sequence="50"/>
+</odoo>
