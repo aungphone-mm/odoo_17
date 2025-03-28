@@ -1,5 +1,8 @@
 from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo import models, api
+import xlsxwriter
+import base64
+from io import BytesIO
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
@@ -199,6 +202,220 @@ class AccountMove(models.Model):
                 move.depreciation_usd = 0.0
                 move.cumulative_depreciation_usd = 0.0
                 move.depreciable_value_usd = 0.0
+    def action_journal_excel_download(self):
+        """Export journal entries to Excel file"""
+        # Create Excel file
+        output = BytesIO()
+        workbook = xlsxwriter.Workbook(output)
+        sheet = workbook.add_worksheet('Journal Entries')
+
+        # Add formats
+        title_format = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'valign': 'vcenter',
+            'font_size': 14,
+            'border': 0,
+            'bg_color': '#e6fcf2'
+        })
+
+        header_format = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'valign': 'vcenter',
+            'border': 1,
+            'border_color': '#C0C0C0',
+            'bg_color': '#e6fcf2'
+        })
+
+        cell_format = workbook.add_format({
+            'align': 'left',
+            'border': 1,
+            'border_color': '#C0C0C0'
+        })
+
+        # Format for account codes - text format to preserve leading zeros
+        account_code_format = workbook.add_format({
+            'align': 'left',
+            'border': 1,
+            'border_color': '#C0C0C0',
+            'num_format': '@'
+        })
+
+        amount_format = workbook.add_format({
+            'align': 'right',
+            'border': 1,
+            'border_color': '#C0C0C0',
+            'num_format': '#,##0.00'
+        })
+
+        date_format = workbook.add_format({
+            'align': 'center',
+            'border': 1,
+            'border_color': '#C0C0C0',
+            'num_format': 'dd/mm/yyyy'
+        })
+
+        # Set column widths
+        sheet.set_column('A:A', 15)  # Entry Number
+        sheet.set_column('B:B', 15)  # Reference
+        sheet.set_column('C:C', 15)  # Date
+        sheet.set_column('D:D', 20)  # Journal
+        sheet.set_column('E:E', 15)  # Account Code
+        sheet.set_column('F:F', 30)  # Account Name
+        sheet.set_column('G:G', 40)  # Description
+        sheet.set_column('H:H', 15)  # Old Account
+        sheet.set_column('I:I', 30)  # Partner
+        sheet.set_column('J:J', 20)  # Label
+        sheet.set_column('K:K', 20)  # Analytic Account
+        sheet.set_column('L:L', 15)  # Amount
+        sheet.set_column('M:M', 15)  # Exchange Rate
+        sheet.set_column('N:N', 15)  # Tax
+        sheet.set_column('O:O', 15)  # Debit
+        sheet.set_column('P:P', 15)  # Credit
+
+        # Write title at the top center
+        sheet.merge_range('A1:P1', 'Journal Entries Export', title_format)
+
+        # Define headers
+        headers = [
+            'Entry Number',
+            'Reference',
+            'Date',
+            'Journal',
+            'Account Code',
+            'Account Name',
+            'Description',
+            'Old Account',
+            'Partner',
+            'Label',
+            'Analytic Account',
+            'Amount',
+            'Exchange Rate',
+            'Tax',
+            'Debit',
+            'Credit'
+        ]
+
+        # Write headers
+        for col, header in enumerate(headers):
+            sheet.write(1, col, header, header_format)
+
+        # Process line data
+        row = 2  # Start from row 2 (Excel row 3)
+
+        # Calculate total amounts
+        total_debit = sum(line.debit for line in self.line_ids)
+        total_credit = sum(line.credit for line in self.line_ids)
+
+        # Write data for each line
+        for line in self.line_ids:
+            # Entry Number - column A
+            sheet.write(row, 0, self.name or '', cell_format)
+
+            # Reference - column B
+            sheet.write(row, 1, self.ref or '', cell_format)
+
+            # Date - column C
+            sheet.write(row, 2, self.date, date_format)
+
+            # Journal - column D
+            journal_name = self.journal_id.name if self.journal_id else ''
+            sheet.write(row, 3, journal_name, cell_format)
+
+            # Account Code - column E
+            account_code = line.account_id.code if line.account_id else ''
+            sheet.write(row, 4, account_code, account_code_format)
+
+            # Account Name - column F
+            account_name = line.account_id.name if line.account_id else ''
+            sheet.write(row, 5, account_name, cell_format)
+
+            # Description - column G
+            sheet.write(row, 6, line.name or '', cell_format)
+
+            # Old Account - column H
+            old_account = ''
+            if hasattr(line, 'old_account_id') and line.old_account_id:
+                old_account = line.old_account_id.code
+            sheet.write(row, 7, old_account, cell_format)
+
+            # Partner - column I
+            partner_name = line.partner_id.name if line.partner_id else ''
+            sheet.write(row, 8, partner_name, cell_format)
+
+            # Label - column J
+            label = line.label if hasattr(line, 'label') else ''
+            sheet.write(row, 9, label, cell_format)
+
+            # Analytic Account - column K
+            analytic_account = ''
+            if hasattr(line, 'analytic_distribution') and line.analytic_distribution:
+                analytic_accounts = []
+                for account_id, percentage in line.analytic_distribution.items():
+                    if ',' in str(account_id):
+                        account_ids = [int(x) for x in account_id.split(',')]
+                        accounts = self.env['account.analytic.account'].browse(account_ids)
+                        analytic_accounts.extend(accounts)
+                    else:
+                        account = self.env['account.analytic.account'].browse(int(account_id))
+                        analytic_accounts.append(account)
+
+                # Get names
+                if analytic_accounts:
+                    analytic_names = [account.name for account in analytic_accounts if
+                                      account.exists() and account.name]
+                    analytic_account = ' / '.join(analytic_names) if analytic_names else ''
+
+            sheet.write(row, 10, analytic_account, cell_format)
+
+            # Amount - column L
+            amount = line.balance
+            sheet.write(row, 11, abs(amount), amount_format)
+
+            # Exchange Rate - column M
+            exchange = line.amount_currency if hasattr(line, 'amount_currency') else 0.0
+            sheet.write(row, 12, exchange, amount_format)
+
+            # Tax - column N
+            tax = ''
+            if hasattr(line, 'tax_line_id') and line.tax_line_id:
+                tax = line.tax_line_id.name
+            sheet.write(row, 13, tax, cell_format)
+
+            # Debit - column O
+            sheet.write(row, 14, line.debit, amount_format)
+
+            # Credit - column P
+            sheet.write(row, 15, line.credit, amount_format)
+
+            row += 1
+
+        # Add total row
+        total_row = len(self.line_ids) + 2
+        sheet.write(total_row, 14, total_debit, amount_format)
+        sheet.write(total_row, 15, total_credit, amount_format)
+
+        workbook.close()
+        output.seek(0)
+
+        # Generate attachment
+        xlsx_data = output.getvalue()
+        file_name = f'Journal_Entry_{self.name}.xlsx'
+
+        attachment = self.env['ir.attachment'].create({
+            'name': file_name,
+            'type': 'binary',
+            'datas': base64.b64encode(xlsx_data),
+            'store_fname': file_name,
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        })
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{attachment.id}?download=true',
+            'target': 'self',
+        }
 
 
 class AccountMoveLine(models.Model):
@@ -291,3 +508,4 @@ class AccountMoveLine(models.Model):
     #                 self.account_id = partner.property_account_receivable_id.id
     #             elif self.move_id.move_type in ('in_invoice', 'in_refund'):
     #                 self.account_id = partner.property_account_payable_id.id
+

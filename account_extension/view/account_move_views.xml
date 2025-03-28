@@ -7,10 +7,10 @@
         <field name="arch" type="xml">
             <!-- Add print button -->
             <xpath expr="//header" position="inside">
-                <button name="action_print_custom_invoice"
-                        string="Print Custom Invoice"
-                        type="object"
-                        class="oe_highlight"/>
+<!--                <button name="action_print_custom_invoice"-->
+<!--                        string="Print Custom Invoice"-->
+<!--                        type="object"-->
+<!--                        class="oe_highlight"/>-->
                 <button name="action_apply_old_account_code"
                         string="Apply Old Account Code"
                         type="object"
@@ -32,12 +32,11 @@
                 <field name="ref_name"/>
                 <field name="ref_desc"/>
                 <field name="old_account_code"/>
-                <!-- Changed from old_account_code_partner_ids to old_account_code_partner_id -->
-                <field name="old_account_code_partner_id" widget="selection"
-                       options="{'no_create': True, 'no_open': True}"
-                       domain="[('id', 'in', old_account_code_partner_options)]"/>
+<!--                <field name="old_account_code_partner_id" widget="selection"-->
+<!--                       options="{'no_create': True, 'no_open': True}"-->
+<!--                       domain="[('id', 'in', old_account_code_partner_options)]"/>-->
                 <!-- This is the hidden field that holds the available options -->
-                <field name="old_account_code_partner_options" invisible="1"/>
+<!--                <field name="old_account_code_partner_options" invisible="1"/>-->
             </xpath>
 <!--            <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='tax_ids']"-->
 <!--                       position="attributes">-->
@@ -98,10 +97,6 @@
             <xpath expr="//field[@name='line_ids']/tree//field[@name='partner_id']" position="attributes">
                 <attribute name="domain">[]</attribute>
             </xpath>
-            <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='tax_ids']"
-                       position="attributes">
-                    <attribute name="string">Service/Taxes</attribute>
-                </xpath>
             <!--                <xpath expr="//notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/group/field[@name='tax_totals']"-->
 <!--                       position="attributes">-->
 <!--                    <attribute name="string">Service/Taxes</attribute>-->
@@ -167,6 +162,19 @@
 <!--            </xpath>-->
         </field>
     </record>
-
-
+        <record id="view_move_form_inherit_excel_download" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.excel.download</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_reverse']" position="after">
+                    <button name="action_journal_excel_download"
+                            string="Download Excel"
+                            type="object"
+                            class="btn-secondary"
+                            icon="fa-download"
+                            invisible="state == 'draft'"/>
+                </xpath>
+            </field>
+        </record>
 </odoo>
