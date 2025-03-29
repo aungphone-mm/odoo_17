@@ -337,8 +337,21 @@ class AccountMove(models.Model):
             sheet.write(row, 7, label, cell_format)
 
             # USD(AMT) - column I (amount_currency)
+            # amount_currency = line.amount_currency if hasattr(line, 'amount_currency') else 0.0
+            # sheet.write(row, 8, amount_currency, amount_format)
+
+            # USD(AMT) - column I (amount_currency)
             amount_currency = line.amount_currency if hasattr(line, 'amount_currency') else 0.0
-            sheet.write(row, 8, amount_currency, amount_format)
+            # Get currency name for checking
+            currency_name = line.currency_id.name if hasattr(line, 'currency_id') and line.currency_id else ''
+            # Only write amount_currency if it's not USD
+            if currency_name == 'USD':
+                sheet.write(row, 8, amount_currency, amount_format)
+            else:
+                sheet.write(row, 8, '', cell_format)  # Empty string for mmk currency
+
+            # Currency - column J
+            sheet.write(row, 9, currency_name, cell_format)
 
             # Currency - column J
             currency_name = line.currency_id.name if hasattr(line, 'currency_id') and line.currency_id else ''
@@ -349,7 +362,9 @@ class AccountMove(models.Model):
             sheet.write(row, 10, rate, amount_format)
 
             # Amount - column L (debit)
-            sheet.write(row, 11, line.debit, amount_format)
+            # sheet.write(row, 11, line.debit, amount_format)
+            amount_currency = line.amount_currency if hasattr(line, 'amount_currency') else 0.0
+            sheet.write(row, 11, amount_currency, amount_format)
 
             # Get account code and name
             account_code = line.account_id.code if line.account_id else ''
@@ -408,8 +423,8 @@ class AccountMove(models.Model):
         total_debit = sum(line.debit for line in self.line_ids)
 
         # Add total row
-        total_row = len(self.line_ids) + 2
-        sheet.write(total_row, 11, total_debit, amount_format)  # Total Amount (debit)
+        # total_row = len(self.line_ids) + 2
+        # sheet.write(total_row, 11, total_debit, amount_format)  # Total Amount (debit)
 
         workbook.close()
         output.seek(0)
