@@ -202,6 +202,7 @@ class AccountMove(models.Model):
                 move.depreciation_usd = 0.0
                 move.cumulative_depreciation_usd = 0.0
                 move.depreciable_value_usd = 0.0
+
     def action_journal_excel_download(self):
         """Export journal entries to Excel file"""
         # Create Excel file
@@ -257,44 +258,46 @@ class AccountMove(models.Model):
         })
 
         # Set column widths
-        sheet.set_column('A:A', 15)  # Entry Number
-        sheet.set_column('B:B', 15)  # Reference
-        sheet.set_column('C:C', 15)  # Date
-        sheet.set_column('D:D', 20)  # Journal
-        sheet.set_column('E:E', 15)  # Account Code
-        sheet.set_column('F:F', 30)  # Account Name
-        sheet.set_column('G:G', 40)  # Description
-        sheet.set_column('H:H', 15)  # Old Account
-        sheet.set_column('I:I', 30)  # Partner
-        sheet.set_column('J:J', 20)  # Label
-        sheet.set_column('K:K', 20)  # Analytic Account
+        sheet.set_column('A:A', 15)  # Date
+        sheet.set_column('B:B', 15)  # Source Code
+        sheet.set_column('C:C', 15)  # Reference
+        sheet.set_column('D:D', 15)  # Cheque
+        sheet.set_column('E:E', 15)  # DN/CN No.
+        sheet.set_column('F:F', 40)  # Description
+        sheet.set_column('G:G', 30)  # Name
+        sheet.set_column('H:H', 20)  # Particular
+        sheet.set_column('I:I', 15)  # USD(AMT)
+        sheet.set_column('J:J', 15)  # Currency
+        sheet.set_column('K:K', 15)  # Price
         sheet.set_column('L:L', 15)  # Amount
-        sheet.set_column('M:M', 15)  # Exchange Rate
-        sheet.set_column('N:N', 15)  # Tax
-        sheet.set_column('O:O', 15)  # Debit
-        sheet.set_column('P:P', 15)  # Credit
+        sheet.set_column('M:M', 15)  # Main Account
+        sheet.set_column('N:N', 25)  # Main Dept
+        sheet.set_column('O:O', 15)  # Sub Account
+        sheet.set_column('P:P', 30)  # Sub Dept
+        sheet.set_column('Q:Q', 30)  # Note
 
         # Write title at the top center
-        sheet.merge_range('A1:P1', 'Journal Entries Export', title_format)
+        sheet.merge_range('A1:Q1', 'Journal Entries Export', title_format)
 
         # Define headers
         headers = [
-            'Entry Number',
-            'Reference',
             'Date',
-            'Journal',
-            'Account Code',
-            'Account Name',
+            'Source Code',
+            'Reference',
+            'Cheque',
+            'DN/CN No.',
             'Description',
-            'Old Account',
-            'Partner',
-            'Label',
-            'Analytic Account',
+            'Name',
+            'Particular',
+            'USD(AMT)',
+            'Currency',
+            'Price',
             'Amount',
-            'Exchange Rate',
-            'Tax',
-            'Debit',
-            'Credit'
+            'Main Account',
+            'Main Dept',
+            'Sub Account',
+            'Sub Dept',
+            'Note'
         ]
 
         # Write headers
@@ -304,97 +307,109 @@ class AccountMove(models.Model):
         # Process line data
         row = 2  # Start from row 2 (Excel row 3)
 
-        # Calculate total amounts
-        total_debit = sum(line.debit for line in self.line_ids)
-        total_credit = sum(line.credit for line in self.line_ids)
-
         # Write data for each line
         for line in self.line_ids:
-            # Entry Number - column A
-            sheet.write(row, 0, self.name or '', cell_format)
+            # Date - column A
+            sheet.write(row, 0, self.date, date_format)
 
-            # Reference - column B
-            sheet.write(row, 1, self.ref or '', cell_format)
+            # Source Code - column B
+            source_code = self.journal_id.code if self.journal_id else ''
+            sheet.write(row, 1, source_code, cell_format)
 
-            # Date - column C
-            sheet.write(row, 2, self.date, date_format)
+            # Reference - column C
+            sheet.write(row, 2, self.ref or '', cell_format)
 
-            # Journal - column D
-            journal_name = self.journal_id.name if self.journal_id else ''
-            sheet.write(row, 3, journal_name, cell_format)
+            # Cheque - column D (leaving empty as not specified)
+            sheet.write(row, 3, '', cell_format)
 
-            # Account Code - column E
-            account_code = line.account_id.code if line.account_id else ''
-            sheet.write(row, 4, account_code, account_code_format)
+            # DN/CN No. - column E (leaving empty as not specified)
+            sheet.write(row, 4, '', cell_format)
 
-            # Account Name - column F
-            account_name = line.account_id.name if line.account_id else ''
-            sheet.write(row, 5, account_name, cell_format)
+            # Description - column F
+            sheet.write(row, 5, line.name or '', cell_format)
 
-            # Description - column G
-            sheet.write(row, 6, line.name or '', cell_format)
-
-            # Old Account - column H
-            old_account = ''
-            if hasattr(line, 'old_account_id') and line.old_account_id:
-                old_account = line.old_account_id.code
-            sheet.write(row, 7, old_account, cell_format)
-
-            # Partner - column I
+            # Name - column G (partner name)
             partner_name = line.partner_id.name if line.partner_id else ''
-            sheet.write(row, 8, partner_name, cell_format)
+            sheet.write(row, 6, partner_name, cell_format)
 
-            # Label - column J
+            # Particular - column H (label)
             label = line.label if hasattr(line, 'label') else ''
-            sheet.write(row, 9, label, cell_format)
+            sheet.write(row, 7, label, cell_format)
 
-            # Analytic Account - column K
-            analytic_account = ''
-            if hasattr(line, 'analytic_distribution') and line.analytic_distribution:
-                analytic_accounts = []
-                for account_id, percentage in line.analytic_distribution.items():
-                    if ',' in str(account_id):
-                        account_ids = [int(x) for x in account_id.split(',')]
-                        accounts = self.env['account.analytic.account'].browse(account_ids)
-                        analytic_accounts.extend(accounts)
-                    else:
-                        account = self.env['account.analytic.account'].browse(int(account_id))
-                        analytic_accounts.append(account)
+            # USD(AMT) - column I (amount_currency)
+            amount_currency = line.amount_currency if hasattr(line, 'amount_currency') else 0.0
+            sheet.write(row, 8, amount_currency, amount_format)
 
-                # Get names
-                if analytic_accounts:
-                    analytic_names = [account.name for account in analytic_accounts if
-                                      account.exists() and account.name]
-                    analytic_account = ' / '.join(analytic_names) if analytic_names else ''
+            # Currency - column J
+            currency_name = line.currency_id.name if hasattr(line, 'currency_id') and line.currency_id else ''
+            sheet.write(row, 9, currency_name, cell_format)
 
-            sheet.write(row, 10, analytic_account, cell_format)
+            # Price - column K (currency_rate_display)
+            rate = line.currency_rate_display if hasattr(line, 'currency_rate_display') else 0.0
+            sheet.write(row, 10, rate, amount_format)
 
-            # Amount - column L
-            amount = line.balance
-            sheet.write(row, 11, abs(amount), amount_format)
+            # Amount - column L (debit)
+            sheet.write(row, 11, line.debit, amount_format)
 
-            # Exchange Rate - column M
-            exchange = line.amount_currency if hasattr(line, 'amount_currency') else 0.0
-            sheet.write(row, 12, exchange, amount_format)
+            # Get account code and name
+            account_code = line.account_id.code if line.account_id else ''
+            account_name = line.account_id.name if line.account_id else ''
 
-            # Tax - column N
-            tax = ''
-            if hasattr(line, 'tax_line_id') and line.tax_line_id:
-                tax = line.tax_line_id.name
-            sheet.write(row, 13, tax, cell_format)
+            # Main Account & Main Dept (Analytic) and Sub Account & Sub Dept (Account)
+            analytic_code = ''
+            analytic_name = ''
 
-            # Debit - column O
-            sheet.write(row, 14, line.debit, amount_format)
+            # If account code doesn't start with '9', show in Main Account/Dept (analytic) columns
+            if account_code and not account_code.startswith('9'):
+                # Show in Main Account (analytic) columns
+                analytic_code = account_code
+                analytic_name = account_name
 
-            # Credit - column P
-            sheet.write(row, 15, line.credit, amount_format)
+                # Sub Account (account) columns remain empty
+                sheet.write(row, 14, '', cell_format)  # Sub Account
+                sheet.write(row, 15, '', cell_format)  # Sub Dept
+            else:
+                # Show in Sub Account (account) columns
+                sheet.write(row, 14, account_code, account_code_format)  # Sub Account
+                sheet.write(row, 15, account_name, cell_format)  # Sub Dept
+
+                # Get analytic information from analytic_distribution
+                if hasattr(line, 'analytic_distribution') and line.analytic_distribution:
+                    analytic_codes = []
+                    analytic_names = []
+
+                    for account_id, percentage in line.analytic_distribution.items():
+                        if ',' in str(account_id):
+                            account_ids = [int(x) for x in account_id.split(',')]
+                            accounts = self.env['account.analytic.account'].browse(account_ids)
+                            for account in accounts:
+                                if account.exists():
+                                    analytic_codes.append(account.code or '')
+                                    analytic_names.append(account.name or '')
+                        else:
+                            account = self.env['account.analytic.account'].browse(int(account_id))
+                            if account.exists():
+                                analytic_codes.append(account.code or '')
+                                analytic_names.append(account.name or '')
+
+                    analytic_code = ' / '.join(analytic_codes) if analytic_codes else ''
+                    analytic_name = ' / '.join(analytic_names) if analytic_names else ''
+
+            # Write Main Account and Main Dept (Analytic)
+            sheet.write(row, 12, analytic_code, cell_format)  # Main Account
+            sheet.write(row, 13, analytic_name, cell_format)  # Main Dept
+
+            # Note - column Q (leaving empty as not specified)
+            sheet.write(row, 16, '', cell_format)
 
             row += 1
 
+        # Calculate total amount (debit)
+        total_debit = sum(line.debit for line in self.line_ids)
+
         # Add total row
         total_row = len(self.line_ids) + 2
-        sheet.write(total_row, 14, total_debit, amount_format)
-        sheet.write(total_row, 15, total_credit, amount_format)
+        sheet.write(total_row, 11, total_debit, amount_format)  # Total Amount (debit)
 
         workbook.close()
         output.seek(0)

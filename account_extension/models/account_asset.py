@@ -170,3 +170,27 @@ class AccountAssetCategory(models.Model):
 
     name = fields.Char(string='Name', required=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
+
+
+class AccountPayment(models.Model):
+    _inherit = 'account.payment'
+
+    description = fields.Text(string='Description', help='Additional payment details')
+
+
+class AccountPaymentRegister(models.TransientModel):
+    _inherit = 'account.payment.register'
+
+    description = fields.Text(string='Description', help='Additional payment details')
+
+    # Transfer the description to the created payment
+    @api.depends('description')
+    def _create_payments(self):
+        payments = super()._create_payments()
+        for payment in payments:
+            payment.description = self.description
+
+            # Update the ref_desc in related move lines
+            if payment.move_id:
+                payment.move_id.line_ids.write({'ref_desc': self.description})
+        return payments
