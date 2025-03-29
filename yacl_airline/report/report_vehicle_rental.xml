@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_vehicle_rental_report" model="ir.actions.report">
+        <field name="name">Vehicle Rental Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">yacl_airline.report_vehicle_rental</field>
+        <field name="report_file">yacl_airline.report_vehicle_rental</field>
+        <field name="print_report_name">(object.name) and ('VehicleRental-' + object.name) or 'VehicleRental-Invoice'</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_vehicle_rental">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Company Header -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+<!--                                <h2 style="font-weight: bold; font-size: 24px;">Yangon Aerodrome Company Limited</h2>-->
+                                <h3 style="font-size: 20px;">Invoice for Vehicle Rental</h3>
+                            </div>
+                        </div>
+
+                        <!-- Client and Invoice Info Section -->
+                        <div class="row mb-5">
+                            <div class="col-6">
+                                <strong>Attn;</strong>
+                                <div t-field="o.partner_id.name"/>
+                                <div t-field="o.partner_id.street" style="font-weight: bold; font-size: 16px;"/>
+                                <div t-field="o.partner_id.street2" style="font-weight: bold; font-size: 16px;"/>
+                                <div t-if="o.partner_id.city" style="font-weight: bold; font-size: 16px;">
+                                    <t t-esc="o.partner_id.city" style="font-weight: bold; font-size: 16px;"/>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-5 text-right">
+                                        <strong>Invoice No.</strong>
+                                    </div>
+                                    <div class="col-7">
+                                        <div style="border: 1px solid black; padding: 8px; text-align: center;" t-field="o.name"/>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-5 text-right">
+                                        <strong>Month</strong>
+                                    </div>
+                                    <div class="col-7">
+                                        <div style="border: 1px solid black; padding: 8px; text-align: center;" t-field="o.invoice_date" t-options='{"format": "MMM&apos;yy"}'/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Invoice Lines Table -->
+                        <table class="table table-bordered" style="border: 1px solid black;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%; border: 1px solid black; text-align: center;">Item</th>
+                                    <th style="width: 65%; border: 1px solid black; text-align: center;">Description</th>
+                                    <th style="width: 25%; border: 1px solid black; text-align: center;">Amount (MMK)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="rental_line" t-value="o.invoice_line_ids.filtered(lambda l: l.product_id.type == 'service' and 'rental' in l.product_id.name.lower())[0] if o.invoice_line_ids.filtered(lambda l: l.product_id.type == 'service' and 'rental' in l.product_id.name.lower()) else False"/>
+                                <t t-set="start_date" t-value="o.invoice_date.replace(day=1)"/>
+                                <t t-set="end_date" t-value="(o.invoice_date.replace(day=28) + datetime.timedelta(days=4)).replace(day=1) - datetime.timedelta(days=1)"/>
+
+                                <tr>
+                                    <td style="border: 1px solid black; text-align: center;">1</td>
+                                    <td style="border: 1px solid black; padding: 10px;">
+                                        <p>Being amount of Vehicle Rental (<t t-if="rental_line" t-esc="rental_line.name.split()[0] if ' ' in rental_line.name else ''"/>) Charges for your</p>
+                                        <p>Project during (<t t-esc="start_date.strftime('%d.%m.%Y')"/> to <t t-esc="end_date.strftime('%d.%m.%Y')"/>).</p>
+                                        <p style="text-align: center;">(Including 5% Commercial Tax)</p>
+                                    </td>
+                                    <td style="border: 1px solid black; text-align: right; padding-right: 10px;">
+                                        <t t-esc="'{:,.0f}'.format(o.amount_total)"/>
+                                    </td>
+                                </tr>
+                                <!-- Empty rows for spacing -->
+
+
+                                <!-- Total row -->
+                                <tr>
+                                    <td style="border: 1px solid black;" colspan="2" class="text-center">
+                                        <strong>Total</strong>
+                                    </td>
+                                    <td style="border: 1px solid black; text-align: right; padding-right: 10px;">
+                                        <t t-esc="'{:,.2f}'.format(o.amount_total)"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Amount in words and date -->
+                        <div class="row mt-3">
+                            <div class="col-2">
+                                <strong>MMK:</strong>
+                            </div>
+                            <div class="col-10">
+                                <t t-esc="o.currency_id.amount_to_text(o.amount_total)"/> only.
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-2">
+                                <strong>Date:</strong>
+                            </div>
+                            <div class="col-10">
+                                <t t-esc="o.invoice_date.strftime('%d-%b-%y')"/>
+                            </div>
+                        </div>
+
+                        <!-- Signature Section -->
+                        <div class="row mt-5">
+                            <div class="col-8">
+                                <!-- Empty space -->
+                            </div>
+                            <div class="col-4 text-center" style="margin-top: 80px;">
+                                <div>
+                                    <p style="border-top: 1px solid black; display: inline-block; padding-top: 5px;">
+                                        Authorize Signature
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

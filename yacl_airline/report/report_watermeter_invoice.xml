@@ -117,11 +117,11 @@
 
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td colspan="5" style="text-align: left;">
-                                        <span t-esc="'(' + o.currency_id.amount_to_text(round(o.amount_total)) + ' Only)'"/>
-                                    </td>
-                                </tr>
+<!--                                <tr>-->
+<!--                                    <td colspan="5" style="text-align: left;">-->
+<!--                                        <span t-esc="'(' + o.currency_id.amount_to_text(round(o.amount_total)) + ' Only)'"/>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
                             </tbody>
                         </table>
 

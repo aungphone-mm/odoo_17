@@ -46,6 +46,7 @@
         'report/security_service_report.xml',
         'wizard/top_ten_outstanding_wizard_view.xml',
         'report/report_top_ten_outstanding.xml',
+        'report/report_vehicle_rental.xml',
     ],
     'installable': True,
     'application': False,

@@ -6,7 +6,7 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">yacl_airline.report_lavatory</field>
         <field name="report_file">yacl_airline.report_lavatory</field>
-        <field name="print_report_name">'Non_schedule_Invoice-%s' % (object.name)</field>
+        <field name="print_report_name">'Lavatory_Invoice-%s' % (object.name)</field>
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
     </record>
@@ -19,7 +19,7 @@
                     <div class="page">
                         <div class="row mb-4">
                             <div class="col-12 text-center">
-                                <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
+                                <h2 style="font-weight: bold; font-size: 24px;">LAVATORY INVOICE</h2>
                             </div>
                         </div>
 
@@ -49,6 +49,7 @@
                         </div>
 
                         <!-- First Page Line Items Table -->
+                        <!-- First Page Line Items Table -->
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -62,25 +63,41 @@
                             <tbody>
                                 <t t-set="line_no" t-value="1"/>
                                 <t t-foreach="o.invoice_line_ids" t-as="line">
-                                    <tr>
-                                        <td><t t-esc="line_no"/></td>
-                                        <td>
-                                            <span t-field="line.name"/>
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <span t-field="line.quantity"/>
-                                            <t t-if="line.product_uom_id">
-                                                <span t-field="line.product_uom_id.name"/>
-                                            </t>
-                                        </td>
-                                        <td style="text-align: right;">
-                                            <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                        </td>
-                                        <td style="text-align: right;">
-                                            <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                        </td>
-                                    </tr>
-                                    <t t-set="line_no" t-value="line_no + 1"/>
+                                    <!-- Check if the line is a note or section -->
+                                    <t t-if="line.display_type in ['line_note', 'line_section']">
+                                        <tr>
+                                            <td colspan="5" style="text-align: left; padding-left: 20px;">
+                                                <t t-if="line.display_type == 'line_section'">
+                                                    <strong><span t-field="line.name"/></strong>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-field="line.name"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <!-- Regular product line -->
+                                    <t t-else="">
+                                        <tr>
+                                            <td><t t-esc="line_no"/></td>
+                                            <td>
+                                                <span t-field="line.name"/>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <span t-field="line.quantity"/>
+                                                <t t-if="line.product_uom_id">
+                                                    <span t-field="line.product_uom_id.name"/>
+                                                </t>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <t t-set="line_no" t-value="line_no + 1"/>
+                                    </t>
                                 </t>
                                 <tr>
                                     <td colspan="4" style="text-align: right;">
@@ -90,22 +107,6 @@
                                         <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                     </td>
                                 </tr>
-<!--                                <tr>-->
-<!--                                    <td colspan="4" style="text-align: right;">-->
-<!--                                        <strong>Commercial Tax 5%</strong>-->
-<!--                                    </td>-->
-<!--                                    <td style="text-align: right;">-->
-<!--                                        <span t-field="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-<!--                                    </td>-->
-<!--                                </tr>-->
-<!--                                <tr>-->
-<!--                                    <td colspan="4" style="text-align: right;">-->
-<!--                                        <strong>Total Invoice Amount</strong>-->
-<!--                                    </td>-->
-<!--                                    <td style="text-align: right;">-->
-<!--                                        <strong><span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></strong>-->
-<!--                                    </td>-->
-<!--                                </tr>-->
                                 <tr>
                                     <td colspan="5" style="text-align: left;">
                                         <span t-esc="'(' + o.currency_id.amount_to_text(o.amount_total) + ' Only)'"/>
