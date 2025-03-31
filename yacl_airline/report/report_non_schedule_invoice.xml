@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="action_report_nonschedule" model="ir.actions.report">
-        <field name="name">Non Schedule Flight</field>
+        <field name="name">Non Schedule Flight Invoice</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">yacl_airline.report_nonschedule</field>

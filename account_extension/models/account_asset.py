@@ -174,23 +174,31 @@ class AccountAssetCategory(models.Model):
 
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
-
     description = fields.Text(string='Description', help='Additional payment details')
 
 
 class AccountPaymentRegister(models.TransientModel):
     _inherit = 'account.payment.register'
-
     description = fields.Text(string='Description', help='Additional payment details')
 
-    # Transfer the description to the created payment
-    @api.depends('description')
+    def _create_payment_vals_from_wizard(self, batch_result):
+        payment_vals = super()._create_payment_vals_from_wizard(batch_result)
+        payment_vals['description'] = self.description
+        return payment_vals
+
     def _create_payments(self):
         payments = super()._create_payments()
         for payment in payments:
-            payment.description = self.description
-
-            # Update the ref_desc in related move lines
-            if payment.move_id:
+            if self.description and payment.move_id:
+                # Update all move lines with the description
                 payment.move_id.line_ids.write({'ref_desc': self.description})
+
+                # For reconciliations, find invoice lines and update them
+                for line in payment.move_id.line_ids.filtered(
+                        lambda l: l.account_id.account_type in ('asset_receivable', 'liability_payable')):
+
+                    # Get reconciled lines
+                    reconciled_lines = line.matched_debit_ids.debit_move_id + line.matched_credit_ids.credit_move_id
+                    if reconciled_lines:
+                        reconciled_lines.write({'ref_desc': self.description})
         return payments
