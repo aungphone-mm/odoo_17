@@ -1,6 +1,7 @@
 from dateutil.relativedelta import relativedelta
-from docutils.utils import math
+# from docutils.utils import math
 from odoo import api, fields, models
+import math
 
 class AccountAsset(models.Model):
     _inherit = 'account.asset'
