@@ -21,6 +21,7 @@ Add Date, Reference and Name in Journal Item in Views.
         'report/cashbook_payment_receive_voucher.xml',
         'report/cashbook_payable_voucher.xml',
         'report/custom_invoice_report.xml',
+        'report/payable_journal_entries.xml',
     ],
     'installable': True,
     'application': False,

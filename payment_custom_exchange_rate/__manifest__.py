@@ -2,6 +2,7 @@
 {
     'name': 'Custom Payment Exchange Rate',
     'version': '1.0',
+    'license': 'AGPL-3',
     'category': 'Accounting/Payment',
     'summary': 'Allow manual exchange rate input when registering payments',
     'description': """

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_report_payable_journal_entries" model="ir.actions.report">
+        <field name="name">Payable Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">account_extension.report_payable_journal</field>
+        <field name="report_file">account_extension.report_payable_journal</field>
+        <field name="print_report_name">'Payable_Invoice-%s' % (object.name)</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_payable_journal">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <style>
+                        .security-table th {
+                            background-color: #e9ecef;
+                        }
+                        .page-break {
+                            page-break-before: always;
+                        }
+                        .company-footer {
+                            margin-top: 80px;
+                            text-align: center;
+                            font-size: 12px;
+                        }
+                        .company-name {
+                            color: red;
+                            font-weight: bold;
+                        }
+                        table.main-table {
+                            border-collapse: collapse;
+                            width: 100%;
+                        }
+                        table.main-table th {
+                            background-color: #f2f2f2;
+                            border: 1px solid #ddd;
+                            padding: 8px;
+                            text-align: center;
+                        }
+                        table.main-table td {
+                            border: 1px solid #ddd;
+                            padding: 8px;
+                        }
+                    </style>
+                    <div class="page">
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <h2 style="font-weight: bold; font-size: 24px;">PAYABLE INVOICE</h2>
+                            </div>
+                        </div>
+
+                        <!-- Invoice Info Section -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <strong>Invoice No:</strong>
+                                <span t-field="o.name"/><br/>
+                                <strong>Date:</strong>
+                                <span t-field="o.date"/><br/>
+                                <strong>Credit to:</strong>
+                                <span t-field="o.partner_id.name"/><br/>
+                                <strong>Reference No:</strong>
+                                <span t-field="o.ref"/>
+                            </div>
+
+                            <div class="col-6 d-flex justify-content-end">
+                                <div>
+                                    <t t-foreach="o.line_ids" t-as="line">
+                                        <t t-if="line_index == 0">
+                                            <strong>Particular:</strong>
+                                            <span t-esc="line.account_id.name" /><br/>
+                                        </t>
+                                    </t>
+                                    <strong>Currency:</strong>
+                                    <span t-field="o.currency_id"/><br/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Transaction Table -->
+                        <table class="table table-bordered security-table main-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%; text-align: center;">Main-Account Code</th>
+                                    <th style="width: 15%; text-align: center;">A/C Code</th>
+                                    <th style="width: 15%; text-align: center;">Debit</th>
+                                    <th style="width: 15%; text-align: center;">Credit</th>
+                                    <th style="width: 40%; text-align: center;">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.line_ids" t-as="mline">
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            <t t-if="mline.analytic_distribution">
+                                                <t t-set="analytic_accounts" t-value="env['account.analytic.account'].browse(list(map(int, mline.analytic_distribution.keys())))"/>
+                                                <t t-foreach="analytic_accounts" t-as="account">
+                                                    <span t-esc="account.code"/>
+                                                    <t t-if="not account_last"> / </t>
+                                                </t>
+                                            </t>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <span t-esc="mline.account_id.code" />
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span t-esc="'{:,.2f}'.format(mline.debit)"/>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <span t-esc="'{:,.2f}'.format(mline.credit)"/>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <span t-field="mline.name"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+<!--                            <tfoot>-->
+                                <t t-if="not next_page">
+                                <tr class="border-black">
+                                    <td></td><td></td>
+                                    <td style="text-align: right; vertical-align: middle;">
+                                        <strong><span t-esc="'{:,.2f}'.format(sum(o.line_ids.mapped('debit')))"/></strong>
+                                    </td>
+                                    <td style="text-align: right; vertical-align: middle;">
+                                        <strong><span t-esc="'{:,.2f}'.format(sum(o.line_ids.mapped('credit')))"/></strong>
+                                    </td>
+
+                                    <td colspan="2" style="text-align: left; vertical-align: middle;">
+                                        <t t-set="total_amount" t-value="sum(o.line_ids.mapped('debit'))"/>
+                                        <span t-esc="o.currency_id.amount_to_text(total_amount or 0.0)"/>
+                                    </td>
+                                </tr>
+                                </t>
+<!--                            </tfoot>-->
+                        </table>
+
+                        <!-- Signature Section in table footer -->
+                        <div style="margin-top: 320px;">
+                            <table class="table" style="border: none; width: 100%;">
+                                <tfoot>
+                                    <tr class="border-bottom">
+                                        <td class="text-center" style="border: none; width: 25%;">
+                                            <div style="border-top: 1px dashed #000; width: 80%; margin: 0 auto; padding-top: 5px;">
+                                                <span style="color: #4472C4;">(Prepared By)</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center" style="border: none; width: 25%;">
+                                            <div style="border-top: 1px dashed #000; width: 80%; margin: 0 auto; padding-top: 5px;">
+                                                <span style="color: #4472C4;">(Checked By)</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center" style="border: none; width: 25%;">
+                                            <div style="border-top: 1px dashed #000; width: 80%; margin: 0 auto; padding-top: 5px;">
+                                                <span style="color: #4472C4;">(Passed By)</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center" style="border: none; width: 25%;">
+                                            <div style="border-top: 1px dashed #000; width: 80%; margin: 0 auto; padding-top: 5px;">
+                                                <span style="color: #4472C4;">(Approved By)</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                            <!-- Company Footer -->
+<!--                            <div class="company-footer">-->
+<!--                                <div class="company-name">-->
+<!--                                    YANGON AERODROME COMPANY LIMITED-->
+<!--                                </div>-->
+<!--                                <div>-->
+<!--                                    Address: Terminal-3(Domestic Terminal),Yangon International Airport,<br/>-->
+<!--                                    Mingaladon Township, Yangon, Myanmar.#11021<br/>-->
+<!--                                    Tel:+95-9670888(Ext.-7345) Fax: +95196705999, Email-yacl@yangon.aero-->
+<!--                                </div>-->
+<!--                            </div>-->
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
