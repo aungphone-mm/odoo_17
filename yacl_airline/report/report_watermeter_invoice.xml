@@ -63,6 +63,20 @@
                             <tbody>
                                 <t t-set="line_no" t-value="1"/>
                                 <t t-foreach="o.invoice_line_ids" t-as="line">
+                                    <t t-if="line.display_type in ['line_note', 'line_section']">
+                                        <tr>
+                                            <td colspan="5" style="text-align: left; padding-left: 20px;">
+                                                <t t-if="line.display_type == 'line_section'">
+                                                    <strong><span t-field="line.name"/></strong>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-field="line.name"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <!-- Regular product line -->
+                                    <t t-else="">
                                     <tr>
                                         <td><t t-esc="line_no"/></td>
                                         <td>
@@ -87,6 +101,7 @@
                                     </td>
                                     </tr>
                                     <t t-set="line_no" t-value="line_no + 1"/>
+                                </t>
                                 </t>
 <!--                                <tr>-->
 <!--                                    <td colspan="4" style="text-align: right;">-->

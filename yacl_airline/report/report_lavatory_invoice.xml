@@ -19,7 +19,7 @@
                     <div class="page">
                         <div class="row mb-4">
                             <div class="col-12 text-center">
-                                <h2 style="font-weight: bold; font-size: 24px;">LAVATORY INVOICE</h2>
+                                <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
                             </div>
                         </div>
 
@@ -43,6 +43,7 @@
                                 <span t-field="o.name"/><br/>
                                 <strong>Date:</strong>
                                 <span t-field="o.invoice_date"/><br/>
+                                <span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>
                                 <strong>Payment Due:</strong>
                                 <span t-field="o.invoice_date_due"/>
                             </div>

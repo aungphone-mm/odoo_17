@@ -47,6 +47,8 @@
         'wizard/top_ten_outstanding_wizard_view.xml',
         'report/report_top_ten_outstanding.xml',
         'report/report_vehicle_rental.xml',
+        'report/report_cute_invoice.xml',
+        'report/report_revenueshare_invoice.xml',
     ],
     'installable': True,
     'application': False,

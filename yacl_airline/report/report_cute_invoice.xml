@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="action_report_nonschedule" model="ir.actions.report">
-        <field name="name">Non Schedule Flight Invoice</field>
+    <record id="action_report_cute" model="ir.actions.report">
+        <field name="name">Cute Invoice</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">yacl_airline.report_nonschedule</field>
-        <field name="report_file">yacl_airline.report_nonschedule</field>
-        <field name="print_report_name">'Non_schedule_Invoice-%s' % (object.name)</field>
+        <field name="report_name">yacl_airline.report_cute</field>
+        <field name="report_file">yacl_airline.report_cute</field>
+        <field name="print_report_name">'Lavatory_Invoice-%s' % (object.name)</field>
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
     </record>
 
-    <template id="report_nonschedule">
+    <template id="report_cute">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <!-- First Page - Invoice -->
@@ -50,6 +50,7 @@
                         </div>
 
                         <!-- First Page Line Items Table -->
+                        <!-- First Page Line Items Table -->
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -63,6 +64,7 @@
                             <tbody>
                                 <t t-set="line_no" t-value="1"/>
                                 <t t-foreach="o.invoice_line_ids" t-as="line">
+                                    <!-- Check if the line is a note or section -->
                                     <t t-if="line.display_type in ['line_note', 'line_section']">
                                         <tr>
                                             <td colspan="5" style="text-align: left; padding-left: 20px;">
@@ -77,26 +79,26 @@
                                     </t>
                                     <!-- Regular product line -->
                                     <t t-else="">
-                                    <tr>
-                                        <td><t t-esc="line_no"/></td>
-                                        <td>
-                                            <span t-field="line.name"/>
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <span t-field="line.quantity"/>
-                                            <t t-if="line.product_uom_id">
-                                                <span t-field="line.product_uom_id.name"/>
-                                            </t>
-                                        </td>
-                                        <td style="text-align: right;">
-                                            <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                        </td>
-                                        <td style="text-align: right;">
-                                            <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                        </td>
-                                    </tr>
-                                    <t t-set="line_no" t-value="line_no + 1"/>
-                                </t>
+                                        <tr>
+                                            <td><t t-esc="line_no"/></td>
+                                            <td>
+                                                <span t-field="line.name"/>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <span t-field="line.quantity"/>
+                                                <t t-if="line.product_uom_id">
+                                                    <span t-field="line.product_uom_id.name"/>
+                                                </t>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </td>
+                                            <td style="text-align: right;">
+                                                <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <t t-set="line_no" t-value="line_no + 1"/>
+                                    </t>
                                 </t>
                                 <tr>
                                     <td colspan="4" style="text-align: right;">
@@ -104,22 +106,6 @@
                                     </td>
                                     <td style="text-align: right;">
                                         <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" style="text-align: right;">
-                                        <strong>Commercial Tax 5%</strong>
-                                    </td>
-                                    <td style="text-align: right;">
-                                        <span t-field="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" style="text-align: right;">
-                                        <strong>Total Invoice Amount</strong>
-                                    </td>
-                                    <td style="text-align: right;">
-                                        <strong><span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></strong>
                                     </td>
                                 </tr>
                                 <tr>
@@ -132,26 +118,23 @@
 
                         <!-- Payment Information -->
                         <div class="row mt-4">
-                            <div class="col-12">
-                                <strong>NOTE:</strong>
-                                <ol>
-                                    <li>Payment has to be made in the currency stated above</li>
-                                    <li>Should the payment be made in other currencies stated as above, the exchange rate shall be based on the prevailing</li>
-                                    <li>For CASH payment, please pay at:
-                                        <p>Finance Department, Yangon Aerodrome Co Ltd Building (Opposite Terminal 2, Yangon International Airport)</p>
-                                    </li>
-                                    <li>For payment via ACCOUNT TRANSFER (All local and Overseas bank charges to be borne by the remitter)</li>
-                                    <li>Account Name: Yangon Aerodrome Co., Ltd</li>
-                                    <li>Account option (Foreign Currency) as below:
-                                        <p>(a) CB Bank, USD Account No. 0010101200703796, (Swift Code- CPOBMMMY)</p>
-                                        <p>(b) Industrial and Commercial Bank of China (ICBC), Yangon Branch -
-                                           USD Account No. 6010010000000150996, (Swift Code- ICBKMMMY)</p>
-                                        <p>(c) Bank of China (BOC), Yangon Branch -
-                                           USD Account No. 053122200007069, (Swift Code- BKCHMM)</p>
-                                    </li>
-                                </ol>
-                            </div>
-                        </div>
+    <div class="col-12">
+        <strong>NOTE:</strong>
+        <span>
+            <p>- Payment has to be made in the currency stated above.<br/>
+               - For CASH payment, please pay at:<br/>
+               Finance Department, Yangon Aerodrome Co Ltd Building (Opposite Terminal 2, Yangon International Airport).<br/>
+               - For payment via ACCOUNT TRANSFER (all Local and Overseas bank charges to be borne by the remitter).<br/>
+               - Account Name: Yangon Aerodrome Company Limited</p>
+            <ul>
+                <li>Foreign Currency Account Options:<br/>
+                    (a) CB Bank, USD Account No. 0010101200703796 (Swift Code: CPOBMMMY)<br/>
+                    (b) Industrial and Commercial Bank of China (ICBC), Yangon Branch, USD Account No. 601010000000150996 (Swift Code: ICBKMMMY)<br/>
+                    (c) Bank of China (BOC), Yangon Branch, USD Account No. 05312220007069 (Swift Code: BKCHMMMY)</li>
+            </ul>
+        </span>
+    </div>
+</div>
 
                         <!-- Signature -->
                         <div class="row mt-5">
