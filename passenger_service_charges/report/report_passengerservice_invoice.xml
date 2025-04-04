@@ -107,7 +107,8 @@
                                     </td>
                                     <td style="text-align: right;">
                                         <br/><br/>
-                                        <span t-field="o.amount_total"/>
+<!--                                        <span t-field="o.amount_total"/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_total"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -115,7 +116,8 @@
                                         <span t-esc="o.currency_id.amount_to_text(o.amount_total)+' Only'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-field="o.amount_total"/>
+<!--                                        <span t-field="o.amount_total"/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_total"/>
                                     </td>
                                 </tr>
                             </tbody>

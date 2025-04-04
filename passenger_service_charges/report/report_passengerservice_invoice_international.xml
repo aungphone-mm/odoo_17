@@ -101,7 +101,8 @@
                                         <t t-esc="sum(o.passenger_service_id.passenger_service_line_ids.mapped('invoice_pax'))"/>
                                     </td>
                                     <td style="text-align: right;" class="align-middle">
-                                        <span t-field="o.amount_total"/>
+<!--                                        <span t-field="o.amount_total"/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_total"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -109,7 +110,8 @@
                                         <span t-esc="o.currency_id.amount_to_text(o.amount_total)+' Only'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-field="o.amount_total"/>
+<!--                                        <span t-field="o.amount_total"/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_total"/>
                                     </td>
                                 </tr>
                             </tbody>

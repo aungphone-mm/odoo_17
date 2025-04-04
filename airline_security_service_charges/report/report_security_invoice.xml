@@ -93,7 +93,8 @@
                                     </td>
                                     <td style="text-align: right;">
                                         <br/><br/>
-                                        <span t-field="o.amount_untaxed"/>
+
+                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -101,7 +102,8 @@
                                         <span t-esc="'Total Invoice Payable'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-field="o.amount_untaxed"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/>
+
                                     </td>
                                 </tr>
                                 <tr>
@@ -117,7 +119,8 @@
                                         <span t-esc="'Total Amount Payable with the Invoice'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-field="o.amount_total"/>
+<!--                                        <span t-field="o.amount_total"/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_total"/>
                                     </td>
                                 </tr>
                             </tbody>
@@ -218,7 +221,8 @@
                                             </t>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
-                                            <span t-field="line.price_subtotal"/>
+<!--                                            <span t-field="line.price_subtotal"/>-->
+                                            <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % line.price_subtotal"/>
                                         </td>
                                         <td style="border: 1px solid black;">
                                             <!-- Remarks field -->
@@ -236,7 +240,8 @@
                                     </td>
                                     <td style="border: 1px solid black; text-align: right;">
                                         <strong>
-                                            <span t-field="o.amount_untaxed"/>
+
+                                            <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/>
                                         </strong>
                                     </td>
                                     <td style="border: 1px solid black;"></td>
