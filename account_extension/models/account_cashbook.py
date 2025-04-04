@@ -50,6 +50,11 @@ class AccountCashbook(models.Model):
         compute='_compute_show_currency_rate',
         store=False,
     )
+    total_amount = fields.Float(string='Total Amount', compute='_compute_total_amount', store=True)
+    @api.depends('line_ids.amount')
+    def _compute_total_amount(self):
+        for record in self:
+            record.total_amount = sum(record.line_ids.mapped('amount'))
 
     @api.depends('currency_id')
     def _compute_currency_id(self):

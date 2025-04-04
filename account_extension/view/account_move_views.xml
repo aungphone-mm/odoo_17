@@ -69,6 +69,10 @@
                     </div>
                 </group>
             </xpath>
+            <!-- Add partner field after journal field -->
+        <xpath expr="//field[@name='ref']" position="after">
+            <field name="partner_id"/>
+        </xpath>
 
             <!-- Add custom header and note fields -->
             <notebook position="inside">

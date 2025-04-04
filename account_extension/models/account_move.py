@@ -1,5 +1,4 @@
 from odoo import models, fields, api
-from odoo import models, api
 import xlsxwriter
 import base64
 from io import BytesIO
@@ -47,8 +46,13 @@ class AccountMove(models.Model):
     def action_apply_old_account_code(self):
         """Apply partner's old account code to all journal items"""
         self.ensure_one()
-        if self.partner_id and hasattr(self.partner_id, 'old_ac') and self.partner_id.old_ac:
-            for line in self.line_ids:
+        for line in self.line_ids:
+            # Check if partner_id exists in the line
+            if line.partner_id and hasattr(line.partner_id, 'old_ac') and line.partner_id.old_ac:
+                # Get old code from the line's partner
+                line.old_account_code = line.partner_id.old_ac
+            # Fallback to move's partner if needed
+            elif self.partner_id and hasattr(self.partner_id, 'old_ac') and self.partner_id.old_ac:
                 line.old_account_code = self.partner_id.old_ac
         return True
 
@@ -178,6 +182,7 @@ class AccountMove(models.Model):
         store=True
     )
 
+    # In AccountMove class
     @api.depends('amount_total', 'asset_id.exchange_rate', 'asset_id.asset_currency')
     def _compute_usd_amounts(self):
         for move in self:
@@ -195,9 +200,13 @@ class AccountMove(models.Model):
                 cumulative_mmk = sum(m.amount_total for m in previous_moves)
                 move.cumulative_depreciation_usd = cumulative_mmk / move.asset_id.exchange_rate
 
-                # Calculate depreciable value in USD
+                # Calculate depreciable value in USD (remaining value)
                 if move.asset_id:
-                    move.depreciable_value_usd = move.asset_id.book_value_usd
+                    # Get the initial book value
+                    initial_value = move.asset_id.book_value_usd
+                    print(move.asset_id.original_value_usd,"originasdf vailer asu usd")
+                    # Subtract cumulative depreciation to get remaining value
+                    move.depreciable_value_usd = initial_value - move.cumulative_depreciation_usd
             else:
                 move.depreciation_usd = 0.0
                 move.cumulative_depreciation_usd = 0.0
@@ -466,6 +475,20 @@ class AccountMoveLine(models.Model):
     # Keep this as a Many2many for displaying all options
     old_account_code_partner_options = fields.Many2many('res.partner', string='Matching Partners',
                                                         compute='_compute_matching_partners')
+    partner_id = fields.Many2one('res.partner', string='Partner',
+                                              compute='_compute_partner',
+                                              inverse='_inverse_partner',
+                                              store=True)
+
+    @api.depends('move_id.partner_id')
+    def _compute_partner(self):
+        for line in self:
+            line.partner_id = line.move_id.partner_id
+
+    def _inverse_partner(self):
+        for line in self:
+            if line.partner_id != line.move_id.partner_id:
+                pass
 
     @api.onchange('old_account_code')
     def _onchange_old_account_code(self):

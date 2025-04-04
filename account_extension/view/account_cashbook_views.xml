@@ -23,6 +23,7 @@
                            decoration-success="state == 'done'"
                            decoration-danger="state == 'cancel'"
                            widget="badge"/>
+                    <field name="total_amount" sum="Total"/>
                 </tree>
             </field>
         </record>
