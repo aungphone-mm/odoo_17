@@ -275,7 +275,7 @@ class AccountCashbook(models.Model):
 
         # Generate attachment
         xlsx_data = output.getvalue()
-        file_name = 'Journal_Entry_UPAY_2025_03_0001 wanted.xlsx'
+        file_name = f'Journal_Entry_{self.name}.xlsx'
 
         attachment = self.env['ir.attachment'].create({
             'name': file_name,
@@ -467,7 +467,7 @@ class AccountCashbook(models.Model):
 
 class AccountCashbookLine(models.Model):
     _name = 'account.cashbook.line'
-    _description = 'Cashbook Payment/Receive Line for Accounting'
+    _description = 'Cashbook line Payment/Receive Line for Accounting'
 
     name = fields.Char(string='Label')
     account_id = fields.Many2one(comodel_name='account.account', string='Account Name', required=True)
