@@ -125,7 +125,7 @@
 <!--                            <tfoot>-->
                                 <t t-if="not next_page">
                                 <tr class="border-black">
-                                    <td></td><td></td>
+                                    <td></td><td></td><td></td>
                                     <td style="text-align: right; vertical-align: middle;">
                                         <strong><span t-esc="'{:,.2f}'.format(sum(o.line_ids.mapped('debit')))"/></strong>
                                     </td>

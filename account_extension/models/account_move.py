@@ -69,6 +69,15 @@ class AccountMove(models.Model):
                 for line in self.line_ids:
                     line.old_account_code = self.partner_id.old_ac
 
+        for line in self.line_ids:
+            # Check if partner_id exists in the line
+            if line.partner_id and hasattr(line.partner_id, 'old_ac') and line.partner_id.old_ac:
+                # Get old code from the line's partner
+                line.old_account_code = line.partner_id.old_ac
+            # Fallback to move's partner if needed
+            elif self.partner_id and hasattr(self.partner_id, 'old_ac') and self.partner_id.old_ac:
+                line.old_account_code = self.partner_id.old_ac
+
     # Add this method to the AccountMove class
     def _set_account_based_on_partner(self):
         """Set accounts based on partner for move lines"""
