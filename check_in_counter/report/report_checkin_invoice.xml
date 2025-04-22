@@ -93,7 +93,7 @@
                                         <span t-esc="o.currency_id.amount_to_text(o.amount_untaxed)+' Only'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed)"/>
                                     </td>
                                 </tr>
                             </tbody>
@@ -183,7 +183,7 @@
                                             <span t-field="line.checkin_counter_line_id.checkin_counter_rate_id.name"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
-                                            <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % line.price_subtotal"/>
+                                            <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(line.price_subtotal)"/>
                                         </td>
                                         <td style="border: 1px solid black;">
                                             <!-- Remarks field -->
@@ -204,7 +204,7 @@
                                     <td style="text-align: right; border: 1px solid black;"></td>
                                     <td style="text-align: right; border: 1px solid black;">
                                         <strong>
-                                            <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/>
+                                            <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed)"/>
                                         </strong>
                                     </td>
                                     <td style="border: 1px solid black;"></td>
@@ -248,13 +248,13 @@
                                 <t t-set="total_count" t-value="total_count + amount_data[1]['count']"/>
                                 <tr>
                                     <td style="border: 1px solid black;">
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % amount_data[0]"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(amount_data[0])"/>
                                     </td>
                                     <td style="border: 1px solid black; text-align: center;">
                                         <t t-esc="amount_data[1]['count']"/>
                                     </td>
                                     <td style="border: 1px solid black; text-align: right;">
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % amount_data[1]['total']"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(amount_data[1]['total'])"/>
                                     </td>
                                 </tr>
                             </t>
@@ -266,7 +266,7 @@
                                     <t t-esc="total_count"/>
                                 </td>
                                 <td style="border: 1px solid black; text-align: right;">
-                                    <strong><span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/></strong>
+                                    <strong><span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed)"/></strong>
                                 </td>
                             </tr>
                         </tbody>

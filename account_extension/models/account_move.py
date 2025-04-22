@@ -213,7 +213,7 @@ class AccountMove(models.Model):
                 if move.asset_id:
                     # Get the initial book value
                     initial_value = move.asset_id.book_value_usd
-                    print(move.asset_id.original_value_usd,"originasdf vailer asu usd")
+                    # print(move.asset_id.original_value_usd,"originasdf vailer asu usd")
                     # Subtract cumulative depreciation to get remaining value
                     move.depreciable_value_usd = initial_value - move.cumulative_depreciation_usd
             else:

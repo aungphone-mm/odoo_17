@@ -42,7 +42,7 @@
                                     <td class="text-center"><span t-esc="sn"/></td>
                                     <td><span t-esc="airline[0]"/></td>
                                     <td class="text-center"><span t-esc="airline[1]['flight_freq']"/></td>
-                                    <td class="text-center"><span t-esc="'%.2f' % airline[1]['total_hours']"/></td>
+                                    <td class="text-center"><span t-esc="'{:,.2f}'.format(airline[1]['total_hours'])"/></td>
                                     <td class="text-right"><span t-esc="'%.2f' % airline[1]['total_amount']"/></td>
 <!--                                    <td class="text-right"><span t-esc="'%.2f' % airline[1]['total_tax']"/></td>-->
                                     <td class="text-right"></td>

@@ -24,20 +24,20 @@
     <field name="model">checkin.counter</field>
     <field name="arch" type="xml">
         <form >
-            <style>
-                .o_form_view {
-                    display: flex !important;
-                    flex-flow: column !important;
-                }
-                .o_form_sheet_bg {
-                    flex: 0 0 auto !important;
-                }
-                .oe_chatter {
-                    width: 100% !important;
-                    min-width: auto !important;
-                    padding-left: 16px !important;
-                }
-            </style>
+<!--            <style>-->
+<!--                .o_form_view {-->
+<!--                    display: flex !important;-->
+<!--                    flex-flow: column !important;-->
+<!--                }-->
+<!--                .o_form_sheet_bg {-->
+<!--                    flex: 0 0 auto !important;-->
+<!--                }-->
+<!--                .oe_chatter {-->
+<!--                    width: 100% !important;-->
+<!--                    min-width: auto !important;-->
+<!--                    padding-left: 16px !important;-->
+<!--                }-->
+<!--            </style>-->
             <header>
                 <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" invisible="state != 'draft'"/>
                 <button name="reset_to_draft" string="Reset to Draft" type="object" class="oe_highlight" invisible="state == 'draft'"/>

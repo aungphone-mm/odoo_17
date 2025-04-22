@@ -15,10 +15,9 @@ class AccountCashbook(models.Model):
     name = fields.Char(string='Name', required=True, readonly=True, copy=False, index=True, default='New')
     date = fields.Date(string='Date', required=True, default=fields.Date.context_today, tracking=True)
     type = fields.Selection(string='Type', selection=[('payment', 'Payment'), ('receive', 'Receive'), ],
-                            required=True)
+                            required=True, tracking=True)
     journal_id = fields.Many2one(comodel_name='account.journal', string='Journal', tracking=True)
-    main_account_id = fields.Many2one(comodel_name='account.account', string='Main Account Name',
-                                       related='journal_id.default_account_id', readonly=False)
+    main_account_id = fields.Many2one(comodel_name='account.account', string='Main Account Name', tracking=True)
     currency_id = fields.Many2one(comodel_name='res.currency', string='Currency', required=True, default=lambda self: self.env.company.currency_id.id, tracking=True)
     description = fields.Html(string='Description', required=False)
     line_ids = fields.One2many(comodel_name='account.cashbook.line', inverse_name='cashbook_id', string='Cashbook Line',

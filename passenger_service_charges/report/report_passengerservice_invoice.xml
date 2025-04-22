@@ -107,8 +107,7 @@
                                     </td>
                                     <td style="text-align: right;">
                                         <br/><br/>
-<!--                                        <span t-field="o.amount_total"/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_total"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total)"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -117,7 +116,9 @@
                                     </td>
                                     <td style="text-align: right;">
 <!--                                        <span t-field="o.amount_total"/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_total"/>
+<!--                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_total"/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total)"/>
+
                                     </td>
                                 </tr>
                             </tbody>

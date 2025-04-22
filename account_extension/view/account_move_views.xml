@@ -64,8 +64,8 @@
                 <group name="inclusive_tax_group" class="mt-2 mb-2" invisible="not show_custom_tax">
                     <div class="row">
                         <label for="custom_tax_amount" string="Inclusive Tax 5%:" class="col-5 text-end"/>
-                        <field name="custom_tax_amount" widget="monetary"
-                               options="{'currency_field': 'currency_id'}" readonly="1"/>
+                        <field name="custom_tax_amount" widget="monetary" readonly="1" options="{'currency_field': 'currency_id', 'digits': [16, 2]}"/>
+
                     </div>
                 </group>
             </xpath>
@@ -73,6 +73,7 @@
         <xpath expr="//field[@name='ref']" position="after">
             <field name="partner_id"/>
         </xpath>
+
 
             <!-- Add custom header and note fields -->
             <notebook position="inside">
@@ -191,4 +192,43 @@
         </xpath>
     </field>
 </record>
+<!--    <record id="view_move_form_inherit_custom_style" model="ir.ui.view">-->
+<!--        <field name="name">account.move.form.inherit.custom.style</field>-->
+<!--        <field name="model">account.move</field>-->
+<!--        <field name="inherit_id" ref="account.view_move_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <xpath expr="//form" position="inside">-->
+<!--                <style>-->
+<!--                    .o_form_view {-->
+<!--                        display: flex !important;-->
+<!--                        flex-flow: column !important;-->
+<!--                    }-->
+<!--                    .o_form_sheet_bg {-->
+<!--                        flex: 0 0 auto !important;-->
+<!--                    }-->
+<!--                    .oe_chatter {-->
+<!--                        width: 100% !important;-->
+<!--                        min-width: auto !important;-->
+<!--                        padding-left: 16px !important;-->
+<!--                    }-->
+<!--                </style>-->
+<!--            </xpath>-->
+<!--        </field>-->
+<!--    </record>-->
+
+
+        <record id="view_move_form_inherit_custom_line_digits" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.custom.line.digits</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']" position="attributes">
+                    <attribute name="digits">[16, 2]</attribute>
+                </xpath>
+                <xpath expr="//field[@name='price_total']" position="attributes">
+                    <attribute name="digits">[16, 2]</attribute>
+                </xpath>
+            </field>
+        </record>
+
 </odoo>
