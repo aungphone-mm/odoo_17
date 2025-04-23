@@ -15,3 +15,4 @@ class AccountMove(models.Model):
     def _compute_show_currency_rate(self):
         for record in self:
             record.show_currency_rate = record.currency_id != record.company_id.currency_id
+

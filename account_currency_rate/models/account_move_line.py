@@ -5,7 +5,7 @@ class AccountMoveLine(models.Model):
 
     currency_rate_display = fields.Float(string="Exchange Rate")
 
-    @api.depends('currency_id', 'company_id', 'move_id.date')
+    @api.depends('currency_id', 'company_id', 'move_id.date','move_id.currency_rate')
     def _compute_currency_rate(self):
         for line in self:
             if line.move_id.company_currency_id != line.move_id.currency_id and line.move_id.currency_rate > 0:
@@ -22,6 +22,24 @@ class AccountMoveLine(models.Model):
                     line.currency_rate_display = 1.0 / line.currency_rate
                 else:
                     line.currency_rate = 1.0
+
+    @api.onchange('move_id.currency_rate')
+    def _onchange_move_currency_rate(self):
+        """Update currency_rate_display when the header currency rate changes"""
+        for line in self:
+            if line.move_id.company_currency_id != line.move_id.currency_id and line.move_id.currency_rate > 0:
+                line.currency_rate = 1.0 / line.move_id.currency_rate
+                line.currency_rate_display = line.move_id.currency_rate
+
+                # Recalculate debit/credit based on amount_currency
+                if line.amount_currency:
+                    company_amount = abs(line.amount_currency) * line.currency_rate_display
+                    if line.amount_currency > 0:
+                        line.debit = company_amount
+                        line.credit = 0.0
+                    else:
+                        line.credit = company_amount
+                        line.debit = 0.0
 
     @api.onchange('debit', 'credit')
     def _onchange_debit_credit(self):

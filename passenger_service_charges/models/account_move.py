@@ -23,6 +23,8 @@ class AccountMove(models.Model):
             'context': {'create': False},
         }
 
+
+
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 

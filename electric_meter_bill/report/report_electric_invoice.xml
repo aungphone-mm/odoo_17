@@ -69,6 +69,7 @@
                                         <span t-field="o.name"/></span><br/>
                                         <strong>Date:</strong>
                                         <span t-field="o.invoice_date"/><br/>
+                                        <span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>
                                         <strong>Due Date:</strong>
                                         <span t-field="o.invoice_date_due"/>
                                     </div>
