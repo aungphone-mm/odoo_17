@@ -56,13 +56,6 @@
                         </div>
                     </div>
 
-                    <!-- Custom Header -->
-                    <div class="row mb-4">
-                        <div class="col-12 text-center">
-                            <h2 style="font-weight: bold; font-size: 24px;"><div t-field="o.custom_header"/></h2>
-                        </div>
-                    </div>
-
                     <!-- Modified Invoice Lines Table -->
                     <table class="table table-sm">
                         <thead>
@@ -125,4 +118,5 @@
         </t>
     </t>
 </template>
+
 </odoo>

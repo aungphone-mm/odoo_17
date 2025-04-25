@@ -56,7 +56,7 @@
                                     <th style="width: 5%;">Sr.</th>
                                     <th style="width: 45%;">Description</th>
                                     <th style="width: 10%;">Quantity</th>
-                                    <th style="width: 10%;">Price</th>
+                                    <th style="width: 15%;">Price</th>
                                     <th style="width: 10%;">Discount</th>
                                     <th style="width: 15%;">Amount</th>
                                 </tr>
@@ -67,7 +67,7 @@
                                 <t t-foreach="o.invoice_line_ids" t-as="line">
                                 <t t-if="line.display_type in ['line_note', 'line_section']">
                                         <tr>
-                                            <td colspan="5" style="text-align: left; padding-left: 20px;">
+                                            <td colspan="6" style="text-align: left; padding-left: 20px;">
                                                 <t t-if="line.display_type == 'line_section'">
                                                     <strong><span t-field="line.name"/></strong>
                                                 </t>
@@ -86,13 +86,13 @@
                                     </td>
                                     <td style="text-align: center;">
                                         <span t-field="line.quantity"/>
-                                        <t t-if="line.product_uom_id">
-                                            <span t-field="line.product_uom_id.name"/>
-                                        </t>
+<!--                                        <t t-if="line.product_uom_id">-->
+<!--                                            <span t-field="line.product_uom_id.name"/>-->
+<!--                                        </t>-->
                                     </td>
                                     <td style="text-align: right;">
 <!--                                        <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="line.currency_id.symbol + ' ' + '%.2f' % line.price_unit"/>
+                                        <span t-esc="  '{:,.2f}'.format(line.price_unit)+ ' ' +line.currency_id.symbol"/>
                                     </td>
                                     <td style="text-align: right;">
                                         <t t-if="line.discount > 0">
@@ -105,7 +105,7 @@
                                     </td>
                                     <td style="text-align: right;">
 <!--                                        <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="line.currency_id.symbol + ' ' + '%.2f' % line.price_subtotal"/>
+                                        <span t-esc=" '{:,.2f}'.format(line.price_subtotal)+ ' ' +line.currency_id.symbol"/>
                                     </td>
                                 </tr>
 
@@ -118,7 +118,7 @@
                                     </td>
                                     <td style="text-align: right;">
 <!--                                        <span t-esc="total_discount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % total_discount"/>
+                                        <span t-esc=" '{:,.2f}'.format(total_discount)+ ' ' +line.currency_id.symbol"/>
                                     </td>
                                 </tr>
 <!--                                <tr>-->
@@ -135,7 +135,7 @@
                                     </td>
                                     <td style="text-align: right;">
 <!--                                        <span t-field="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_tax"/>
+                                        <span t-esc="'{:,.2f}'.format(o.amount_tax)+ ' ' +line.currency_id.symbol"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -145,7 +145,7 @@
                                     <td style="text-align: right;">
                                         <strong>
 <!--                                            <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                            <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_total"/>
+                                            <span t-esc="'{:,.2f}'.format(o.amount_total)+ ' ' +line.currency_id.symbol"/>
                                         </strong>
                                     </td>
                                 </tr>
