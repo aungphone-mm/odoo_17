@@ -6,6 +6,7 @@ import base64
 
 class ReportCheckinSelectionWizard(models.TransientModel):
     _name = 'report.checkin.selection.wizard'
+    _transient_max_count = 100
     _description = 'Check-in Counter Report Selection Wizard'
 
     start_date = fields.Date(

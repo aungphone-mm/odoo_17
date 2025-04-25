@@ -4,6 +4,7 @@ from odoo import fields, models
 
 class ReportPassengerSelectionWizard(models.TransientModel):
     _name = 'report.passenger.selection.wizard'
+    _transient_max_count = 100
     _description = 'Passenger Report Selection Wizard'
 
     start_date = fields.Date(

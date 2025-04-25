@@ -118,7 +118,7 @@
                                     </td>
                                     <td style="text-align: right;">
 <!--                                        <span t-esc="total_discount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.total_discount"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % total_discount"/>
                                     </td>
                                 </tr>
 <!--                                <tr>-->

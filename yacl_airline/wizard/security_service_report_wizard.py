@@ -3,6 +3,7 @@ from odoo import fields, models
 
 class SecurityServiceReportWizard(models.TransientModel):
     _name = 'security.service.report.wizard'
+    _transient_max_count = 100
     _description = 'Security Service Report Wizard'
 
     date_from = fields.Date(

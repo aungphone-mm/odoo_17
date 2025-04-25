@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 class ReportSelectionWizard(models.TransientModel):
     _name = 'report.selection.wizard'
+    _transient_max_count = 100
     _description = 'Invoice Report Selection Wizard'
 
     airline_id = fields.Many2one('airline', string='Airline', required=True)

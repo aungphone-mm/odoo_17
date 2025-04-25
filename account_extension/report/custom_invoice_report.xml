@@ -16,6 +16,12 @@
         <t t-foreach="docs" t-as="o">
             <t t-call="web.external_layout">
                 <div class="page">
+                    <!-- Custom Header -->
+                    <div class="row mb-4">
+                        <div class="col-12 text-center">
+                            <h2 style="font-weight: bold; font-size: 24px;"><div t-field="o.custom_header"/></h2>
+                        </div>
+                    </div>
                     <!-- Keep existing header part -->
                     <div class="row mb-4">
                         <div class="col-6">
@@ -43,7 +49,7 @@
                                 <span t-field="o.name"/><br/>
                                 <strong>Date:</strong>
                                 <span t-field="o.invoice_date"/><br/>
-                                <span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>
+<!--                                <span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>-->
                                 <strong>Due Date:</strong>
                                 <span t-field="o.invoice_date_due"/>
                             </div>

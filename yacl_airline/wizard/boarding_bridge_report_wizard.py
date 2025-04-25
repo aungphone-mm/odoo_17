@@ -4,6 +4,7 @@ from odoo import fields, models
 class BoardingBridgeReportWizard(models.TransientModel):
     _name = 'boarding.bridge.report.wizard'
     _description = 'Boarding Bridge Report Wizard'
+    _transient_max_count = 100
 
     date_from = fields.Date(
         string='Start Date',

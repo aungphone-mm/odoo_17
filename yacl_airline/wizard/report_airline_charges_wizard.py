@@ -3,6 +3,7 @@ from odoo import fields, models
 
 class AirlineChargesReportWizard(models.TransientModel):
     _name = 'airline.charges.report.wizard'
+    _transient_max_count = 100
     _description = 'Airline Charges Report Wizard'
 
     date_from = fields.Date(

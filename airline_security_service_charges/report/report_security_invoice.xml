@@ -57,7 +57,7 @@
                                     <span t-field="o.name"/><br/>
                                     <strong>Date:</strong>
                                     <span t-field="o.invoice_date"/><br/>
-                                    <span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>
+<!--                                    <span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>-->
                                     <strong>Due Date:</strong>
                                     <span t-field="o.invoice_date_due"/>
                                 </div>
@@ -131,7 +131,7 @@
                         <div class="row mt-4">
                             <div class="col-12">
                                 <strong>NOTE:</strong>
-                                <span><p style="margin-bottom: 0;">1 Payment has to be made in the currency stated above.</p>
+                                <span style="font-size: 0.85em;"><p style="margin-bottom: 0;">1 Payment has to be made in the currency stated above.</p>
                                 <p style="margin-bottom: 0;">2 For CASH payment, please pay at:</p>
                                 <p style="margin-left: 20px; margin-bottom: 0;">Finance Department, Yangon Aerodrome Co Ltd Building (Opposite Terminal 2, Yangon International Airport)</p>
                                 <p style="margin-bottom: 0;">3 For payment via ACCOUNT TRANSFER (all Local and Overseas bank charges to be borne by the remitter),</p>

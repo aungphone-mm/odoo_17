@@ -3,6 +3,7 @@ from odoo import api, fields, models
 
 class TopTenOutstandingWizard(models.TransientModel):
     _name = 'top.ten.outstanding.wizard'
+    _transient_max_count = 100
     _description = 'Wizard for Top Ten Outstanding Report'
 
     # You can add filters here if needed in the future

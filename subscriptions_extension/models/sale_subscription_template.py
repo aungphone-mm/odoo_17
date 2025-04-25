@@ -127,6 +127,7 @@ class SubscriptionCustomer(models.Model):
 
 class CreateSubscriptionWizard(models.TransientModel):
     _name = 'create.subscription.wizard'
+    _transient_max_count = 100
     _description = 'Create Subscription Wizard'
 
     template_id = fields.Many2one('sale.order.template', string='Subscription Template', required=True)
@@ -166,6 +167,7 @@ class CreateSubscriptionWizard(models.TransientModel):
 
 class SaleOrderLineWizard(models.TransientModel):
     _name = 'sale.order.line.wizard'
+    _transient_max_count = 100
     _description = 'Sale Order Line Wizard'
 
     template_id = fields.Many2one('sale.order.template', string='Subscription Template')
@@ -235,6 +237,7 @@ class SaleOrderLineWizard(models.TransientModel):
 
 class SaleOrderLineWizardLine(models.TransientModel):
     _name = 'sale.order.line.wizard.line'
+    _transient_max_count = 100
     _description = 'Sale Order Line Wizard Line'
 
     wizard_id = fields.Many2one('sale.order.line.wizard', string='Wizard')

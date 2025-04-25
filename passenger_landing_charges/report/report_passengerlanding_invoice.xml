@@ -57,7 +57,7 @@
                                     <span t-field="o.name"/><br/>
                                     <strong>Date:</strong>
                                     <span t-field="o.invoice_date"/><br/>
-                                    <span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>
+
                                     <strong>Due Date:</strong>
                                     <span t-field="o.invoice_date_due"/>
                                 </div>
@@ -70,7 +70,7 @@
                                 <tr>
                                     <th style="width: 5%;">Sr.</th>
                                     <th style="width: 55%;">Description</th>
-                                    <th style="width: 20%;">Units</th>
+<!--                                    <th style="width: 20%;">Units</th>-->
                                     <th style="width: 20%;">Amount</th>
                                 </tr>
                             </thead>
@@ -78,47 +78,50 @@
                                 <tr>
                                     <td>1</td>
                                     <td>
-                                        <span>Aircraft Landing Charges for:<br/>
+                                        <span>Aircraft Landing Charges for:<span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>
                                         Flight No: As per attached</span><br/>
-                                        <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "yy"}'/>
+<!--                                        <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "yy"}'/>-->
 
                                     </td>
-                                    <td style="text-align: center;">
+<!--                                    <td style="text-align: center;">-->
 
-                                        <t t-esc="sum([g['count'] for g in o.get_grouped_landing_lines()])"/>
-                                    </td>
+<!--                                        <t t-esc="sum([g['count'] for g in o.get_grouped_landing_lines()])"/>-->
+<!--                                    </td>-->
                                     <td style="text-align: right;">
 
-                                        <span t-field="o.amount_untaxed"/>
+<!--                                        <span t-field="o.amount_untaxed"/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3" style="text-align: center;">
+                                    <td colspan="2" style="text-align: center;">
                                         <span t-esc="'Total Amount'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-field="o.amount_untaxed"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3" style="text-align: center;">
+                                    <td colspan="2" style="text-align: center;">
                                         <span t-esc="'Commercial Tax 5%'"/>
                                     </td>
                                     <td style="text-align: right;">
 <!--                                        <span t-esc="o.amount_untaxed * 0.05"/>-->
-                                        <span t-options='{"widget": "monetary", "display_currency": o.currency_id}' t-esc="o.amount_untaxed * 0.05"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % (o.amount_untaxed * 0.05)"/>
+
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3" style="text-align: center;">
+                                    <td colspan="2" style="text-align: center;">
                                         <span t-esc="'Grand Total'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-field="o.amount_total"/>
+<!--                                        <span t-field="o.amount_total"/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_total"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="4" style="text-align: left;">
+                                    <td colspan="3" style="text-align: left;">
                                         <span t-esc="'('+o.currency_id.amount_to_text(o.amount_total)+' Only)'"/>
                                     </td>
 <!--                                    <td style="text-align: right;">-->

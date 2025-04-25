@@ -567,6 +567,7 @@ class ElectricMeterReadingLine(models.Model):
 class AddSubtractionWizard(models.TransientModel):
     _name = 'add.subtraction.wizard'
     _description = 'Add Subtraction Wizard'
+    _transient_max_count = 100
 
     reading_line_id = fields.Many2one(
         'electric.meter.reading.line',

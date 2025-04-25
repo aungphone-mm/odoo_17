@@ -4,6 +4,7 @@ from odoo import fields, models
 
 class ReportLandingSelectionWizard(models.TransientModel):
     _name = 'report.landing.selection.wizard'
+    _transient_max_count = 100
     _description = 'Landing Report Selection Wizard'
 
     start_date = fields.Date(
