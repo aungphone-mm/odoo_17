@@ -47,13 +47,23 @@ class AccountMove(models.Model):
         """Apply partner's old account code to all journal items"""
         self.ensure_one()
         for line in self.line_ids:
-            # Check if partner_id exists in the line
-            if line.partner_id and hasattr(line.partner_id, 'old_ac') and line.partner_id.old_ac:
-                # Get old code from the line's partner
-                line.old_account_code = line.partner_id.old_ac
-            # Fallback to move's partner if needed
-            elif self.partner_id and hasattr(self.partner_id, 'old_ac') and self.partner_id.old_ac:
-                line.old_account_code = self.partner_id.old_ac
+            # Check if account is a Debtors account
+            is_debtors_account = False
+            if line.account_id:
+                account_name = line.account_id.name if hasattr(line.account_id, 'name') else ''
+                account_code = line.account_id.code if hasattr(line.account_id, 'code') else ''
+                is_debtors_account = 'Debtor' in account_name or 'Debtor' in account_code
+
+            # If it's a Debtors account, get old_account_code from partner
+            if is_debtors_account:
+                if line.partner_id and hasattr(line.partner_id, 'old_ac') and line.partner_id.old_ac:
+                    line.old_account_code = line.partner_id.old_ac
+                # Fallback to move's partner if needed
+                elif self.partner_id and hasattr(self.partner_id, 'old_ac') and self.partner_id.old_ac:
+                    line.old_account_code = self.partner_id.old_ac
+            # If not a Debtors account, use account_id.code
+            elif line.account_id and hasattr(line.account_id, 'code'):
+                line.old_account_code = line.account_id.code
         return True
 
 
@@ -64,19 +74,25 @@ class AccountMove(models.Model):
         if self.partner_id and self.move_type in ('out_invoice', 'out_refund'):
             self.account_receivable_id = self.partner_id.property_account_receivable_id
 
-            # Update old_account_code on line items if they exist
-            if hasattr(self.partner_id, 'old_ac') and self.partner_id.old_ac:
-                for line in self.line_ids:
-                    line.old_account_code = self.partner_id.old_ac
-
+        # Process line items
         for line in self.line_ids:
-            # Check if partner_id exists in the line
-            if line.partner_id and hasattr(line.partner_id, 'old_ac') and line.partner_id.old_ac:
-                # Get old code from the line's partner
-                line.old_account_code = line.partner_id.old_ac
-            # Fallback to move's partner if needed
-            elif self.partner_id and hasattr(self.partner_id, 'old_ac') and self.partner_id.old_ac:
-                line.old_account_code = self.partner_id.old_ac
+            # Check if account is a Debtors account
+            is_debtors_account = False
+            if line.account_id:
+                account_name = line.account_id.name if hasattr(line.account_id, 'name') else ''
+                account_code = line.account_id.code if hasattr(line.account_id, 'code') else ''
+                is_debtors_account = 'Debtor' in account_name or 'Debtor' in account_code
+
+            # If it's a Debtors account, get old_account_code from partner
+            if is_debtors_account:
+                if line.partner_id and hasattr(line.partner_id, 'old_ac') and line.partner_id.old_ac:
+                    line.old_account_code = line.partner_id.old_ac
+                # Fallback to move's partner if needed
+                elif self.partner_id and hasattr(self.partner_id, 'old_ac') and self.partner_id.old_ac:
+                    line.old_account_code = self.partner_id.old_ac
+            # If not a Debtors account, use account_id.code
+            elif line.account_id and hasattr(line.account_id, 'code'):
+                line.old_account_code = line.account_id.code
 
     # Add this method to the AccountMove class
     def _set_account_based_on_partner(self):
