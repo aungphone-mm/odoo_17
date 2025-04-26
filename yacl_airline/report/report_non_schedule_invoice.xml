@@ -55,8 +55,8 @@
                                 <tr>
                                     <th style="width: 5%;">Sr.</th>
                                     <th style="width: 55%;">Description</th>
-                                    <th style="width: 10%;">Quantity</th>
-                                    <th style="width: 15%;">Unit Price</th>
+                                    <th style="width: 15%;">Quantity</th>
+                                    <th style="width: 10%;">Unit Price</th>
                                     <th style="width: 15%;">Amount</th>
                                 </tr>
                             </thead>
@@ -90,11 +90,11 @@
                                         </td>
                                         <td style="text-align: right;">
 <!--                                            <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                            <span t-esc="line.currency_id.symbol + ' ' + '%.2f' % line.price_unit"/>
+                                            <span t-esc="line.currency_id.symbol + ' ' + '{:,.2f}'.format(line.price_unit)"/>
                                         </td>
                                         <td style="text-align: right;">
 <!--                                            <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                            <span t-esc="line.currency_id.symbol + ' ' + '%.2f' % line.price_subtotal"/>
+                                            <span t-esc="line.currency_id.symbol + ' ' + '{:,.2f}'.format(line.price_subtotal)"/>
                                         </td>
                                     </tr>
                                     <t t-set="line_no" t-value="line_no + 1"/>
@@ -106,7 +106,7 @@
                                     </td>
                                     <td style="text-align: right;">
 <!--                                        <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed)"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -115,7 +115,7 @@
                                     </td>
                                     <td style="text-align: right;">
 <!--                                        <span t-field="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_tax"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_tax)"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -125,7 +125,7 @@
                                     <td style="text-align: right;">
                                         <strong>
 <!--                                            <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_total"/></strong>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total)"/></strong>
                                     </td>
                                 </tr>
                                 <tr>

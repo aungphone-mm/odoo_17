@@ -79,7 +79,7 @@
                                             <span t-field="line.price_unit"/>
                                         </td>
                                         <td class="text-right">
-                                            <span t-field="line.price_subtotal"/>
+                                            <span t-esc="line.currency_id.symbol + ' ' + '{:,.2f}'.format(line.price_subtotal)"/>
                                         </td>
                                     </tr>
                                 </t>
@@ -100,7 +100,8 @@
                             <tr>
                                 <td colspan="3" class="text-right"><strong>Total</strong></td>
                                 <td class="text-right">
-                                    <span t-field="o.amount_total"/>
+<!--                                    <span t-field="o.amount_total"/>-->
+                                    <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total)"/>
                                 </td>
                             </tr>
                         </tfoot>

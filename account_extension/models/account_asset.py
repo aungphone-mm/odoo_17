@@ -176,15 +176,18 @@ class AccountAssetCategory(models.Model):
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
     description = fields.Text(string='Description', help='Additional payment details')
+    ref_no = fields.Char(string="Reference No.")
 
 
 class AccountPaymentRegister(models.TransientModel):
     _inherit = 'account.payment.register'
     description = fields.Text(string='Description', help='Additional payment details')
+    ref_no = fields.Char(string="Reference No.")
 
     def _create_payment_vals_from_wizard(self, batch_result):
         payment_vals = super()._create_payment_vals_from_wizard(batch_result)
         payment_vals['description'] = self.description
+        payment_vals['ref_no'] = self.ref_no
         return payment_vals
 
     def _create_payments(self):
@@ -193,6 +196,7 @@ class AccountPaymentRegister(models.TransientModel):
             if self.description and payment.move_id:
                 # Update all move lines with the description
                 payment.move_id.line_ids.write({'ref_desc': self.description})
+                payment.move_id.line_ids.write({'ref_no': self.ref_no})
 
                 # For reconciliations, find invoice lines and update them
                 for line in payment.move_id.line_ids.filtered(
@@ -202,4 +206,5 @@ class AccountPaymentRegister(models.TransientModel):
                     reconciled_lines = line.matched_debit_ids.debit_move_id + line.matched_credit_ids.credit_move_id
                     if reconciled_lines:
                         reconciled_lines.write({'ref_desc': self.description})
+                        reconciled_lines.write({'ref_no': self.ref_no})
         return payments

@@ -451,6 +451,7 @@ class AccountCashbook(models.Model):
                 'debit': main_debit,
                 'credit': main_credit,
                 'currency_id': record.currency_id.id,
+                'ref_no': record.ref_no,
             }))
 
             move_vals = {

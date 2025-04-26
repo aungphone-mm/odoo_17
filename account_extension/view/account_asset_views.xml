@@ -74,8 +74,9 @@
         <field name="model">account.payment</field>
         <field name="inherit_id" ref="account.view_account_payment_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='currency_id']" position="after">
+            <xpath expr="//field[@name='ref']" position="after">
                 <field name="description" placeholder="Add description or additional payment details..."/>
+                <field name="ref_no"/>
             </xpath>
         </field>
     </record>
@@ -86,8 +87,9 @@
         <field name="model">account.payment.register</field>
         <field name="inherit_id" ref="account.view_account_payment_register_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='currency_id']" position="after">
+            <xpath expr="//field[@name='communication']" position="after">
                 <field name="description" placeholder="Add description or additional payment details..."/>
+                <field name="ref_no"/>
             </xpath>
         </field>
     </record>

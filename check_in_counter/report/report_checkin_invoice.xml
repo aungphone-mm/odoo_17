@@ -86,7 +86,7 @@
                                         <span t-esc="len(o.invoice_line_ids)"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed)"/>
                                     </td>
                                 </tr>
                                 <tr>

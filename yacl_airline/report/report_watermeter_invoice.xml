@@ -94,12 +94,12 @@
 <!--                                        </td>-->
                                         <td style="text-align: right;">
 <!--                                        <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                            <span t-esc="line.currency_id.symbol + ' ' + '%.2f' % line.price_unit"/>
+                                            <span t-esc="line.currency_id.symbol + ' ' + '{:,.2f}'.format(line.price_unit)"/>
                                     </td>
 
                                         <td style="text-align: right;">
 <!--                                        <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                            <span t-esc="line.currency_id.symbol + ' ' + '%.2f' % line.price_subtotal"/>
+                                            <span t-esc="line.currency_id.symbol + ' ' + '{:,.2f}'.format(line.price_subtotal)"/>
                                     </td>
                                     </tr>
                                     <t t-set="line_no" t-value="line_no + 1"/>
@@ -129,9 +129,7 @@
 <!--                                        <span t-field="int(line.amount_total)" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
 <!--                                    </td>-->
                                     <td style="text-align: right;">
-<!--                                        <span t-esc="round(o.amount_total)" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="int(o.amount_total + 0.5)" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total * 0.05)"/>
                                     </td>
                                 </tr>
 <!--                                <tr>-->

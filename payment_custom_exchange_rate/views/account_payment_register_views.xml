@@ -6,6 +6,7 @@
         <field name="inherit_id" ref="account.view_account_payment_register_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='currency_id']" position="after">
+
                 <field name="show_manual_exchange_rate" invisible="1"/>
                 <field name="manual_rate_id" invisible="1"/>
                 <field name="manual_exchange_rate"

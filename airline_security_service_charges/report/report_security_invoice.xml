@@ -80,8 +80,8 @@
                                     <td>
                                         <span>Security Service Charges for:<br/>
                                         Flight No: As per attached(
-                                            <span t-field="o.airline_security_service_id.for_date" t-options='{"format": "MMM"}'/>'
-                                            <span t-field="o.airline_security_service_id.for_date" t-options='{"format": "yy"}'/>
+                                            <span t-field="o.invoice_date" t-options='{"format": "MMM"}'/>'
+                                            <span t-field="o.invoice_date" t-options='{"format": "yy"}'/>
                                         )</span>
                                         <span t-field="o.airline_security_service_id.inv_desc"/>
                                     </td>
