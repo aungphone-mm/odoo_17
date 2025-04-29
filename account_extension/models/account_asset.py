@@ -190,13 +190,37 @@ class AccountPaymentRegister(models.TransientModel):
         payment_vals['ref_no'] = self.ref_no
         return payment_vals
 
+    # def _create_payments(self):
+    #     payments = super()._create_payments()
+    #     for payment in payments:
+    #         if self.description and payment.move_id:
+    #             # Update all move lines with the description
+    #             payment.move_id.line_ids.write({'ref_desc': self.description})
+    #             payment.move_id.line_ids.write({'ref_no': self.ref_no})
+    #
+    #             # For reconciliations, find invoice lines and update them
+    #             for line in payment.move_id.line_ids.filtered(
+    #                     lambda l: l.account_id.account_type in ('asset_receivable', 'liability_payable')):
+    #
+    #                 # Get reconciled lines
+    #                 reconciled_lines = line.matched_debit_ids.debit_move_id + line.matched_credit_ids.credit_move_id
+    #                 if reconciled_lines:
+    #                     reconciled_lines.write({'ref_desc': self.description})
+    #                     reconciled_lines.write({'ref_no': self.ref_no})
+    #     return payments
+
     def _create_payments(self):
         payments = super()._create_payments()
         for payment in payments:
-            if self.description and payment.move_id:
-                # Update all move lines with the description
-                payment.move_id.line_ids.write({'ref_desc': self.description})
-                payment.move_id.line_ids.write({'ref_no': self.ref_no})
+            if payment.move_id:
+                # Apply the old account code logic to the payment move
+                payment.move_id.action_apply_old_account_code()
+
+                # Update all move lines with the description and ref_no
+                if self.description:
+                    payment.move_id.line_ids.write({'ref_desc': self.description})
+                if self.ref_no:
+                    payment.move_id.line_ids.write({'ref_no': self.ref_no})
 
                 # For reconciliations, find invoice lines and update them
                 for line in payment.move_id.line_ids.filtered(
@@ -205,6 +229,9 @@ class AccountPaymentRegister(models.TransientModel):
                     # Get reconciled lines
                     reconciled_lines = line.matched_debit_ids.debit_move_id + line.matched_credit_ids.credit_move_id
                     if reconciled_lines:
-                        reconciled_lines.write({'ref_desc': self.description})
-                        reconciled_lines.write({'ref_no': self.ref_no})
+                        if self.description:
+                            reconciled_lines.write({'ref_desc': self.description})
+                        if self.ref_no:
+                            reconciled_lines.write({'ref_no': self.ref_no})
         return payments
+

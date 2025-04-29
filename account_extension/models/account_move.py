@@ -30,6 +30,16 @@ class AccountMove(models.Model):
         store=True
     )
 
+    def write(self, vals):
+        """Override write method to apply old account code after saving"""
+        result = super(AccountMove, self).write(vals)
+
+        # Check if this is an invoice and needs to apply old account codes
+        if self.is_invoice():
+            self.action_apply_old_account_code()
+
+        return result
+
     @api.depends('amount_untaxed', 'invoice_line_ids.tax_ids')
     def _compute_custom_tax_amount(self):
         for move in self:

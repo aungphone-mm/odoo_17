@@ -96,11 +96,12 @@
                                             </td>
                                             <td style="text-align: right;">
 <!--                                                <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                                <span t-esc="line.currency_id.symbol + ' ' + '%.2f' % line.price_unit"/>
+<!--                                                <span t-esc="line.currency_id.symbol + ' ' + '%.2f' % line.price_unit"/>-->
+                                                <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_unit) or '{:,.2f}'.format(line.price_unit) + line.currency_id.symbol"/>
                                             </td>
                                             <td style="text-align: right;">
 <!--                                                <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                                <span t-esc="line.currency_id.symbol + ' ' + '%.2f' % line.price_subtotal"/>
+                                                <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_subtotal) or '{:,.2f}'.format(line.price_subtotal) + line.currency_id.symbol"/>
                                             </td>
                                         </tr>
                                         <t t-set="line_no" t-value="line_no + 1"/>
@@ -112,7 +113,7 @@
                                     </td>
                                     <td style="text-align: right;">
 <!--                                        <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_total"/>
+                                        <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_total) or '{:,.2f}'.format(o.amount_total) + o.currency_id.symbol"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -121,7 +122,8 @@
                                     </td>
                                     <td style="text-align: right;">
 <!--                                        <span t-esc="o.amount_untaxed * 0.05"/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % (o.amount_untaxed * 0.05)"/>
+<!--                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % (o.amount_untaxed * 0.05)"/>-->
+                                        <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_untaxed* 0.05) or '{:,.2f}'.format(o.amount_untaxed* 0.05) + o.currency_id.symbol"/>
 
                                     </td>
                                 </tr>
@@ -143,11 +145,8 @@
                                         Grand Amount
                                       </td>
                                       <td style="text-align: right;">
-                                        <span t-esc="
-                                          o.currency_id.symbol
-                                          + ' '
-                                          + '%.2f' % total_with_tax
-                                        "/>
+                                       <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(total_with_tax) or '{:,.2f}'.format(total_with_tax) + o.currency_id.symbol"/>
+
                                       </td>
                                     </tr>
                             </tbody>

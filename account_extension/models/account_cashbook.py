@@ -434,6 +434,7 @@ class AccountCashbook(models.Model):
                     'credit': credit,
                     'analytic_distribution': line.analytic_distribution,
                     'currency_id': record.currency_id.id,
+                    'ref_no': record.ref_no,
                 }))
 
             # Add the main account line at the end
@@ -463,6 +464,7 @@ class AccountCashbook(models.Model):
             }
             move = self.env['account.move'].create(move_vals)
             record.write({'move_id': move.id})
+            move.action_apply_old_account_code()
 
 
 class AccountCashbookLine(models.Model):

@@ -73,13 +73,15 @@
                                     <tr>
                                         <td><span t-field="line.name"/></td>
                                         <td class="text-right">
-                                            <span t-field="line.quantity"/>
+<!--                                            <span t-field="line.quantity"/>-->
+                                            <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.quantity) or '{:,.2f}'.format(line.quantity) + line.currency_id.symbol"/>
                                         </td>
                                         <td class="text-right">
-                                            <span t-field="line.price_unit"/>
+<!--                                            <span t-field="line.price_unit"/>-->
+                                            <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_unit) or '{:,.2f}'.format(line.price_unit) + line.currency_id.symbol"/>
                                         </td>
                                         <td class="text-right">
-                                            <span t-esc="line.currency_id.symbol + ' ' + '{:,.2f}'.format(line.price_subtotal)"/>
+                                            <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_subtotal) or '{:,.2f}'.format(line.price_subtotal) + line.currency_id.symbol"/>
                                         </td>
                                     </tr>
                                 </t>
@@ -97,11 +99,19 @@
                             </t>
                         </tbody>
                         <tfoot>
+<!--                            <tr>-->
+<!--                                    <td colspan="3" class="text-right">-->
+<!--                                        <span t-esc="'Commercial Tax 5%'"/>-->
+<!--                                    </td>-->
+<!--                                    <td class="text-right">-->
+<!--                                        <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_untaxed* 0.05) or '{:,.2f}'.format(o.amount_untaxed* 0.05) + o.currency_id.symbol"/>-->
+<!--                                    </td>-->
+<!--                                </tr>-->
                             <tr>
                                 <td colspan="3" class="text-right"><strong>Total</strong></td>
                                 <td class="text-right">
 <!--                                    <span t-field="o.amount_total"/>-->
-                                    <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total)"/>
+                                    <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_total) or '{:,.2f}'.format(o.amount_total) + o.currency_id.symbol"/>
                                 </td>
                             </tr>
                         </tfoot>
