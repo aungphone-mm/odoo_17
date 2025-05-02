@@ -69,7 +69,6 @@
                                         <span t-field="o.name"/></span><br/>
                                         <strong>Date:</strong>
                                         <span t-field="o.invoice_date"/><br/>
-                                        <span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>
                                         <strong>Due Date:</strong>
                                         <span t-field="o.invoice_date_due"/>
                                     </div>
@@ -89,16 +88,16 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><br/><br/><br/>1</td>
+                                        <td><br/><br/>1</td>
                                         <td>
-                                            <br/><br/><br/>
+                                            <br/><br/>
                                             <span t-field="o.reading_line_id.reading_id.inv_desc"/>
 <!--                                            <span t-field="o.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.for_date" t-options='{"format": "yy"}'/>-->
-                                            <br/><br/><br/>
+                                            <br/><br/>
                                         </td>
                                         <t t-set="total_units" t-value="sum(o.invoice_line_ids.filtered(lambda l: l.reading_line_id).mapped('reading_line_id.total_unit'))"/>
                                         <td style="text-align: center;">
-                                            <br/><br/><br/>
+                                            <br/><br/>
                                             <t t-if="total_units > 0">
                                                 <span t-esc="'{:,.0f}'.format(total_units)"/>
                                             </t>
@@ -108,7 +107,7 @@
 <!--                                            <span t-field="o.amount_total"/>-->
 <!--                                        </td>-->
                                         <td style="text-align: right;">
-                                            <br/><br/><br/>
+                                            <br/><br/>
                                             <t t-if="o.currency_id.name == 'MMK'">
                                                 <span t-esc="'MMK ' + '{:,.2f}'.format(o.amount_total)"/>
                                             </t>
