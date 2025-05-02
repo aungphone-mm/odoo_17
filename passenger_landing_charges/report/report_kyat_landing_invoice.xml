@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_landing_report_kyat" model="ir.actions.report">
+        <field name="name">Aircraft Landing Invoice(Kyat) With Breakdown</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">passenger_landing_charges.report_passenger_landing_kyat</field>
+        <field name="report_file">passenger_landing_charges.report_passenger_landing_kyat</field>
+        <field name="print_report_name">(object.name) and ('AircraftLanding-' + object.name) or 'AircraftLanding-Invoice'</field>
+        <field name="binding_model_id" ref="model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_passenger_landing_kyat">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <!-- First Page - Invoice -->
+                <t t-call="web.external_layout">
+                    <style>
+                        .security-table th {
+                            background-color: #e9ecef;
+                        }
+                    </style>
+                    <div class="row mb-4">
+                        <div class="col-12 text-center">
+                            <h2 style="font-weight: bold; font-size: 24px;">INVOICE</h2>
+                        </div>
+                    </div>
+                    <div class="page">
+                        <!-- Invoice Info Section -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <div t-field="o.partner_id.name"/>
+                                <div t-field="o.partner_id.street"/>
+                                <div t-field="o.partner_id.street2"/>
+                                <div t-if="o.partner_id.city">
+                                    <t t-esc="o.partner_id.city"/>
+                                </div>
+
+                                    <div>
+                                        <t t-esc="o.partner_id.state_id.name"/>
+                                        <t t-if="o.partner_id.zip">, <t t-esc="o.partner_id.zip"/></t>
+                                        <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
+                                    </div>
+
+                                <div t-if="o.partner_id.contact_name">
+                                            Attention: <t t-esc="o.partner_id.contact_name"/><br/>
+                                        </div>
+                                        <div t-if="o.partner_id.contact_job_position">
+                                            Position: <t t-esc="o.partner_id.contact_job_position"/>
+                                        </div>
+                            </div>
+
+                            <div class="col-6 d-flex justify-content-end">
+                                <div>
+                                    <strong>Invoice No:</strong>
+                                    <span t-field="o.name"/><br/>
+                                    <strong>Date:</strong>
+                                    <span t-field="o.invoice_date"/><br/>
+
+                                    <strong>Due Date:</strong>
+                                    <span t-field="o.invoice_date_due"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Invoice Lines -->
+                        <table class="table table-bordered security-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%;">Sr.</th>
+                                    <th style="width: 55%;">Description</th>
+<!--                                    <th style="width: 20%;">Units</th>-->
+                                    <th style="width: 20%;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>
+                                        <span>Aircraft Landing Charges for:<span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>
+                                        Flight No: As per attached</span><br/>
+<!--                                        <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "yy"}'/>-->
+
+                                    </td>
+<!--                                    <td style="text-align: center;">-->
+
+<!--                                        <t t-esc="sum([g['count'] for g in o.get_grouped_landing_lines()])"/>-->
+<!--                                    </td>-->
+                                    <td style="text-align: right;">
+
+<!--                                        <span t-field="o.amount_untaxed"/>--><br/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;">
+                                        <span t-esc="'Total Amount'"/>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;">
+                                        <span t-esc="'Commercial Tax 5%'"/>
+                                    </td>
+                                    <td style="text-align: right;">
+<!--                                        <span t-esc="o.amount_untaxed * 0.05"/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format((o.amount_untaxed * 0.05))"/>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;">
+                                        <span t-esc="'Grand Total'"/>
+                                    </td>
+                                    <td style="text-align: right;">
+<!--                                        <span t-field="o.amount_total"/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format((o.amount_total+(o.amount_untaxed * 0.05)))"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: center;">
+                                        <span t-esc="'('+o.currency_id.amount_to_text(o.amount_total+(o.amount_untaxed * 0.05))+' Only)'"/>
+
+                                    </td>
+<!--                                    <td style="text-align: right;">-->
+<!--                                        <span t-field="o.amount_total"/>-->
+<!--                                    </td>-->
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Payment Information -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <strong>NOTE:</strong>
+                                    <span><p>- Payment has to be made in the currency stated above.<br/>
+                                       - Should the payment be made in other currencies stated as above, the exchange rate shall be based on the prevailing rate. Please check before payment is made.<br/>
+                                       - For CASH payment, please pay at:<br/>
+                                       Yangon Aerodrome Company Limited Building, Finance Department, Infront Of (T-2) Yangon International Airport<br/>
+                                       - For payment via ACCOUNT TRANSFER (All Local and Oversea Bank charges to be borne by the remitter), account no.:</p>
+                                    <ul>
+                                        <li>Myanmar Currency: Ayeyarwady Bank, MMK Account No. 1000 2103 936</li>
+                                        <li>Myanmar currency: CB Bank, MMK Account No. 0010 1005 0003 8757</li>
+                                        <li>Myanmar currency: KBZ Bank, MMK Account No. 2061 0320 6016 29501</li>
+                                        <li>Myanmar currency: Industrial and Commercial Bank of China (ICBC), Yangon Branch,<br/>
+                                            MMK Account No. 60100 1000 0000 150872</li>
+                                        <li>Myanmar currency: Myanma Apex Bank, MMK Account No. 0740 1630 7400 2519 024</li>
+                                        <li>Myanmar currency: United Amara Bank (Special) MMK Account No. 0281 0601 0000 7306</li>
+                                    </ul></span>
+                                </div>
+                            </div>
+                        <!-- Signature -->
+                        <div class="row mt-5">
+                            <div class="col-6">
+                                <p>Issued by:</p><br/><br/><br/>
+                                <p>____________________</p>
+                                <p>Aye Thida<br/>
+                                General Manager</p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Second Page - Breakdown -->
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h3>DETAIL STATEMENT OF AIRCRAFT LANDING CHARGES</h3>
+                            <h4>AIRLINES-<span t-field="o.partner_id.name"/></h4>
+                        </div>
+
+                        <table class="table table-sm" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background-color: #e9ecef;">
+                                    <th style="border: 1px solid black;">No</th>
+                                    <th style="border: 1px solid black;">Date</th>
+                                    <th style="border: 1px solid black;">CALL SIGN</th>
+                                    <th style="border: 1px solid black;">A/C TYPE</th>
+                                    <th style="border: 1px solid black;">Registration</th>
+                                    <th style="border: 1px solid black;">Ldg</th>
+                                    <th style="border: 1px solid black;">Rate</th>
+                                    <th style="border: 1px solid black;">Total Amount</th>
+                                    <th style="border: 1px solid black;">Remark</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.get_grouped_landing_lines()" t-as="group">
+                                    <tr>
+                                        <td style="border: 1px solid black; text-align: center;">
+                                            <t t-esc="group_index + 1"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <t t-esc="group['date']"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <t t-esc="group['flight_no']"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <t t-esc="group['aircraft_type']"/>
+                                        </td>
+                                        <td style="border: 1px solid black;">
+                                            <t t-esc="group['reg_no']"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                             <t t-esc="group['count']"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % (group['amount'] / group['count'])"/>
+                                        </td>
+                                        <td style="border: 1px solid black; text-align: right;">
+                                            <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % group['amount']"/>
+                                        </td>
+
+                                        <td style="border: 1px solid black;">
+                                            <!-- Remarks field -->
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-if="not next_page">
+                                <tr>
+                                    <td colspan="6" style="text-align: right; border: 1px solid black;">
+                                        <t t-esc="sum([g['count'] for g in o.get_grouped_landing_lines()])"/>
+                                    </td>
+                                    <td style="text-align: right; border: 1px solid black;">
+                                        <strong>Total</strong>
+                                    </td>
+                                    <td style="text-align: right; border: 1px solid black;">
+                                        <strong>
+                                            <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/>
+                                        </strong>
+                                    </td>
+                                    <td style="border: 1px solid black;"></td>
+                                </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+<!--                                <tr>-->
+<!--                                    <td colspan="6" style="text-align: right; border: 1px solid black;">-->
+<!--                                        <t t-esc="sum([g['count'] for g in o.get_grouped_landing_lines()])"/>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>Total</strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="text-align: right; border: 1px solid black;">-->
+<!--                                        <strong>-->
+<!--                                            <span t-field="o.amount_total"/>-->
+<!--                                        </strong>-->
+<!--                                    </td>-->
+<!--                                    <td style="border: 1px solid black;"></td>-->
+
+<!--                                </tr>-->
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
