@@ -73,7 +73,7 @@ class ResCurrency(models.Model):
     @api.model
     def amount_to_text(self, amount):
         """
-        Override the default amount_to_text to correctly handle cents for USD
+        Override the default amount_to_text to correctly handle cents for USD and kyat
         """
         self.ensure_one()
 
@@ -152,17 +152,36 @@ class ResCurrency(models.Model):
 
             return _convert_number(number)
 
-        # Split amount into dollars and cents
-        dollars, cents = divmod(round(amount * 100), 100)
+        # Split amount into whole and decimal parts
+        whole, decimal = divmod(round(amount * 100), 100)
 
-        # Convert dollars to words
-        dollars_text = _num2words(int(dollars), 'en').title()
+        # Convert whole number to words
+        whole_text = _num2words(int(whole), 'en').title()
 
-        # Format full text
-        if cents == 0:
-            text = f"{dollars_text} Dollars"
+        # Format full text based on currency
+        if self.name == 'USD':
+            # Handle USD
+            if decimal == 0:
+                text = f"{whole_text} Dollars "
+            else:
+                decimal_text = _num2words(int(decimal), 'en').title()
+                text = f"{whole_text} Dollars and {decimal_text} Cents "
+        elif self.name == 'MMK':
+            # Handle Kyat (Myanmar currency)
+            if decimal == 0:
+                text = f"{whole_text} Kyat "
+            else:
+                decimal_text = _num2words(int(decimal), 'en').title()
+                text = f"{whole_text} Kyat and {decimal_text} Pya "
         else:
-            cents_text = _num2words(int(cents), 'en').title()
-            text = f"{dollars_text} Dollars and {cents_text} Cents"
+            # Generic handling for other currencies
+            currency_name = self.currency_unit_label or self.name
+            subunit_name = self.currency_subunit_label or "Cents"
+
+            if decimal == 0:
+                text = f"{whole_text} {currency_name} "
+            else:
+                decimal_text = _num2words(int(decimal), 'en').title()
+                text = f"{whole_text} {currency_name} and {decimal_text} {subunit_name} "
 
         return text
