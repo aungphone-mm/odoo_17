@@ -121,8 +121,8 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3" style="text-align: left;">
-                                        <span t-esc="'('+o.currency_id.amount_to_text(o.amount_total)+' Only)'"/>
+                                    <td colspan="3" style="text-align: center;">
+                                        <span t-esc="'('+o.currency_id.amount_to_text(o.amount_total+(o.amount_untaxed * 0.05))+' Only)'"/>
                                     </td>
 <!--                                    <td style="text-align: right;">-->
 <!--                                        <span t-field="o.amount_total"/>-->

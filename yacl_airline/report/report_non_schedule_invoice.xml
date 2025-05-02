@@ -55,8 +55,8 @@
                                 <tr>
                                     <th style="width: 5%;">Sr.</th>
                                     <th style="width: 55%;">Description</th>
-                                    <th style="width: 15%;">Quantity</th>
-                                    <th style="width: 10%;">Unit Price</th>
+                                    <th style="width: 10%;">Quantity</th>
+                                    <th style="width: 15%;">Unit Price</th>
                                     <th style="width: 15%;">Amount</th>
                                 </tr>
                             </thead>
@@ -115,7 +115,7 @@
                                     </td>
                                     <td style="text-align: right;">
 <!--                                        <span t-field="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_tax)"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed*0.05)"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -125,12 +125,12 @@
                                     <td style="text-align: right;">
                                         <strong>
 <!--                                            <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total)"/></strong>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total+(o.amount_untaxed*0.05))"/></strong>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="5" style="text-align: left;">
-                                        <span t-esc="'(' + o.currency_id.amount_to_text(o.amount_total) + ' Only)'"/>
+                                        <span t-esc="'(' + o.currency_id.amount_to_text(o.amount_total+(o.amount_untaxed*0.05)) + ' Only)'"/>
                                     </td>
                                 </tr>
                             </tbody>

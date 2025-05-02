@@ -72,15 +72,15 @@
                                 <t t-if="line.price_unit > 0">
                                     <tr>
                                         <td><span t-field="line.name"/></td>
-                                        <td class="text-right">
+                                        <td style="text-align: right;">
                                             <span t-field="line.quantity"/>
 
                                         </td>
-                                        <td class="text-right">
+                                        <td style="text-align: right;">
 <!--                                            <span t-field="line.price_unit"/>-->
                                             <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_unit) or '{:,.2f}'.format(line.price_unit) + line.currency_id.symbol"/>
                                         </td>
-                                        <td class="text-right">
+                                        <td style="text-align: right;">
                                             <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_subtotal) or '{:,.2f}'.format(line.price_subtotal) + line.currency_id.symbol"/>
                                         </td>
                                     </tr>
@@ -99,21 +99,42 @@
                             </t>
                         </tbody>
                         <tfoot>
+
+                                                            <tr>
+                                    <td colspan="3" style="text-align: right;">
+                                        <strong>Total Amount</strong>
+                                    </td>
+                                    <td style="text-align: right;">
+<!--                                        <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: right;">
+                                        <strong>Commercial Tax 5%</strong>
+                                    </td>
+                                    <td style="text-align: right;">
+<!--                                        <span t-field="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed*0.05)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="text-align: right;">
+                                        <strong>Total Invoice Amount</strong>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <strong>
+<!--                                            <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total+(o.amount_untaxed*0.05))"/></strong>
+                                    </td>
+                                </tr>
 <!--                            <tr>-->
-<!--                                    <td colspan="3" class="text-right">-->
-<!--                                        <span t-esc="'Commercial Tax 5%'"/>-->
-<!--                                    </td>-->
-<!--                                    <td class="text-right">-->
-<!--                                        <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_untaxed* 0.05) or '{:,.2f}'.format(o.amount_untaxed* 0.05) + o.currency_id.symbol"/>-->
-<!--                                    </td>-->
-<!--                                </tr>-->
-                            <tr>
-                                <td colspan="3" class="text-right"><strong>Total</strong></td>
-                                <td class="text-right">
-<!--                                    <span t-field="o.amount_total"/>-->
-                                    <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_total) or '{:,.2f}'.format(o.amount_total) + o.currency_id.symbol"/>
-                                </td>
-                            </tr>
+<!--                                <td colspan="3" class="text-right"><strong>Total</strong></td>-->
+<!--                                <td class="text-right">-->
+<!--&lt;!&ndash;                                    <span t-field="o.amount_total"/>&ndash;&gt;-->
+<!--                                    <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_total) or '{:,.2f}'.format(o.amount_total) + o.currency_id.symbol"/>-->
+<!--                                </td>-->
+<!--                            </tr>-->
                         </tfoot>
                     </table>
 
