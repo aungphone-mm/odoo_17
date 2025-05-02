@@ -129,7 +129,7 @@
 <!--                                        <span t-field="int(line.amount_total)" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
 <!--                                    </td>-->
                                     <td style="text-align: right;">
-                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total * 0.05)"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total)"/>
                                     </td>
                                 </tr>
 <!--                                <tr>-->

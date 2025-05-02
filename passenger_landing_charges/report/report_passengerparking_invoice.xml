@@ -113,7 +113,7 @@
                                         <span t-esc="'Grand Total'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total)"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total+(o.amount_untaxed * 0.05))"/>
                                     </td>
                                 </tr>
                                 <tr>

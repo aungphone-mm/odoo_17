@@ -73,8 +73,8 @@
                                     <tr>
                                         <td><span t-field="line.name"/></td>
                                         <td class="text-right">
-<!--                                            <span t-field="line.quantity"/>-->
-                                            <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.quantity) or '{:,.2f}'.format(line.quantity) + line.currency_id.symbol"/>
+                                            <span t-field="line.quantity"/>
+
                                         </td>
                                         <td class="text-right">
 <!--                                            <span t-field="line.price_unit"/>-->
