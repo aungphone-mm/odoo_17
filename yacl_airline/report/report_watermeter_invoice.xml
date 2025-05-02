@@ -26,16 +26,25 @@
                         <!-- Invoice Info Section -->
                         <div class="row mb-4">
                             <div class="col-6">
-                                <strong><span t-field="o.partner_id.name"/></strong><br/>
-                                <span t-field="o.partner_id.street"/>
-                                <t t-if="o.partner_id.street2"><br/><span t-field="o.partner_id.street2"/></t>
-                                <t t-if="o.partner_id.city"><br/><span t-field="o.partner_id.city"/></t>
-                                <t t-if="o.partner_id.state_id or o.partner_id.zip or o.partner_id.country_id">
-                                    <br/>
-                                    <t t-if="o.partner_id.state_id"><span t-field="o.partner_id.state_id.name"/></t>
-                                    <t t-if="o.partner_id.zip">, <span t-field="o.partner_id.zip"/></t>
-                                    <t t-if="o.partner_id.country_id">, <span t-field="o.partner_id.country_id.name"/></t>
-                                </t>
+                                <div t-field="o.partner_id.name"/>
+                                <div t-field="o.partner_id.street"/>
+                                <div t-field="o.partner_id.street2"/>
+                                <div t-if="o.partner_id.city">
+                                    <t t-esc="o.partner_id.city"/>
+                                </div>
+
+                                    <div>
+                                        <t t-esc="o.partner_id.state_id.name"/>
+                                        <t t-if="o.partner_id.zip">, <t t-esc="o.partner_id.zip"/></t>
+                                        <t t-if="o.partner_id.country_id">, <t t-esc="o.partner_id.country_id.name"/></t>
+                                    </div>
+
+                                <div t-if="o.partner_id.contact_name">
+                                            Attention: <t t-esc="o.partner_id.contact_name"/><br/>
+                                        </div>
+                                        <div t-if="o.partner_id.contact_job_position">
+                                            Position: <t t-esc="o.partner_id.contact_job_position"/>
+                                        </div>
                             </div>
 
                             <div class="col-6 d-flex justify-content-end">

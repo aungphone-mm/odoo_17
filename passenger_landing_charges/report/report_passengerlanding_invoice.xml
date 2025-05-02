@@ -76,10 +76,10 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>1</td>
-                                    <td>
+                                    <td><br/>1</td>
+                                    <td><br/>
                                         <span>Aircraft Landing Charges for:<span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>
-                                        Flight No: As per attached</span><br/>
+                                        Flight No: As per attached</span><br/><br/>
 <!--                                        <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "yy"}'/>-->
 
                                     </td>
@@ -89,7 +89,7 @@
 <!--                                    </td>-->
                                     <td style="text-align: right;">
 
-<!--                                        <span t-field="o.amount_untaxed"/>-->
+<!--                                        <span t-field="o.amount_untaxed"/>--><br/>
                                         <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/>
                                     </td>
                                 </tr>
