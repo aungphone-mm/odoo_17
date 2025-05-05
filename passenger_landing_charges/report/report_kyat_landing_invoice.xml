@@ -20,6 +20,14 @@
                         .security-table th {
                             background-color: #e9ecef;
                         }
+                        /* Add global font size reduction */
+                        .page {
+                            font-size: 0.9em;
+                        }
+                        /* Make table content smaller */
+                        .table {
+                            font-size: 0.85em;
+                        }
                     </style>
                     <div class="row mb-4">
                         <div class="col-12 text-center">
@@ -28,7 +36,7 @@
                     </div>
                     <div class="page">
                         <!-- Invoice Info Section -->
-                        <div class="row mb-4">
+                        <div class="row mb-4" style="font-size: 0.85em;">
                             <div class="col-6">
                                 <div t-field="o.partner_id.name"/>
                                 <div t-field="o.partner_id.street"/>

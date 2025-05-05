@@ -78,10 +78,12 @@
                                         </td>
                                         <td style="text-align: right;">
 <!--                                            <span t-field="line.price_unit"/>-->
-                                            <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_unit) or '{:,.2f}'.format(line.price_unit) + line.currency_id.symbol"/>
+<!--                                            <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_unit) or '{:,.2f}'.format(line.price_unit) + line.currency_id.symbol"/>-->
+                                            <span t-esc="line.currency_id.symbol + ' ' + '{:,.2f}'.format(line.price_unit)"/>
                                         </td>
                                         <td style="text-align: right;">
-                                            <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_subtotal) or '{:,.2f}'.format(line.price_subtotal) + line.currency_id.symbol"/>
+<!--                                            <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_subtotal) or '{:,.2f}'.format(line.price_subtotal) + line.currency_id.symbol"/>-->
+                                            <span t-esc="line.currency_id.symbol + ' ' + '{:,.2f}'.format(line.price_subtotal)"/>
                                         </td>
                                     </tr>
                                 </t>
