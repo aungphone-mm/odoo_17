@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="action_landing_report_kyat" model="ir.actions.report">
-        <field name="name">Aircraft Landing Invoice(Kyat) With Breakdown</field>
+    <record id="action_parking_report_kyat" model="ir.actions.report">
+        <field name="name">Aircraft Parking Invoice(Kyat) With Breakdown</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">passenger_landing_charges.report_passenger_landing_kyat</field>
-        <field name="report_file">passenger_landing_charges.report_passenger_landing_kyat</field>
-        <field name="print_report_name">(object.name) and ('AircraftLanding-' + object.name) or 'AircraftLanding-Invoice'</field>
+        <field name="report_name">passenger_landing_charges.report_passenger_parking_kyat</field>
+        <field name="report_file">passenger_landing_charges.report_passenger_parking_kyat</field>
+        <field name="print_report_name">(object.name) and ('Aircraftparking-' + object.name) or 'Aircraftparking-Invoice'</field>
         <field name="binding_model_id" ref="model_account_move"/>
         <field name="binding_type">report</field>
     </record>
 
-    <template id="report_passenger_landing_kyat">
+    <template id="report_passenger_parking_kyat">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <!-- First Page - Invoice -->
@@ -76,20 +76,19 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>1</td>
-                                    <td>
-                                        <span>Aircraft Landing Charges for:<span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>
+                                    <td><br/>1</td>
+                                    <td><br/>
+                                        <span>Aircraft Parking Charges for:<span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>
                                         Flight No: As per attached</span><br/>
 <!--                                        <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_landing_id.for_date" t-options='{"format": "yy"}'/>-->
-
+                                        <br/>
                                     </td>
 <!--                                    <td style="text-align: center;">-->
-
-<!--                                        <t t-esc="sum([g['count'] for g in o.get_grouped_landing_lines()])"/>-->
+<!--                                        <br/>-->
+<!--                                        <span t-esc="len(o.invoice_line_ids)"/>-->
 <!--                                    </td>-->
                                     <td style="text-align: right;">
-
-<!--                                        <span t-field="o.amount_untaxed"/>--><br/>
+                                        <br/>
                                         <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed)"/>
                                     </td>
                                 </tr>
@@ -106,9 +105,7 @@
                                         <span t-esc="'Commercial Tax 5%'"/>
                                     </td>
                                     <td style="text-align: right;">
-<!--                                        <span t-esc="o.amount_untaxed * 0.05"/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format((o.amount_untaxed * 0.05))"/>
-
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed * 0.05)"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -116,14 +113,12 @@
                                         <span t-esc="'Grand Total'"/>
                                     </td>
                                     <td style="text-align: right;">
-<!--                                        <span t-field="o.amount_total"/>-->
-                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format((o.amount_total+(o.amount_untaxed * 0.05)))"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total+(o.amount_untaxed * 0.05))"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3" style="text-align: center;">
+                                    <td colspan="3" style="text-align: left;">
                                         <span t-esc="'('+o.currency_id.amount_to_text(o.amount_total+(o.amount_untaxed * 0.05))+' Only)'"/>
-
                                     </td>
 <!--                                    <td style="text-align: right;">-->
 <!--                                        <span t-field="o.amount_total"/>-->
@@ -154,12 +149,12 @@
                             </div>
                         <!-- Signature -->
                         <div class="row mt-5">
-                            <div class="col-6"><span style="font-size: 0.85em;">
+                            <div class="col-6">
                                 <p>Issued by:</p><br/><br/><br/>
                                 <p>____________________</p>
                                 <p>Aye Thida<br/>
                                 General Manager</p>
-                            </span></div>
+                            </div>
                         </div>
                     </div>
                 </t>
@@ -168,7 +163,7 @@
                 <t t-call="web.external_layout">
                     <div class="page">
                         <div style="text-align: center; margin-bottom: 20px;">
-                            <h3>DETAIL STATEMENT OF AIRCRAFT LANDING CHARGES</h3>
+                            <h3>DETAIL STATEMENT OF AIRCRAFT PARKING CHARGES</h3>
                             <h4>AIRLINES-<span t-field="o.partner_id.name"/></h4>
                         </div>
 
@@ -208,12 +203,13 @@
                                              <t t-esc="group['count']"/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
-                                            <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % (group['amount'] / group['count'])"/>
+                                            <span t-esc="group['amount'] / group['count']"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
                                         <td style="border: 1px solid black; text-align: right;">
-                                            <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % group['amount']"/>
+                                            <span t-esc="group['amount']"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
-
                                         <td style="border: 1px solid black;">
                                             <!-- Remarks field -->
                                         </td>
@@ -229,7 +225,8 @@
                                     </td>
                                     <td style="text-align: right; border: 1px solid black;">
                                         <strong>
-                                            <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % o.amount_untaxed"/>
+<!--                                            <span t-field="o.amount_total"/>-->
+                                            <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_total)"/>
                                         </strong>
                                     </td>
                                     <td style="border: 1px solid black;"></td>

@@ -35,7 +35,7 @@
                                         <strong>Reading Date:</strong> <span t-field="doc.reading_date"/>
                                     </div>
                                     <div>
-                                        <strong>Invoice For:</strong> <span t-field="doc.for_date"/>
+<!--                                        <strong>Invoice For:</strong> <span t-field="doc.for_date"/>-->
                                     </div>
                                 </div>
                             </div>

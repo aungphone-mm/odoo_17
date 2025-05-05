@@ -1,3 +1,7 @@
+from wheel.metadata import _
+import logging
+from odoo.exceptions import UserError
+_logger = logging.getLogger(__name__)
 from odoo import models, fields, api
 import xlsxwriter
 import base64
@@ -8,6 +12,7 @@ class AccountMove(models.Model):
 
     custom_header = fields.Html(string='Custom Header')
     custom_note = fields.Html(string='Custom Note')
+    inv_desc = fields.Html(string='Invoice Desc:')
 
     account_receivable_id = fields.Many2one(
         'account.account',
@@ -29,16 +34,113 @@ class AccountMove(models.Model):
         compute="_compute_custom_tax_amount",
         store=True
     )
+    reference_no = fields.Char(string='Reference No', copy=False)
+    analytic_account_id = fields.Many2one(
+        'account.analytic.account',
+        string='Analytic Account',
+        copy=False
+    )
 
-    def write(self, vals):
-        """Override write method to apply old account code after saving"""
-        result = super(AccountMove, self).write(vals)
+    # Button action to populate reference no to journal items
+    def action_add_reference(self):
+        self.ensure_one()
+        try:
+            if not self.reference_no:
+                # Use direct string instead of translation function for now
+                raise UserError("Please enter a reference number first.")
 
-        # Check if this is an invoice and needs to apply old account codes
-        if self.is_invoice():
-            self.action_apply_old_account_code()
+            # Check if we have journal items
+            if not self.line_ids:
+                raise UserError("No journal items found to update.")
 
-        return result
+            # Update the reference on journal items
+            updated = 0
+            for line in self.line_ids:
+                line.ref_no = self.reference_no
+                updated += 1
+
+            # Show success message without using string formatting
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Success',
+                    'message': str(updated) + " journal items updated with reference: " + self.reference_no,
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+
+        except Exception as e:
+            # Log the error for debugging
+            _logger.error("Error updating reference: %s", str(e))
+
+            # Show error message without using string formatting
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Error',
+                    'message': "Failed to update references: " + str(e),
+                    'type': 'danger',
+                    'sticky': True,
+                }
+            }
+
+    def action_add_analytic(self):
+        self.ensure_one()
+        try:
+            if not self.analytic_account_id:
+                raise UserError("Please select an analytic account first.")
+
+            # Check if we have journal items
+            if not self.line_ids:
+                raise UserError("No journal items found to update.")
+
+            # Update the analytic account on journal items
+            updated = 0
+            for line in self.line_ids:
+                line.analytic_distribution = {str(self.analytic_account_id.id): 100}
+                updated += 1
+
+            # Show success message
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Success',
+                    'message': str(
+                        updated) + " journal items updated with analytic account: " + self.analytic_account_id.name,
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+
+        except Exception as e:
+            # Log the error for debugging
+            _logger.error("Error updating analytic account: %s", str(e))
+
+            # Show error message
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Error',
+                    'message': "Failed to update analytic account: " + str(e),
+                    'type': 'danger',
+                    'sticky': True,
+                }
+            }
+
+    # def write(self, vals):
+    #     """Override write method to apply old account code after saving"""
+    #     result = super(AccountMove, self).write(vals)
+    #
+    #     # Check if this is an invoice and needs to apply old account codes
+    #     if self.is_invoice():
+    #         self.action_apply_old_account_code()
+    #
+    #     return result
 
     @api.depends('amount_untaxed', 'invoice_line_ids.tax_ids')
     def _compute_custom_tax_amount(self):

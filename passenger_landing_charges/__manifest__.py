@@ -17,6 +17,7 @@
         'report/report_passengerlanding_invoice.xml',
         'report/report_passengerparking_invoice.xml',
         'report/report_kyat_landing_invoice.xml',
+        'report/report_kyat_parking_invoice.xml',
     ],
     'installable': True,
     'application': False,

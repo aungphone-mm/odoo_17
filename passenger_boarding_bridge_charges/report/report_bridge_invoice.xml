@@ -76,7 +76,7 @@
                                         <br/><br/>
                                         <span>Passenger Boarding Bridge Service Charges for:<br/>
                                         Flight No: As per attached<br/>
-                                        <span t-field="o.passenger_boarding_bridge_charges_id.for_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_boarding_bridge_charges_id.for_date" t-options='{"format": "yy"}'/>
+                                        <span t-field="o.passenger_boarding_bridge_charges_id.invoice_date" t-options='{"format": "MMM"}'/>' <span t-field="o.passenger_boarding_bridge_charges_id.invoice_date" t-options='{"format": "yy"}'/>
                                         </span>
                                         <br/><br/>
                                     </td>

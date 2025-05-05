@@ -75,7 +75,7 @@
                         <field name="bridge_rate_id"/>
                         <field name="start_time"/>
                         <field name="end_time"/>
-                        <field name="for_date"/>
+<!--                        <field name="for_date"/>-->
                         <field name="active"/>
                     </group>
                 </group>

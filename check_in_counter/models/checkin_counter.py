@@ -83,7 +83,7 @@ class CheckinCounter(models.Model):
             'checkin_counter_id': self.id,
             'currency_id': self.checkin_counter_rate_id.currency_id.id,
             'form_type': 'checkin',
-            # 'for_date': self.for_date,
+            'inv_desc': self.inv_desc,
             'journal_id': self.checkin_counter_rate_id.journal_id.id,
         }
 

@@ -5,6 +5,9 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
+             <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="inv_desc"/>
+            </xpath>
             <!-- Add print button -->
             <xpath expr="//header" position="inside">
 <!--                <button name="action_print_custom_invoice"-->
@@ -73,8 +76,37 @@
         <xpath expr="//field[@name='ref']" position="after">
             <field name="partner_id"/>
         </xpath>
+            <xpath expr="//button[@name='action_reverse']" position="after">
+                    <button name="action_journal_excel_download"
+                            string="Download Excel"
+                            type="object"
+                            class="btn-secondary"
+                            icon="fa-download"
+                            />
+            </xpath>
+            <xpath expr="//group[@id='header_right_group']" position="inside">
+                <label for="reference_no" string="Reference No"/>
+                <div class="d-flex">
+                    <field name="reference_no" placeholder="Reference No"/>
+                    <button name="action_add_reference"
+                            string="Add Ref No"
+                            type="object"
+                            class="btn btn-primary btn-sm ms-2"
+                            />
+                </div>
 
-
+                <label for="analytic_account_id" string="Analytic Account"/>
+                <div class="d-flex">
+                    <field name="analytic_account_id"
+                           placeholder="Analytic Account"
+                           options="{'no_create': True, 'no_create_edit': True}"/>
+                    <button name="action_add_analytic"
+                            string="Apply Analytic"
+                            type="object"
+                            class="btn btn-primary btn-sm ms-2"
+                            />
+                </div>
+            </xpath>
             <!-- Add custom header and note fields -->
             <notebook position="inside">
                 <page string="Custom Invoice Details">
@@ -167,21 +199,7 @@
 <!--            </xpath>-->
         </field>
     </record>
-        <record id="view_move_form_inherit_excel_download" model="ir.ui.view">
-            <field name="name">account.move.form.inherit.excel.download</field>
-            <field name="model">account.move</field>
-            <field name="inherit_id" ref="account.view_move_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//button[@name='action_reverse']" position="after">
-                    <button name="action_journal_excel_download"
-                            string="Download Excel"
-                            type="object"
-                            class="btn-secondary"
-                            icon="fa-download"
-                            />
-                </xpath>
-            </field>
-        </record>
+
     <record id="res_config_settings_view_form_inherit" model="ir.ui.view">
     <field name="name">res.config.settings.view.form.inherit</field>
     <field name="model">res.config.settings</field>

@@ -609,7 +609,6 @@ class AccountMove(models.Model):
     reading_line_id = fields.Many2one('electric.meter.reading.line', string='Electric Meter Reading Line',
                                       required=False)
     form_type = fields.Char('Form Type')
-    for_date = fields.Date(string='Invoice For')
 
     # In the AccountMove class
     def action_print_electric_meter_invoice(self):
