@@ -183,6 +183,19 @@ class AccountPaymentRegister(models.TransientModel):
     _inherit = 'account.payment.register'
     description = fields.Text(string='Description', help='Additional payment details')
     ref_no = fields.Char(string="Reference No.")
+    total_amount = fields.Monetary(string='Total Amount', compute='_compute_total_amount', readonly=True)
+    show_total_amount = fields.Boolean(compute='_compute_show_total_amount')
+
+    @api.depends('line_ids')
+    def _compute_total_amount(self):
+        for wizard in self:
+            # In Odoo 17, use 'amount_residual' instead of 'amount'
+            wizard.total_amount = sum(wizard.line_ids.mapped('amount_residual'))
+
+    @api.depends('line_ids')
+    def _compute_show_total_amount(self):
+        for wizard in self:
+            wizard.show_total_amount = len(wizard.line_ids) > 1
 
     def _create_payment_vals_from_wizard(self, batch_result):
         payment_vals = super()._create_payment_vals_from_wizard(batch_result)

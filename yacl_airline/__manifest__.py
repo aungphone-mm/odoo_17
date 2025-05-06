@@ -49,6 +49,8 @@
         'report/report_vehicle_rental.xml',
         'report/report_cute_invoice.xml',
         'report/report_revenueshare_invoice.xml',
+        'wizard/journal_report_wizard.xml',
+        'report/journal_report.xml',
     ],
     'installable': True,
     'application': False,

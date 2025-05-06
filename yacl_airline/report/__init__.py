@@ -6,3 +6,4 @@ from . import checkin_report
 from . import boarding_bridge_report
 from . import security_service_report
 from . import top_ten_outstanding_report
+from . import journal_report

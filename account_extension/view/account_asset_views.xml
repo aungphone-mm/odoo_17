@@ -91,6 +91,12 @@
                 <field name="description" placeholder="Add description or additional payment details..."/>
                 <field name="ref_no"/>
             </xpath>
+            <field name="payment_date" position="after">
+                <field name="show_total_amount" invisible="1"/>
+                <field name="total_amount"
+                       widget="monetary" options="{'currency_field': 'currency_id'}"
+                       class="oe_inline font-weight-bold" string="Total Selected Amount"/>
+            </field>
         </field>
     </record>
     </data>
