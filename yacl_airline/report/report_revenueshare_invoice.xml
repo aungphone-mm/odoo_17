@@ -124,8 +124,10 @@
 <!--                                        <span t-esc="o.amount_untaxed * 0.05"/>-->
 <!--                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % (o.amount_untaxed * 0.05)"/>-->
 <!--                                        <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_untaxed* 0.05) or '{:,.2f}'.format(o.amount_untaxed* 0.05) + o.currency_id.symbol"/>-->
-                                         <span t-esc="line.currency_id.name == 'MMK' and '{:,.0f}'.format(o.amount_untaxed* 0.05)+ ' ' + line.currency_id.symbol or '{:,.2f}'.format(o.amount_untaxed* 0.05) + ' ' + line.currency_id.symbol"/>
-<!--                                        <span t-esc="(o.currency_id.position == 'before' and o.currency_id.symbol + ' ' + '{:,.0f}'.format(o.amount_untaxed * 0.05) or '{:,.0f}'.format(o.amount_untaxed * 0.05) + ' ' + o.currency_id.symbol) if line.currency_id.name == 'MMK' else (o.currency_id.position == 'before' and o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed * 0.05) or '{:,.2f}'.format(o.amount_untaxed * 0.05) + ' ' + o.currency_id.symbol)"/>-->
+<!--                                         <span t-esc="line.currency_id.name == 'MMK' and '{:,.0f}'.format(o.amount_untaxed* 0.05)+ ' ' + line.currency_id.symbol or '{:,.2f}'.format(o.amount_untaxed* 0.05) + ' ' + line.currency_id.symbol"/>-->
+<!--                                            <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_untaxed* 0.05) or '{:,.2f}'.format(o.amount_untaxed* 0.05) + o.currency_id.symbol"/>-->
+                                            <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(int(o.amount_untaxed* 0.05)) or '{:,.2f}'.format(int(o.amount_untaxed* 0.05)) + o.currency_id.symbol"/>
+                                        <!--                                        <span t-esc="(o.currency_id.position == 'before' and o.currency_id.symbol + ' ' + '{:,.0f}'.format(o.amount_untaxed * 0.05) or '{:,.0f}'.format(o.amount_untaxed * 0.05) + ' ' + o.currency_id.symbol) if line.currency_id.name == 'MMK' else (o.currency_id.position == 'before' and o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed * 0.05) or '{:,.2f}'.format(o.amount_untaxed * 0.05) + ' ' + o.currency_id.symbol)"/>-->
                                     </td>
                                 </tr>
 <!--                                <tr>-->
@@ -169,17 +171,11 @@
                                         <li>Myanmar Currency: Industrial and Commercial Bank of China (ICBC), Yangon Branch,
                                         <br/>MMK Account No. 60100 1000 0000 150872</li>
                                     </ul>
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Signature -->
-                        <div class="row mt-5">
-                            <div class="col-6">
-                                <p>Issued by:</p><br/><br/><br/>
-                                <p>____________________</p>
-                                <p>Aye Thida<br/>
-                                General Manager</p>
+                                </span><br/>
+                                Issued by:<br/><br/><br/><br/><br/>
+                                ____________________<br/>
+                                Aye Thida<br/>
+                                General Manager
                             </div>
                         </div>
                     </div>
