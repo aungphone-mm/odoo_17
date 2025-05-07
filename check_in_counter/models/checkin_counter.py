@@ -100,14 +100,15 @@ class CheckinCounter(models.Model):
             })
         return lines
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            current_date = datetime.now().strftime('%Y/%m')
-            sequence = self.env['ir.sequence'].next_by_code('checkin.counter.bill.seq') or '00001'
-            if vals['type'] == 'domestic':
-                vals['name'] = f'DCI/{current_date}/{sequence}'
-            else:
-                vals['name'] = f'ICI/{current_date}/{sequence}'
-        return super(CheckinCounter, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                current_date = datetime.now().strftime('%Y/%m')
+                sequence = self.env['ir.sequence'].next_by_code('checkin.counter.bill.seq') or '00001'
+                if vals['type'] == 'domestic':
+                    vals['name'] = f'DCI/{current_date}/{sequence}'
+                else:
+                    vals['name'] = f'ICI/{current_date}/{sequence}'
+            return super().create(vals_list)
 

@@ -66,16 +66,17 @@ class AirlinePassengerBill(models.Model):
             self.passenger_rate_id = self.env['passenger.rate'].search(
                 [('from_date', '<=', self.date), ('to_date', '>=', self.date), ('active', '=', True)], limit=1).id
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            current_date = datetime.now().strftime('%Y/%m')
-            sequence = self.env['ir.sequence'].next_by_code('airline.passenger.bill.seq') or '00001'
-            if vals['type'] == 'domestic':
-                vals['name'] = f'DPB/{current_date}/{sequence}'
-            else:
-                vals['name'] = f'IPB/{current_date}/{sequence}'
-        return super(AirlinePassengerBill, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                current_date = datetime.now().strftime('%Y/%m')
+                sequence = self.env['ir.sequence'].next_by_code('airline.passenger.bill.seq') or '00001'
+                if vals.get('type') == 'domestic':
+                    vals['name'] = f'DPB/{current_date}/{sequence}'
+                else:
+                    vals['name'] = f'IPB/{current_date}/{sequence}'
+        return super().create(vals_list)
 
     @api.onchange('raw')
     def _onchange_raw(self):

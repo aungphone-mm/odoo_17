@@ -78,12 +78,12 @@ class CheckinCounterLine(models.Model):
             if not record.flightno_id:
                 raise ValidationError(_("Flight No. must be set for each checkin line."))
 
-    @api.model
-    def create(self, vals):
-        passenger_lines = super(CheckinCounterLine, self).create(vals)
-        for passenger_line in passenger_lines:
-            passenger_line._log_tracking(vals)
-            return passenger_lines
+    @api.model_create_multi
+    def create(self, vals_list):
+        passenger_lines = super().create(vals_list)
+        for i, passenger_line in enumerate(passenger_lines):
+            passenger_line._log_tracking(vals_list[i])
+        return passenger_lines
 
     def _log_tracking(self, vals):
         template_id = self.env.ref('check_in_counter.airline_passenger_checkin_line_template')

@@ -111,14 +111,15 @@ class PassengerBoardingBridgeCharges(models.Model):
             })
         return lines
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            current_date = datetime.now().strftime('%Y/%m')
-            sequence = self.env['ir.sequence'].next_by_code('passenger.boarding.bridge.charges.seq') or '00001'
-            if vals['type'] == 'domestic':
-                vals['name'] = f'DPB/{current_date}/{sequence}'
-            else:
-                vals['name'] = f'IPB/{current_date}/{sequence}'
-        return super(PassengerBoardingBridgeCharges, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                current_date = datetime.now().strftime('%Y/%m')
+                sequence = self.env['ir.sequence'].next_by_code('passenger.boarding.bridge.charges.seq') or '00001'
+                if vals.get('type') == 'domestic':
+                    vals['name'] = f'DPB/{current_date}/{sequence}'
+                else:
+                    vals['name'] = f'IPB/{current_date}/{sequence}'
+        return super().create(vals_list)
 

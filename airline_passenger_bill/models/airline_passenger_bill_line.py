@@ -145,14 +145,15 @@ class AirlinePassengerBillLine(models.Model):
             'type': 'ir.actions.act_window',
         }
 
-    @api.model
-    def create(self, vals):
-        passenger_bills = super(AirlinePassengerBillLine, self).create(vals)
-        for passenger_bill in passenger_bills:
-            passenger_bill._log_billing_tracking(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        passenger_bills = super().create(vals_list)
+        for i, passenger_bill in enumerate(passenger_bills):
+            passenger_bill._log_billing_tracking(vals_list[i])
+            # If you want to add a message post:
             # msg = f"Airline Passenger Bill Line created."
             # passenger_bill.airline_passenger_bill_id.message_post(body=msg)
-            return passenger_bills
+        return passenger_bills
 
     # def write(self, vals):
     #     self._log_billing_tracking(vals)

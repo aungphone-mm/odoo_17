@@ -106,14 +106,15 @@ class AirlineSecurityService(models.Model):
             })
         return lines
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            current_date = datetime.now().strftime('%Y/%m')
-            sequence = self.env['ir.sequence'].next_by_code('airline.security.bill.seq') or '00001'
-            if vals['type'] == 'domestic':
-                vals['name'] = f'DSC/{current_date}/{sequence}'
-            else:
-                vals['name'] = f'ISC/{current_date}/{sequence}'
-        return super(AirlineSecurityService, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                current_date = datetime.now().strftime('%Y/%m')
+                sequence = self.env['ir.sequence'].next_by_code('airline.security.bill.seq') or '00001'
+                if vals.get('type') == 'domestic':
+                    vals['name'] = f'DSC/{current_date}/{sequence}'
+                else:
+                    vals['name'] = f'ISC/{current_date}/{sequence}'
+        return super().create(vals_list)
 

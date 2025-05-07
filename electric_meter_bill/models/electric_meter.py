@@ -63,6 +63,10 @@ class ElectricMeterReading(models.Model):
 
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
+    @api.model
+    def _valid_field_parameter(self, field, name):
+        return name == 'digits' or super(ElectricMeterReading, self)._valid_field_parameter(field, name)
+
     name = fields.Char(string='Name', required=True, readonly=True, copy=False, index=True, default='New')
     description = fields.Text(string='Description', tracking=True)
     reading_date = fields.Date(string='Reading Date', required=True, default=fields.Date.today, tracking=True)
@@ -99,13 +103,14 @@ class ElectricMeterReading(models.Model):
 
         return reload_action
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            current_date = datetime.now().strftime('%Y/%m')
-            sequence = self.env['ir.sequence'].next_by_code('electric.meter.reading.seq') or '00001'
-            vals['name'] = f'EMR/{current_date}/{sequence}'
-        return super(ElectricMeterReading, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                current_date = datetime.now().strftime('%Y/%m')
+                sequence = self.env['ir.sequence'].next_by_code('electric.meter.reading.seq') or '00001'
+                vals['name'] = f'EMR/{current_date}/{sequence}'
+        return super().create(vals_list)
 
     def default_get(self, field_list):
         res = super(ElectricMeterReading, self).default_get(field_list)
@@ -494,6 +499,11 @@ class ElectricMeterReadingLine(models.Model):
 
     _inherit = ['mail.activity.mixin', 'mail.thread']
 
+    @api.model
+    def _valid_field_parameter(self, field, name):
+        # The correct way to call super() with explicit class reference
+        return name == 'digits' or super(ElectricMeterReadingLine, self)._valid_field_parameter(field, name)
+
     reading_id = fields.Many2one('electric.meter.reading', string='Reading', required=True)
     selection_line = fields.Boolean(string='Select', default=False)
     partner_id = fields.Many2one('res.partner', string="Customer", readonly=True, automatic=True, store=True)
@@ -536,15 +546,6 @@ class ElectricMeterReadingLine(models.Model):
             total_subtraction = sum(line.subtraction_amount for line in record.subtraction_line_ids)
             record.final_amount = record.amount - total_subtraction
 
-    @api.onchange('reading_line_ids')
-    def _onchange_reading_line_ids(self):
-        for line in self.reading_line_ids:
-            if line.current_reading_unit is not False and line.latest_reading_unit is not False:
-                if line.current_reading_unit >= line.latest_reading_unit:
-                    line.total_unit = float(line.current_reading_unit - line.latest_reading_unit)
-                else:
-                    line.total_unit = 0.0
-
     # @api.depends('partner_id', 'partner_id.business_source_id.rate_id.currency_id')
     # def _compute_currency_id(self):
     #     for record in self:
@@ -553,6 +554,14 @@ class ElectricMeterReadingLine(models.Model):
     #         else:
     #             # Default to company currency if no specific currency is set
     #             record.currency_id = self.env.company.currency_id
+
+    @api.onchange('current_reading_unit', 'latest_reading_unit')
+    def _onchange_reading_units(self):
+        if self.current_reading_unit is not False and self.latest_reading_unit is not False:
+            if self.current_reading_unit >= self.latest_reading_unit:
+                self.total_unit = float(self.current_reading_unit - self.latest_reading_unit)
+            else:
+                self.total_unit = 0.0
 
     @api.depends('meter_id.latest_reading_unit')
     def _compute_latest_reading_unit(self):

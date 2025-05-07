@@ -184,14 +184,15 @@ class PassengerLanding(models.Model):
                     _("You cannot delete this Landing record because it has related line items. Please delete all Landing Lines first."))
         return super(PassengerLanding, self).unlink()
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            current_date = datetime.now().strftime('%Y/%m')
-            sequence = self.env['ir.sequence'].next_by_code('passenger.landing.bill.seq') or '00001'
-            if vals['type'] == 'domestic':
-                vals['name'] = f'DAL/{current_date}/{sequence}'
-            else:
-                vals['name'] = f'IAL/{current_date}/{sequence}'
-        return super(PassengerLanding, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                current_date = datetime.now().strftime('%Y/%m')
+                sequence = self.env['ir.sequence'].next_by_code('passenger.landing.bill.seq') or '00001'
+                if vals.get('type') == 'domestic':
+                    vals['name'] = f'DAL/{current_date}/{sequence}'
+                else:
+                    vals['name'] = f'IAL/{current_date}/{sequence}'
+        return super().create(vals_list)
 

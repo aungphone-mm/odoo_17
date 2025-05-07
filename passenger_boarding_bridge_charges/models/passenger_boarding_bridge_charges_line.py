@@ -136,11 +136,11 @@ class PassengerBoardingBridgeChargesLine(models.Model):
                     }
                 }
 
-    @api.model
-    def create(self, vals):
-        passenger_lines = super(PassengerBoardingBridgeChargesLine, self).create(vals)
-        for passenger_line in passenger_lines:
-            passenger_line._log_bridge_tracking(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        passenger_lines = super().create(vals_list)
+        for i, passenger_line in enumerate(passenger_lines):
+            passenger_line._log_bridge_tracking(vals_list[i])
         return passenger_lines
 
     def _log_bridge_tracking(self, vals):
