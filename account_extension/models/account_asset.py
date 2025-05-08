@@ -96,7 +96,6 @@ class AccountAsset(models.Model):
 
     def compute_depreciation_board(self):
         self.ensure_one()
-
         if self.per_depreciation_amount > 0 and self.prorata_date:
             self.depreciation_move_ids.filtered(lambda x: x.state == 'draft').unlink()
 
@@ -108,6 +107,10 @@ class AccountAsset(models.Model):
                 remaining_value = self.book_value
                 depreciation_amount = self.per_depreciation_amount
 
+            # Round the depreciation amount if it has decimals
+            if depreciation_amount != round(depreciation_amount):
+                depreciation_amount = round(depreciation_amount)
+
             number_of_periods = math.ceil(remaining_value / depreciation_amount)
             commands = []
             base_date = self.prorata_date + relativedelta(day=31)
@@ -116,14 +119,27 @@ class AccountAsset(models.Model):
                 depreciation_date = base_date + relativedelta(months=i, day=31)
 
                 if i == number_of_periods - 1:
-                    current_depreciation = remaining_value
+                    # For the final entry, ensure it doesn't go below zero
+                    current_depreciation = max(0, remaining_value)
                 else:
                     current_depreciation = min(depreciation_amount, remaining_value)
+
+                # Ensure current_depreciation is never negative
+                if current_depreciation < 0:
+                    current_depreciation = 0
 
                 # Convert amount to MMK if using USD
                 move_amount = current_depreciation
                 if self.asset_currency == 'USD':
                     move_amount = current_depreciation * self.exchange_rate
+
+                # Ensure move_amount is never negative
+                if move_amount < 0:
+                    move_amount = 0
+
+                # Skip creating an entry if the amount is zero or very small (less than 1)
+                if move_amount < 1:
+                    continue
 
                 vals = {
                     'asset_id': self.id,

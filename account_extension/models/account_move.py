@@ -1,4 +1,3 @@
-from wheel.metadata import _
 import logging
 from odoo.exceptions import UserError
 _logger = logging.getLogger(__name__)
@@ -178,8 +177,6 @@ class AccountMove(models.Model):
                 line.old_account_code = line.account_id.code
         return True
 
-
-    # For AccountMove class
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
         """Update account receivable when partner changes"""
@@ -195,7 +192,7 @@ class AccountMove(models.Model):
                 account_code = line.account_id.code if hasattr(line.account_id, 'code') else ''
                 is_debtors_account = 'Debtor' in account_name or 'Debtor' in account_code
 
-            # If it's a Debtors account, get old_account_code from partner
+            # If it's a Debtors account, get old_account_code from partner-------------------------------------------------
             if is_debtors_account:
                 if line.partner_id and hasattr(line.partner_id, 'old_ac') and line.partner_id.old_ac:
                     line.old_account_code = line.partner_id.old_ac
@@ -206,7 +203,6 @@ class AccountMove(models.Model):
             elif line.account_id and hasattr(line.account_id, 'code'):
                 line.old_account_code = line.account_id.code
 
-    # Add this method to the AccountMove class
     def _set_account_based_on_partner(self):
         """Set accounts based on partner for move lines"""
         if self.partner_id:
@@ -303,6 +299,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         return self.env.ref('account_extension.action_report_custom_invoice').report_action(self)
 
+    #---------------------------------------------------------------------------------------------------------------
     depreciation_usd = fields.Float(
         string='Depreciation (USD)',
         compute='_compute_usd_amounts',
@@ -341,14 +338,17 @@ class AccountMove(models.Model):
                 if move.asset_id:
                     # Get the initial book value
                     initial_value = move.asset_id.book_value_usd
-                    # print(move.asset_id.original_value_usd,"originasdf vailer asu usd")
                     # Subtract cumulative depreciation to get remaining value
-                    move.depreciable_value_usd = initial_value - move.cumulative_depreciation_usd
+                    # move.depreciable_value_usd = initial_value - move.cumulative_depreciation_usd
+                    depreciable = initial_value - move.cumulative_depreciation_usd
+                    # Prevent negative values
+                    move.depreciable_value_usd = max(0.0, depreciable)
             else:
                 move.depreciation_usd = 0.0
                 move.cumulative_depreciation_usd = 0.0
                 move.depreciable_value_usd = 0.0
 
+    #--------------------------------------------------------------------------------------------------------
     def action_journal_excel_download(self):
         """Export journal entries to Excel file"""
         # Create Excel file
