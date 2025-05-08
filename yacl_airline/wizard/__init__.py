@@ -7,3 +7,4 @@ from . import boarding_bridge_report_wizard
 from . import security_service_report_wizard
 from . import top_ten_outstanding_wizard
 from . import journal_report_wizard
+from . import cashbook_report_wizard

@@ -51,6 +51,8 @@
         'report/report_revenueshare_invoice.xml',
         'wizard/journal_report_wizard.xml',
         'report/journal_report.xml',
+        'wizard/cashbook_report_wizard_view.xml',
+        'report/cashbook_report_template.xml',
     ],
     'installable': True,
     'application': False,

@@ -16,6 +16,8 @@
                             <field name="start_date"/>
                             <field name="end_date"/>
                             <field name="currency_id" invisible="1"/>
+                            <field name="excel_file" invisible="1"/>
+                            <field name="file_name" invisible="1"/>
                         </group>
                     </group>
 
@@ -41,6 +43,7 @@
                     </notebook>
                 </sheet>
                 <footer>
+                    <button name="action_export_excel" string="Download Excel" type="object" class="btn-primary"/>
                     <button name="action_generate_report" string="Generate Report" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>

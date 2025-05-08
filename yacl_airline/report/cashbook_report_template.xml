@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_cashbook_report" model="ir.actions.report">
+        <field name="name">Cashbook Report</field>
+        <field name="model">cashbook.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">yacl_airline.report_cashbook</field>
+        <field name="report_file">yacl_airline.report_cashbook</field>
+        <field name="binding_model_id" ref="model_cashbook_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_cashbook">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">Expenditure For All Department as at <span t-esc="data['date_to']" t-options='{"widget": "date"}'/></h2>
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <strong>From:</strong> <span t-esc="data['date_from']" t-options='{"widget": "date"}'/>
+                        </div>
+                        <div class="col-6">
+                            <strong>To:</strong> <span t-esc="data['date_to']" t-options='{"widget": "date"}'/>
+                        </div>
+                    </div>
+
+                    <!-- Main Table -->
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 5%">No.</th>
+                                <th style="width: 15%">Name</th>
+                                <th class="text-center" style="width: 10%">Status</th>
+                                <th style="width: 20%">Main Account</th>
+                                <th style="width: 30%">Description</th>
+                                <th class="text-right" style="width: 20%">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="sn" t-value="1"/>
+                            <t t-foreach="cashbooks" t-as="cashbook">
+                                <tr>
+                                    <td class="text-center"><span t-esc="sn"/></td>
+                                    <td>
+                                        <span t-esc="cashbook.name"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-if="cashbook.state == 'confirm'">
+                                            <span style="color: blue">Confirm</span>
+                                        </t>
+                                        <t t-if="cashbook.state == 'done'">
+                                            <span style="color: green">Done</span>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <span t-esc="cashbook.main_account_id.name or ''"/>
+                                    </td>
+                                    <td>
+                                        <div>
+<!--                                            <span style="color: red">Payment</span>-->
+                                            <t t-if="cashbook.description">
+                                                <span t-raw="cashbook.description"/>
+                                            </t>
+                                            <t t-if="not cashbook.description">
+                                                <span t-if="cashbook.partner_id">for <t t-esc="cashbook.partner_id.name"/></span>
+                                            </t>
+                                        </div>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="'%.2f' % cashbook.total_amount"/>
+                                        <span t-esc="cashbook.currency_id.symbol"/>
+                                    </td>
+                                </tr>
+                                <t t-set="sn" t-value="sn + 1"/>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <!-- Group by Main Account -->
+                    <h4 class="mt-4">Summary by Main Account</h4>
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 5%">No.</th>
+                                <th style="width: 35%">Main Account</th>
+                                <th class="text-center" style="width: 15%">Count</th>
+                                <th class="text-right" style="width: 25%">Total Amount</th>
+                                <th class="text-right" style="width: 20%">Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="sn" t-value="1"/>
+                            <t t-foreach="accounts.items()" t-as="account">
+                                <tr>
+                                    <td class="text-center"><span t-esc="sn"/></td>
+                                    <td><span t-esc="account[0]"/></td>
+                                    <td class="text-center"><span t-esc="account[1]['count']"/></td>
+                                    <td class="text-right">
+                                        <span t-esc="'%.2f' % account[1]['total_amount']"/>
+                                    </td>
+                                    <td class="text-right"></td>
+                                </tr>
+                                <t t-set="sn" t-value="sn + 1"/>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" class="text-right"><strong>Grand Total</strong></td>
+                                <td class="text-center"><strong><span t-esc="grand_totals['total_count']"/></strong></td>
+                                <td class="text-right"><strong><span t-esc="'%.2f' % grand_totals['total_amount']"/></strong></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Summary by Type -->
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <strong>Bank Paid:</strong>
+                            <span t-esc="'%.2f' % grand_totals['total_amount']"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <strong>Cash Paid:</strong>
+                            <span t-esc="'%.2f' % 0.0"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 text-right">
+                            <strong>Total Expense:</strong>
+                            <span t-esc="'%.2f' % grand_totals['total_amount']"/>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
