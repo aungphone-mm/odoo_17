@@ -1,7 +1,9 @@
 from dateutil.relativedelta import relativedelta
-# from docutils.utils import math
 from odoo import api, fields, models
 import math
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class AccountAsset(models.Model):
     _inherit = 'account.asset'
@@ -94,6 +96,7 @@ class AccountAsset(models.Model):
                 asset.per_depreciation_amount_usd = 0.0
                 asset.book_value_usd = 0.0
 
+    # In account_asset.py
     def compute_depreciation_board(self):
         self.ensure_one()
         if self.per_depreciation_amount > 0 and self.prorata_date:
@@ -141,6 +144,17 @@ class AccountAsset(models.Model):
                 if move_amount < 1:
                     continue
 
+                # Apply the analytic distribution from the asset to the expense line
+                expense_line_vals = {
+                    'name': f'{self.name}: Depreciation',
+                    'debit': move_amount,
+                    'account_id': self.account_depreciation_expense_id.id,
+                }
+
+                # Add analytic distribution if it exists on the asset
+                if hasattr(self, 'analytic_distribution') and self.analytic_distribution:
+                    expense_line_vals['analytic_distribution'] = self.analytic_distribution
+
                 vals = {
                     'asset_id': self.id,
                     'amount_total': move_amount,
@@ -150,11 +164,7 @@ class AccountAsset(models.Model):
                     'journal_id': self.journal_id.id,
                     'currency_id': self.currency_id.id,
                     'line_ids': [
-                        (0, 0, {
-                            'name': f'{self.name}: Depreciation',
-                            'debit': move_amount,
-                            'account_id': self.account_depreciation_expense_id.id,
-                        }),
+                        (0, 0, expense_line_vals),
                         (0, 0, {
                             'name': f'{self.name}: Depreciation',
                             'credit': move_amount,
@@ -165,6 +175,10 @@ class AccountAsset(models.Model):
 
                 move = self.env['account.move'].create(vals)
                 move.write({'auto_post': 'at_date'})
+
+                # Apply old account code to the newly created move
+                move.action_apply_old_account_code()
+
                 commands.append((4, move.id))
 
                 remaining_value -= current_depreciation
@@ -180,6 +194,7 @@ class AccountAsset(models.Model):
     def _onchange_asset_currency(self):
         if self.asset_currency == 'MMK':
             self.exchange_rate = 1.0
+
 
 class AccountAssetCategory(models.Model):
 
