@@ -145,15 +145,27 @@ class AccountAsset(models.Model):
                     continue
 
                 # Apply the analytic distribution from the asset to the expense line
+                analytic_distribution = False
+                if hasattr(self, 'analytic_distribution') and self.analytic_distribution:
+                    analytic_distribution = self.analytic_distribution
+
+                # Create the journal entry line values
                 expense_line_vals = {
                     'name': f'{self.name}: Depreciation',
                     'debit': move_amount,
                     'account_id': self.account_depreciation_expense_id.id,
                 }
 
-                # Add analytic distribution if it exists on the asset
-                if hasattr(self, 'analytic_distribution') and self.analytic_distribution:
-                    expense_line_vals['analytic_distribution'] = self.analytic_distribution
+                depreciation_line_vals = {
+                    'name': f'{self.name}: Depreciation',
+                    'credit': move_amount,
+                    'account_id': self.account_depreciation_id.id,
+                }
+
+                # Apply analytic distribution to both lines if it exists
+                if analytic_distribution:
+                    expense_line_vals['analytic_distribution'] = analytic_distribution
+                    depreciation_line_vals['analytic_distribution'] = analytic_distribution
 
                 vals = {
                     'asset_id': self.id,
@@ -165,11 +177,7 @@ class AccountAsset(models.Model):
                     'currency_id': self.currency_id.id,
                     'line_ids': [
                         (0, 0, expense_line_vals),
-                        (0, 0, {
-                            'name': f'{self.name}: Depreciation',
-                            'credit': move_amount,
-                            'account_id': self.account_depreciation_id.id,
-                        })
+                        (0, 0, depreciation_line_vals)
                     ]
                 }
 
@@ -195,14 +203,12 @@ class AccountAsset(models.Model):
         if self.asset_currency == 'MMK':
             self.exchange_rate = 1.0
 
-
 class AccountAssetCategory(models.Model):
 
     _name = 'account.asset.category'
 
     name = fields.Char(string='Name', required=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
-
 
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
@@ -278,4 +284,3 @@ class AccountPaymentRegister(models.TransientModel):
                         if self.ref_no:
                             reconciled_lines.write({'ref_no': self.ref_no})
         return payments
-
