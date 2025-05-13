@@ -112,7 +112,7 @@
                                         <span t-esc="'Commercial Tax 5%'"/>
                                     </td>
                                     <td style="text-align: right;">
-                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % (o.amount_untaxed * 0.05)"/>
+                                        <span t-esc="o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed * 0.05)"/>
                                     </td>
                                 </tr>
                                 <tr>

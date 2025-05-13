@@ -99,23 +99,44 @@ class JournalReportWizard(models.TransientModel):
         date_format = workbook.add_format({'num_format': 'yyyy-mm-dd'})
         number_format = workbook.add_format({'num_format': '#,##0.00'})
 
-        # Set column widths
-        worksheet.set_column('A:A', 15)  # Date
-        worksheet.set_column('B:B', 20)  # Move Name
-        worksheet.set_column('C:C', 30)  # Account
-        worksheet.set_column('D:D', 30)  # Description
-        worksheet.set_column('E:E', 15)  # Partner
-        worksheet.set_column('F:F', 15)  # Debit
-        worksheet.set_column('G:G', 15)  # Credit
+        # Set column widths for new structure - fixed duplicate column assignments
+        worksheet.set_column('A:A', 15)  # REFERENCE
+        worksheet.set_column('B:B', 15)  # analytic code
+        worksheet.set_column('C:C', 15)  # DCNOTENO
+        worksheet.set_column('D:D', 15)  # account receivable id
+        worksheet.set_column('E:E', 15)  # DATE
+        worksheet.set_column('F:F', 20)  # partner
+        worksheet.set_column('G:G', 30)  # label
+        worksheet.set_column('H:H', 15)  # AMOUNT
+        worksheet.set_column('I:I', 15)  # MAIN A/C
+        worksheet.set_column('J:J', 15)  # SUB A/C
+        worksheet.set_column('K:K', 15)  # Currency
+        worksheet.set_column('L:L', 15)  # Amount in Currency
+        worksheet.set_column('M:M', 15)  # Exchange Rate
+        worksheet.set_column('N:N', 15)  # MAIN DEPT
+        worksheet.set_column('O:O', 15)  # SUB DEPT
+        worksheet.set_column('P:P', 10)  # QTY
+        worksheet.set_column('Q:Q', 10)  # UNIT
+        worksheet.set_column('R:R', 15)  # PRICE
+        worksheet.set_column('S:S', 20)  # NOTE
+        worksheet.set_column('T:T', 15)  # BATCHNO
+        worksheet.set_column('U:U', 15)  # ENTRYNO
+        worksheet.set_column('V:V', 10)  # LINE
+        worksheet.set_column('W:W', 15)  # SOURCE CODE
 
-        # Write headers
-        headers = ['Date', 'Move Name', 'Account', 'Description', 'Partner', 'Debit', 'Credit']
+        # Write headers - removed header column
+        headers = ['REFERENCE', 'CHEQUE', 'DCNOTENO', 'NAME',
+                   'DATE', 'DESCRIPTION', 'PARTICULAR', 'AMOUNT', 'MAIN A/C', 'SUB A/C',
+                   'Currency', 'Amount in Currency', 'Exchange Rate',
+                   'MAIN DEPT', 'SUB DEPT', 'QTY', 'UNIT', 'PRICE', 'NOTE',
+                   'BATCHNO', 'ENTRYNO', 'LINE', 'SOURCE CODE']
+
         for col, header in enumerate(headers):
             worksheet.write(0, col, header, header_format)
 
         # Get all move lines from the journal entries
         move_lines = self.env['account.move.line'].search([
-            ('move_id.journal_id', '=', self.journal_id.id),
+            # ('move_id.journal_id', '=', self.journal_id.id),
             ('move_id.date', '>=', self.start_date),
             ('move_id.date', '<=', self.end_date),
             ('move_id.company_id', '=', self.company_id.id),
@@ -128,45 +149,128 @@ class JournalReportWizard(models.TransientModel):
             account_id = line.account_id.id
             key = (move_name, account_id)
 
+            # Improved analytic code extraction
+            analytic_code = ''
+            # Try different ways to access analytic account in Odoo 17
+            if hasattr(line, 'analytic_distribution') and line.analytic_distribution:
+                # For Odoo 17's new analytic distribution dict format
+                # Get the first analytic account code if available
+                analytic_ids = list(line.analytic_distribution.keys())
+                if analytic_ids:
+                    analytic_account = self.env['account.analytic.account'].browse(int(analytic_ids[0]))
+                    analytic_code = analytic_account.code or analytic_account.name or ''
+            elif hasattr(line, 'analytic_account_id') and line.analytic_account_id:
+                # Traditional way
+                analytic_code = line.analytic_account_id.code or line.analytic_account_id.name or ''
+            elif hasattr(line, 'analytic_tag_ids') and line.analytic_tag_ids:
+                # Via tags
+                analytic_code = ', '.join(line.analytic_tag_ids.mapped('name'))
+
+            currency_name = line.currency_id.name if line.currency_id else ''
+            narration = line.move_id.inv_desc if hasattr(line.move_id, 'inv_desc') else ''
+
+            # Determine main_ac based on the account type
+            main_ac = ''
+            if line.account_id:
+                account_name = line.account_id.name if hasattr(line.account_id, 'name') else ''
+                # Check if account is a Debtors account
+                if 'Debtor' in account_name:
+                    # First try using partner's old_ac from the line
+                    if line.partner_id and hasattr(line.partner_id, 'old_ac') and line.partner_id.old_ac:
+                        main_ac = line.partner_id.old_ac
+                    # Fallback to move's partner if needed
+                    elif line.move_id.partner_id and hasattr(line.move_id.partner_id,
+                                                             'old_ac') and line.move_id.partner_id.old_ac:
+                        main_ac = line.move_id.partner_id.old_ac
+                    # If still no value, use account name as fallback
+                    else:
+                        main_ac = account_name
+                else:
+                    # For non-Debtor accounts, use account name as before
+                    main_ac = line.account_id.code
+
             if key not in grouped_data:
                 grouped_data[key] = {
+                    'reference': line.move_id.ref or '',
+                    'analytic_code': analytic_code,
+                    'dcnoteno': line.move_id.name or '',
+                    'account_receivable_id': line.move_id.account_receivable_id.name or '',
                     'date': line.date,
-                    'move_name': move_name,
-                    'account': line.account_id.name,
-                    'description': line.name or '',
                     'partner': line.partner_id.name if line.partner_id else '',
+                    'label': line.name or '',
+                    'amount': 0.0,
+                    'main_ac': main_ac,
+                    # 'main_ac': line.account_id.code.split('/')[
+                    #     0] if line.account_id.code and '/' in line.account_id.code else (line.account_id.code or ''),
+                    'sub_ac': line.account_id.code.split('/')[
+                        1] if line.account_id.code and '/' in line.account_id.code else '',
+                    'main_dept': '',
+                    'sub_dept': '',
+                    'qty': line.quantity if hasattr(line, 'quantity') else 0,
+                    'unit': line.product_uom_id.name if hasattr(line, 'product_uom_id') and line.product_uom_id else '',
+                    'price': line.price_unit if hasattr(line, 'price_unit') else 0.0,
+                    'note': narration,
+                    'batchno': '',
+                    'entryno': line.id,
+                    'line': line.sequence if hasattr(line, 'sequence') else 0,
+                    'source_code': line.move_id.journal_id.code or '',
                     'debit': 0.0,
                     'credit': 0.0,
+                    'currency': currency_name,
+                    'amount_currency': 0.0,
+                    'exchange_rate': line.currency_rate_display if hasattr(line, 'currency_rate_display') else '',
                 }
 
             # Sum debits and credits
             grouped_data[key]['debit'] += line.debit
             grouped_data[key]['credit'] += line.credit
+            # Calculate amount as debit - credit
+            grouped_data[key]['amount'] = grouped_data[key]['debit'] - grouped_data[key]['credit']
+            # Add amount_currency
+            grouped_data[key]['amount_currency'] += line.amount_currency if hasattr(line, 'amount_currency') else 0.0
 
         # Sort by move name and write to Excel
         row = 1
         for key in sorted(grouped_data.keys()):
             data = grouped_data[key]
-            worksheet.write(row, 0, data['date'], date_format)
-            worksheet.write(row, 1, data['move_name'])
-            worksheet.write(row, 2, data['account'])
-            worksheet.write(row, 3, data['description'])
-            worksheet.write(row, 4, data['partner'])
-            worksheet.write(row, 5, data['debit'], number_format)
-            worksheet.write(row, 6, data['credit'], number_format)
+
+            # Write data to worksheet - fixed column indices
+            worksheet.write(row, 0, data['reference'])
+            worksheet.write(row, 1, data['analytic_code'])
+            worksheet.write(row, 2, data['dcnoteno'])
+            worksheet.write(row, 3, data['account_receivable_id'])
+            worksheet.write(row, 4, data['date'], date_format)
+            worksheet.write(row, 5, data['partner'])
+            worksheet.write(row, 6, data['label'])
+            worksheet.write(row, 7, data['amount'], number_format)
+            worksheet.write(row, 8, data['main_ac'])
+            worksheet.write(row, 9, data['sub_ac'])
+            worksheet.write(row, 10, data['currency'])
+            worksheet.write(row, 11, data['amount_currency'], number_format)
+            worksheet.write(row, 12, data['exchange_rate'])
+            worksheet.write(row, 13, data['main_dept'])
+            worksheet.write(row, 14, data['sub_dept'])
+            worksheet.write(row, 15, data['qty'])
+            worksheet.write(row, 16, data['unit'])
+            worksheet.write(row, 17, data['price'], number_format)
+            worksheet.write(row, 18, data['note'])
+            worksheet.write(row, 19, data['batchno'])
+            worksheet.write(row, 20, data['entryno'])
+            worksheet.write(row, 21, data['line'])
+            worksheet.write(row, 22, data['source_code'])
+
             row += 1
 
-        # Add totals row
-        worksheet.write(row, 4, 'Total', header_format)
-        worksheet.write_formula(row, 5, f'=SUM(F2:F{row})', number_format)
-        worksheet.write_formula(row, 6, f'=SUM(G2:G{row})', number_format)
+        # Add totals row - updated formula to match AMOUNT column
+        worksheet.write(row, 6, 'Total', header_format)
+        worksheet.write_formula(row, 7, f'=SUM(H2:H{row})', number_format)
 
         # Close workbook
         workbook.close()
 
         # Set binary data to download
         out = base64.encodebytes(output.getvalue())
-        file_name = f'Journal_Report_{self.journal_id.name}_{self.start_date}_{self.end_date}.xlsx'
+        file_name = f'Journal_Report_{self.start_date}_{self.end_date}.xlsx'
 
         # Save the file
         self.write({
