@@ -1,6 +1,4 @@
-from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models
-import math
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -96,107 +94,24 @@ class AccountAsset(models.Model):
                 asset.per_depreciation_amount_usd = 0.0
                 asset.book_value_usd = 0.0
 
-    # In account_asset.py
-    def compute_depreciation_board(self):
-        self.ensure_one()
-        if self.per_depreciation_amount > 0 and self.prorata_date:
-            self.depreciation_move_ids.filtered(lambda x: x.state == 'draft').unlink()
+    def compute_depreciation_board(self, date=False):
+        # Need to unlink draft moves before adding new ones because if we create new moves before, it will cause an error
+        self.depreciation_move_ids.filtered(lambda mv: mv.state == 'draft').unlink()
+        new_depreciation_moves_data = []
+        for asset in self:
+            new_depreciation_moves_data.extend(asset._recompute_board(date))
 
-            # Use USD amounts if currency is USD
-            if self.asset_currency == 'USD' and self.exchange_rate:
-                remaining_value = self.book_value_usd
-                depreciation_amount = self.per_depreciation_amount_usd
-            else:
-                remaining_value = self.book_value
-                depreciation_amount = self.per_depreciation_amount
+        # Create the new moves
+        new_depreciation_moves = self.env['account.move'].create(new_depreciation_moves_data)
 
-            # Round the depreciation amount if it has decimals
-            if depreciation_amount != round(depreciation_amount):
-                depreciation_amount = round(depreciation_amount)
+        # Set auto_post and apply old account code for each move
+        for move in new_depreciation_moves:
+            move.write({'auto_post': 'at_date'})
+            move.action_apply_old_account_code()
 
-            number_of_periods = math.ceil(remaining_value / depreciation_amount)
-            commands = []
-            base_date = self.prorata_date + relativedelta(day=31)
-
-            for i in range(number_of_periods):
-                depreciation_date = base_date + relativedelta(months=i, day=31)
-
-                if i == number_of_periods - 1:
-                    # For the final entry, ensure it doesn't go below zero
-                    current_depreciation = max(0, remaining_value)
-                else:
-                    current_depreciation = min(depreciation_amount, remaining_value)
-
-                # Ensure current_depreciation is never negative
-                if current_depreciation < 0:
-                    current_depreciation = 0
-
-                # Convert amount to MMK if using USD
-                move_amount = current_depreciation
-                if self.asset_currency == 'USD':
-                    move_amount = current_depreciation * self.exchange_rate
-
-                # Ensure move_amount is never negative
-                if move_amount < 0:
-                    move_amount = 0
-
-                # Skip creating an entry if the amount is zero or very small (less than 1)
-                if move_amount < 1:
-                    continue
-
-                # Apply the analytic distribution from the asset to the expense line
-                analytic_distribution = False
-                if hasattr(self, 'analytic_distribution') and self.analytic_distribution:
-                    analytic_distribution = self.analytic_distribution
-
-                # Create the journal entry line values
-                expense_line_vals = {
-                    'name': f'{self.name}: Depreciation',
-                    'debit': move_amount,
-                    'account_id': self.account_depreciation_expense_id.id,
-                }
-
-                depreciation_line_vals = {
-                    'name': f'{self.name}: Depreciation',
-                    'credit': move_amount,
-                    'account_id': self.account_depreciation_id.id,
-                }
-
-                # Apply analytic distribution to both lines if it exists
-                if analytic_distribution:
-                    expense_line_vals['analytic_distribution'] = analytic_distribution
-                    depreciation_line_vals['analytic_distribution'] = analytic_distribution
-
-                vals = {
-                    'asset_id': self.id,
-                    'amount_total': move_amount,
-                    'date': depreciation_date,
-                    'ref': f'{self.name}: Depreciation ({self.asset_currency})',
-                    'move_type': 'entry',
-                    'journal_id': self.journal_id.id,
-                    'currency_id': self.currency_id.id,
-                    'line_ids': [
-                        (0, 0, expense_line_vals),
-                        (0, 0, depreciation_line_vals)
-                    ]
-                }
-
-                move = self.env['account.move'].create(vals)
-                move.write({'auto_post': 'at_date'})
-
-                # Apply old account code to the newly created move
-                move.action_apply_old_account_code()
-
-                commands.append((4, move.id))
-
-                remaining_value -= current_depreciation
-                if remaining_value <= 0:
-                    break
-
-            self.write({'depreciation_move_ids': commands})
-            return True
-
-        return super(AccountAsset, self).compute_depreciation_board()
+        new_depreciation_moves_to_post = new_depreciation_moves.filtered(lambda move: move.asset_id.state == 'open')
+        # In case of the asset is in running mode, we post in the past and set to auto post move in the future
+        new_depreciation_moves_to_post._post()
 
     @api.onchange('asset_currency')
     def _onchange_asset_currency(self):
