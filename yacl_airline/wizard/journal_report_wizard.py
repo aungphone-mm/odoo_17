@@ -110,26 +110,28 @@ class JournalReportWizard(models.TransientModel):
         worksheet.set_column('H:H', 15)  # AMOUNT
         worksheet.set_column('I:I', 15)  # MAIN A/C
         worksheet.set_column('J:J', 15)  # SUB A/C
-        worksheet.set_column('K:K', 15)  # Currency
-        worksheet.set_column('L:L', 15)  # Amount in Currency
-        worksheet.set_column('M:M', 15)  # Exchange Rate
-        worksheet.set_column('N:N', 15)  # MAIN DEPT
-        worksheet.set_column('O:O', 15)  # SUB DEPT
-        worksheet.set_column('P:P', 10)  # QTY
-        worksheet.set_column('Q:Q', 10)  # UNIT
-        worksheet.set_column('R:R', 15)  # PRICE
-        worksheet.set_column('S:S', 20)  # NOTE
-        worksheet.set_column('T:T', 15)  # BATCHNO
-        worksheet.set_column('U:U', 15)  # ENTRYNO
-        worksheet.set_column('V:V', 10)  # LINE
-        worksheet.set_column('W:W', 15)  # SOURCE CODE
+        worksheet.set_column('K:K', 15)  # JOURNAL
+        worksheet.set_column('L:L', 15)  # Currency
+        worksheet.set_column('M:M', 15)  # Amount in Currency
+        worksheet.set_column('N:N', 15)  # Exchange Rate
+        worksheet.set_column('O:O', 15)  # MAIN DEPT
+        worksheet.set_column('P:P', 15)  # SUB DEPT
+        worksheet.set_column('Q:Q', 10)  # QTY
+        worksheet.set_column('R:R', 10)  # UNIT
+        worksheet.set_column('S:S', 15)  # PRICE
+        worksheet.set_column('T:T', 20)  # NOTE
+        worksheet.set_column('U:U', 15)  # BATCHNO
+        worksheet.set_column('V:V', 15)  # ENTRYNO
+        worksheet.set_column('W:W', 10)  # LINE
+        worksheet.set_column('X:X', 15)  # SOURCE CODE
+        worksheet.set_column('Y:Y', 10)  # State
 
         # Write headers - removed header column
         headers = ['REFERENCE', 'CHEQUE', 'DCNOTENO', 'NAME',
-                   'DATE', 'DESCRIPTION', 'PARTICULAR', 'AMOUNT', 'MAIN A/C', 'SUB A/C',
+                   'DATE', 'DESCRIPTION', 'PARTICULAR', 'AMOUNT', 'MAIN A/C', 'SUB A/C','JOURNAL',
                    'Currency', 'Amount in Currency', 'Exchange Rate',
                    'MAIN DEPT', 'SUB DEPT', 'QTY', 'UNIT', 'PRICE', 'NOTE',
-                   'BATCHNO', 'ENTRYNO', 'LINE', 'SOURCE CODE']
+                   'BATCHNO', 'ENTRYNO', 'LINE', 'SOURCE CODE','State']
 
         for col, header in enumerate(headers):
             worksheet.write(0, col, header, header_format)
@@ -191,7 +193,7 @@ class JournalReportWizard(models.TransientModel):
 
             if key not in grouped_data:
                 grouped_data[key] = {
-                    'reference': line.move_id.ref or '',
+                    'reference': line.move_id.reference_no or '',
                     'analytic_code': analytic_code,
                     'dcnoteno': line.move_id.name or '',
                     'account_receivable_id': line.move_id.account_receivable_id.name or '',
@@ -204,6 +206,7 @@ class JournalReportWizard(models.TransientModel):
                     #     0] if line.account_id.code and '/' in line.account_id.code else (line.account_id.code or ''),
                     'sub_ac': line.account_id.code.split('/')[
                         1] if line.account_id.code and '/' in line.account_id.code else '',
+                    'journal': line.move_id.journal_id.name or '',  # Added journal name
                     'main_dept': '',
                     'sub_dept': '',
                     'qty': line.quantity if hasattr(line, 'quantity') else 0,
@@ -219,6 +222,7 @@ class JournalReportWizard(models.TransientModel):
                     'currency': currency_name,
                     'amount_currency': 0.0,
                     'exchange_rate': line.currency_rate_display if hasattr(line, 'currency_rate_display') else '',
+                    'state': line.move_id.state,
                 }
 
             # Sum debits and credits
@@ -245,19 +249,20 @@ class JournalReportWizard(models.TransientModel):
             worksheet.write(row, 7, data['amount'], number_format)
             worksheet.write(row, 8, data['main_ac'])
             worksheet.write(row, 9, data['sub_ac'])
-            worksheet.write(row, 10, data['currency'])
-            worksheet.write(row, 11, data['amount_currency'], number_format)
-            worksheet.write(row, 12, data['exchange_rate'])
-            worksheet.write(row, 13, data['main_dept'])
-            worksheet.write(row, 14, data['sub_dept'])
-            worksheet.write(row, 15, data['qty'])
-            worksheet.write(row, 16, data['unit'])
-            worksheet.write(row, 17, data['price'], number_format)
-            worksheet.write(row, 18, data['note'])
-            worksheet.write(row, 19, data['batchno'])
-            worksheet.write(row, 20, data['entryno'])
-            worksheet.write(row, 21, data['line'])
-            worksheet.write(row, 22, data['source_code'])
+            worksheet.write(row, 10, data['journal'])
+            worksheet.write(row, 12, data['amount_currency'], number_format)
+            worksheet.write(row, 13, data['exchange_rate'])
+            worksheet.write(row, 14, data['main_dept'])
+            worksheet.write(row, 15, data['sub_dept'])
+            worksheet.write(row, 16, data['qty'])
+            worksheet.write(row, 17, data['unit'])
+            worksheet.write(row, 18, data['price'], number_format)
+            worksheet.write(row, 19, data['note'])
+            worksheet.write(row, 20, data['batchno'])
+            worksheet.write(row, 21, data['entryno'])
+            worksheet.write(row, 22, data['line'])
+            worksheet.write(row, 23, data['source_code'])
+            worksheet.write(row, 24, data['state'])
 
             row += 1
 

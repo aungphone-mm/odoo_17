@@ -67,8 +67,7 @@
                                         </div>
                                     </td>
                                     <td class="text-right">
-                                        <span t-esc="'%.2f' % cashbook.total_amount"/>
-                                        <span t-esc="cashbook.currency_id.symbol"/>
+                                        <span t-esc="cashbook.total_amount" t-options='{"widget": "monetary", "display_currency": cashbook.currency_id}'/>
                                     </td>
                                 </tr>
                                 <t t-set="sn" t-value="sn + 1"/>
@@ -96,7 +95,7 @@
                                     <td><span t-esc="account[0]"/></td>
                                     <td class="text-center"><span t-esc="account[1]['count']"/></td>
                                     <td class="text-right">
-                                        <span t-esc="'%.2f' % account[1]['total_amount']"/>
+                                        <span t-esc="account[1]['total_amount']" t-options='{"widget": "monetary", "display_currency": env.company.currency_id}'/>
                                     </td>
                                     <td class="text-right"></td>
                                 </tr>
@@ -107,7 +106,7 @@
                             <tr>
                                 <td colspan="2" class="text-right"><strong>Grand Total</strong></td>
                                 <td class="text-center"><strong><span t-esc="grand_totals['total_count']"/></strong></td>
-                                <td class="text-right"><strong><span t-esc="'%.2f' % grand_totals['total_amount']"/></strong></td>
+                                <td class="text-right"><strong><span t-esc="grand_totals['total_amount']" t-options='{"widget": "monetary", "display_currency": env.company.currency_id}'/></strong></td>
                                 <td></td>
                             </tr>
                         </tfoot>
@@ -117,7 +116,7 @@
                     <div class="row mt-4">
                         <div class="col-6">
                             <strong>Bank Paid:</strong>
-                            <span t-esc="'%.2f' % grand_totals['total_amount']"/>
+                            <span t-esc="grand_totals['total_amount']" t-options='{"widget": "monetary", "display_currency": env.company.currency_id}'/>
                         </div>
                         <div class="col-6 text-right">
                             <strong>Cash Paid:</strong>
