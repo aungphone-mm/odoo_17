@@ -168,7 +168,7 @@ class JournalReportWizard(models.TransientModel):
                 # Via tags
                 analytic_code = ', '.join(line.analytic_tag_ids.mapped('name'))
 
-            currency_name = line.currency_id.name if line.currency_id else ''
+            currency_name = line.move_id.currency_id.name if line.move_id.currency_id else ''
             narration = line.move_id.inv_desc if hasattr(line.move_id, 'inv_desc') else ''
 
             # Determine main_ac based on the account type
@@ -250,6 +250,7 @@ class JournalReportWizard(models.TransientModel):
             worksheet.write(row, 8, data['main_ac'])
             worksheet.write(row, 9, data['sub_ac'])
             worksheet.write(row, 10, data['journal'])
+            worksheet.write(row, 11, data['currency'])
             worksheet.write(row, 12, data['amount_currency'], number_format)
             worksheet.write(row, 13, data['exchange_rate'])
             worksheet.write(row, 14, data['main_dept'])

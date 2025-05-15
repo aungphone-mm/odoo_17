@@ -33,7 +33,7 @@
                                 <tree>
                                     <field name="name"/>
                                     <field name="date"/>
-                                    <field name="ref"/>
+                                    <field name="reference_no"/>
                                     <field name="partner_id"/>
                                     <field name="amount_total" sum="Total"/>
                                     <field name="payment_state" widget="badge"/>
