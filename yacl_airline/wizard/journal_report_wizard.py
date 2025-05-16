@@ -193,7 +193,7 @@ class JournalReportWizard(models.TransientModel):
 
             if key not in grouped_data:
                 grouped_data[key] = {
-                    'reference': line.move_id.reference_no or '',
+                    'reference': line.ref_no or '',
                     'analytic_code': analytic_code,
                     'dcnoteno': line.move_id.name or '',
                     'account_receivable_id': line.move_id.account_receivable_id.name or '',
@@ -214,8 +214,10 @@ class JournalReportWizard(models.TransientModel):
                     'price': line.price_unit if hasattr(line, 'price_unit') else 0.0,
                     'note': narration,
                     'batchno': '',
-                    'entryno': line.id,
-                    'line': line.sequence if hasattr(line, 'sequence') else 0,
+                    # 'entryno': line.id,
+                    # 'line': line.sequence if hasattr(line, 'sequence') else 0,
+                    'entryno': '',
+                    'line': '',
                     'source_code': line.move_id.journal_id.code or '',
                     'debit': 0.0,
                     'credit': 0.0,

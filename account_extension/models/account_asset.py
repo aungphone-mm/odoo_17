@@ -1,5 +1,7 @@
 from odoo import api, fields, models
 import logging
+from dateutil.relativedelta import relativedelta
+from odoo.tools import float_round
 
 _logger = logging.getLogger(__name__)
 
@@ -95,11 +97,32 @@ class AccountAsset(models.Model):
                 asset.book_value_usd = 0.0
 
     def compute_depreciation_board(self, date=False):
-        # Need to unlink draft moves before adding new ones because if we create new moves before, it will cause an error
+        # Need to unlink draft moves before adding new ones
         self.depreciation_move_ids.filtered(lambda mv: mv.state == 'draft').unlink()
+
         new_depreciation_moves_data = []
         for asset in self:
-            new_depreciation_moves_data.extend(asset._recompute_board(date))
+            # Get original depreciation entries
+            depreciation_entries = asset._recompute_board(date)
+
+            # Process the entries to move min value to last month
+            if depreciation_entries:
+                # Find the entry with the minimum amount
+                min_entry = min(depreciation_entries, key=lambda x: x.get('depreciation_value', float('inf')))
+
+                # Find the entry with the last date
+                last_date_entry = max(depreciation_entries, key=lambda x: x.get('date', ''))
+
+                # Swap the dates between the min entry and the last date entry
+                if min_entry != last_date_entry:
+                    min_entry_date = min_entry['date']
+                    min_entry['date'] = last_date_entry['date']
+                    last_date_entry['date'] = min_entry_date
+
+                # Sort entries by date to maintain chronological order
+                depreciation_entries.sort(key=lambda x: x['date'])
+
+            new_depreciation_moves_data.extend(depreciation_entries)
 
         # Create the new moves
         new_depreciation_moves = self.env['account.move'].create(new_depreciation_moves_data)
@@ -110,8 +133,10 @@ class AccountAsset(models.Model):
             move.action_apply_old_account_code()
 
         new_depreciation_moves_to_post = new_depreciation_moves.filtered(lambda move: move.asset_id.state == 'open')
+
         # In case of the asset is in running mode, we post in the past and set to auto post move in the future
         new_depreciation_moves_to_post._post()
+
 
     @api.onchange('asset_currency')
     def _onchange_asset_currency(self):
