@@ -43,8 +43,8 @@
                         <field name="airline_id"/>
                         <field name="type"/>
                         <field name="currency_id"/>
-                        <field name="non_schedule"/>
-                        <field name="airline_user_id" options="{'no_create': True}"/>
+<!--                        <field name="non_schedule"/>-->
+<!--                        <field name="airline_user_id" options="{'no_create': True}"/>-->
                     </group>
                     <group>
                         <field name="passenger_service_rate_id" />
