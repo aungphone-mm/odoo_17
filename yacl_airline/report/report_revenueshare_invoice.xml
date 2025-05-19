@@ -89,9 +89,7 @@
                                             </td>
                                             <td style="text-align: center;">
                                                 <span t-field="line.quantity"/>
-                                                <t t-if="line.product_uom_id">
-                                                    <span t-field="line.product_uom_id.name"/>
-                                                </t>
+
                                             </td>
                                             <td style="text-align: right;">
                                                 <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_unit) or '{:,.2f}'.format(line.price_unit) + line.currency_id.symbol"/>
@@ -174,11 +172,11 @@
                                         <li>Myanmar Currency: Industrial and Commercial Bank of China (ICBC), Yangon Branch,
                                         <br/>MMK Account No. 60100 1000 0000 150872</li>
                                     </ul>
-                                </span><br/>
-                                Issued by:<br/><br/><br/><br/><br/>
+                                </span>
+                                <span style="font-size: 0.85em;">Issued by:<br/><br/><br/><br/>
                                 ____________________<br/>
                                 Aye Thida<br/>
-                                General Manager
+                                General Manager</span>
                             </div>
                         </div>
                     </div>
