@@ -26,29 +26,28 @@
                         <!-- Invoice Info Section -->
                         <div class="row mb-4">
                             <div class="col-6">
-                                <strong><span t-field="o.partner_id.name"/></strong><br/>
-                                <span t-field="o.partner_id.street"/>
-                                <t t-if="o.partner_id.street2"><br/><span t-field="o.partner_id.street2"/></t>
-                                <t t-if="o.partner_id.city"><br/><span t-field="o.partner_id.city"/></t>
-                                <t t-if="o.partner_id.state_id or o.partner_id.zip or o.partner_id.country_id">
-                                    <br/>
-                                    <t t-if="o.partner_id.state_id"><span t-field="o.partner_id.state_id.name"/></t>
-                                    <t t-if="o.partner_id.zip">, <span t-field="o.partner_id.zip"/></t>
-                                    <t t-if="o.partner_id.country_id">, <span t-field="o.partner_id.country_id.name"/></t>
-                                </t>
-                                <div t-if="o.partner_id.contact_name">
-                                            Attention: <t t-esc="o.partner_id.contact_name"/><br/>
-                                        </div>
-                                        <div t-if="o.partner_id.contact_job_position">
-                                            Position: <t t-esc="o.partner_id.contact_job_position"/>
-                                        </div>
-                            </div>
+                            <strong><span t-field="o.partner_id.name"/></strong><br/>
+                            <span t-field="o.partner_id.street"/>
+                            <t t-if="o.partner_id.street2"><br/><span t-field="o.partner_id.street2"/></t>
+                            <t t-if="o.partner_id.city"><br/><span t-field="o.partner_id.city"/></t>
+                            <t t-if="o.partner_id.state_id or o.partner_id.zip or o.partner_id.country_id">
+                                <br/>
+                                <t t-if="o.partner_id.state_id"><span t-field="o.partner_id.state_id.name"/></t>
+                                <t t-if="o.partner_id.zip">, <span t-field="o.partner_id.zip"/></t>
+                                <t t-if="o.partner_id.country_id">, <span t-field="o.partner_id.country_id.name"/></t>
+                            </t>
+                            <t t-if="o.partner_id.contact_name">
+                                <br/><span>Attention: <t t-esc="o.partner_id.contact_name"/></span>
+                            </t>
+                            <t t-if="o.partner_id.contact_job_position">
+                                <br/><span>Position: <t t-esc="o.partner_id.contact_job_position"/></span>
+                            </t>
+                        </div>
                             <div class="col-6 d-flex justify-content-end">
                                 <strong>Inv No:</strong>
                                 <span t-field="o.name"/><br/>
                                 <strong>Date:</strong>
                                 <span t-field="o.invoice_date"/><br/>
-<!--                                <span t-field="o.invoice_date" t-options='{"format": "yyyy MMMM"}'/><br/>-->
                                 <strong>Payment Due:</strong>
                                 <span t-field="o.invoice_date_due"/>
                             </div>
@@ -95,13 +94,15 @@
                                                 </t>
                                             </td>
                                             <td style="text-align: right;">
-<!--                                                <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-<!--                                                <span t-esc="line.currency_id.symbol + ' ' + '%.2f' % line.price_unit"/>-->
                                                 <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_unit) or '{:,.2f}'.format(line.price_unit) + line.currency_id.symbol"/>
                                             </td>
                                             <td style="text-align: right;">
-<!--                                                <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                                <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_subtotal) or '{:,.2f}'.format(line.price_subtotal) + line.currency_id.symbol"/>
+                                                <t t-if="line.currency_id.name == 'MMK'">
+                                                    <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(round(line.price_subtotal)) or '{:,.2f}'.format(round(line.price_subtotal)) + line.currency_id.symbol"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-esc="line.currency_id.position == 'before' and line.currency_id.symbol + '{:,.2f}'.format(line.price_subtotal) or '{:,.2f}'.format(line.price_subtotal) + line.currency_id.symbol"/>
+                                                </t>
                                             </td>
                                         </tr>
                                         <t t-set="line_no" t-value="line_no + 1"/>
@@ -112,8 +113,12 @@
                                         <strong>Total Amount</strong>
                                     </td>
                                     <td style="text-align: right;">
-<!--                                        <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_total) or '{:,.2f}'.format(o.amount_total) + o.currency_id.symbol"/>
+                                        <t t-if="o.currency_id.name == 'MMK'">
+                                            <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(round(o.amount_total)) or '{:,.2f}'.format(round(o.amount_total)) + o.currency_id.symbol"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_total) or '{:,.2f}'.format(o.amount_total) + o.currency_id.symbol"/>
+                                        </t>
                                     </td>
                                 </tr>
                                 <tr>
@@ -121,37 +126,35 @@
                                         <span t-esc="'Commercial Tax 5%'"/>
                                     </td>
                                     <td style="text-align: right;">
-<!--                                        <span t-esc="o.amount_untaxed * 0.05"/>-->
-<!--                                        <span t-esc="o.currency_id.symbol + ' ' + '%.2f' % (o.amount_untaxed * 0.05)"/>-->
-<!--                                        <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_untaxed* 0.05) or '{:,.2f}'.format(o.amount_untaxed* 0.05) + o.currency_id.symbol"/>-->
-<!--                                         <span t-esc="line.currency_id.name == 'MMK' and '{:,.0f}'.format(o.amount_untaxed* 0.05)+ ' ' + line.currency_id.symbol or '{:,.2f}'.format(o.amount_untaxed* 0.05) + ' ' + line.currency_id.symbol"/>-->
-<!--                                            <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_untaxed* 0.05) or '{:,.2f}'.format(o.amount_untaxed* 0.05) + o.currency_id.symbol"/>-->
-                                            <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(int(o.amount_untaxed* 0.05)) or '{:,.2f}'.format(int(o.amount_untaxed* 0.05)) + o.currency_id.symbol"/>
-                                        <!--                                        <span t-esc="(o.currency_id.position == 'before' and o.currency_id.symbol + ' ' + '{:,.0f}'.format(o.amount_untaxed * 0.05) or '{:,.0f}'.format(o.amount_untaxed * 0.05) + ' ' + o.currency_id.symbol) if line.currency_id.name == 'MMK' else (o.currency_id.position == 'before' and o.currency_id.symbol + ' ' + '{:,.2f}'.format(o.amount_untaxed * 0.05) or '{:,.2f}'.format(o.amount_untaxed * 0.05) + ' ' + o.currency_id.symbol)"/>-->
+                                        <t t-if="o.currency_id.name == 'MMK'">
+                                            <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(round(o.amount_untaxed * 0.05)) or '{:,.2f}'.format(round(o.amount_untaxed * 0.05)) + o.currency_id.symbol"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(o.amount_untaxed * 0.05) or '{:,.2f}'.format(o.amount_untaxed * 0.05) + o.currency_id.symbol"/>
+                                        </t>
                                     </td>
                                 </tr>
-<!--                                <tr>-->
-<!--                                    <td colspan="5" style="text-align: left;">-->
-<!--                                        <span t-esc="'(' + o.currency_id.amount_to_text(o.amount_total) + ' Only)'"/>-->
-<!--                                    </td>-->
-<!--                                </tr>-->
                                 <!-- compute once, up front -->
                                 <tr>
-                                      <td colspan="3" style="text-align: left;">
+                                    <td colspan="3" style="text-align: left;">
                                         <span t-esc="
                                           '('
                                           + o.currency_id.amount_to_text(total_with_tax)
                                           + ' Only)'
                                         "/>
-                                      </td>
-                                      <td style="text-align: right; font-weight: bold;">
+                                    </td>
+                                    <td style="text-align: right; font-weight: bold;">
                                         Grand Amount
-                                      </td>
-                                      <td style="text-align: right;">
-                                       <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(total_with_tax) or '{:,.2f}'.format(total_with_tax) + o.currency_id.symbol"/>
-
-                                      </td>
-                                    </tr>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <t t-if="o.currency_id.name == 'MMK'">
+                                            <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(round(total_with_tax)) or '{:,.2f}'.format(round(total_with_tax)) + o.currency_id.symbol"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="o.currency_id.position == 'before' and o.currency_id.symbol + '{:,.2f}'.format(total_with_tax) or '{:,.2f}'.format(total_with_tax) + o.currency_id.symbol"/>
+                                        </t>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                         <!-- Payment Information -->
